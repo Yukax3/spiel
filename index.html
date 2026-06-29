@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1612">
+<title>Wurzelwerk — Aufbau</title>
+<style>
+  :root{--bg:#0f1612;--panel:rgba(28,36,28,0.82);--panel2:rgba(20,26,20,0.9);--line:rgba(255,255,255,0.06);
+    --line2:rgba(255,255,255,0.1);--text:#f0e6d3;--muted:#a8b898;--accent:#88d080;--gold:#e2c65a;
+    --bad:#e07a52;--ink:#090d09;--shadow:0 8px 32px rgba(0,0,0,0.35);}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+  body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;opacity:.14;
+    background-image:radial-gradient(circle at 15% 8%,rgba(255,244,205,.14),transparent 32%),
+      radial-gradient(circle at 85% 20%,rgba(180,220,160,.1),transparent 28%),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(0deg,rgba(0,0,0,.04) 1px,transparent 1px);
+    background-size:auto,auto,5px 5px,6px 6px;mix-blend-mode:soft-light}
+  #app{display:flex;height:100%;backdrop-filter:blur(2px)}
+  #left{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+  #topbar{display:flex;align-items:center;gap:16px;padding:10px 16px;background:var(--panel);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    flex-wrap:wrap;font-size:13.5px;box-shadow:var(--shadow);position:relative;z-index:10}
+  .res{display:flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(255,255,255,0.03);
+    border-radius:8px;border:1px solid var(--line);transition:all .2s}
+  .res:hover{background:rgba(255,255,255,0.06);border-color:var(--line2)}
+  .res b{font-weight:650;min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
+  .res .ic{font-size:16px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3))}
+  #store{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:4px 10px;
+    background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid var(--line)}
+  #storeBar{width:84px;height:10px;background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:6px;
+    overflow:hidden;position:relative;box-shadow:inset 0 1px 3px rgba(0,0,0,0.4)}
+  #storeFill{height:100%;background:linear-gradient(90deg,#7cb868,#e0c055);border-radius:4px;
+    transition:width .4s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 8px rgba(124,184,104,0.3)}
+  #season{margin-left:auto;font-size:12.5px;color:var(--muted);text-align:right;line-height:1.4;padding:4px 10px;
+    background:rgba(0,0,0,0.15);border-radius:8px;border:1px solid var(--line)}
+  #season b{color:var(--text);font-weight:600}
+  #vitToggle{font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;
+    background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);
+    transition:all .15s;font-weight:600;letter-spacing:0.5px}
+  #vitToggle:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+  #stage{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at center, #1a2420 0%, #0a0f0c 100%)}
+  canvas{display:block;filter:drop-shadow(0 0 20px rgba(0,0,0,0.5))}
+  #buildbar{width:248px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);
+    overflow-y:auto;padding:16px 12px 24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    box-shadow:var(--shadow);position:relative;z-index:10}
+  #buildbar::-webkit-scrollbar{width:6px}
+  #buildbar::-webkit-scrollbar-track{background:transparent}
+  #buildbar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+  #buildbar h4{margin:0 0 16px 4px;font-size:14px;font-weight:700;color:var(--gold);
+    letter-spacing:0.4px;text-shadow:0 0 20px rgba(226,198,90,0.3)}
+  .grp{margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .grp:last-child{border-bottom:none}
+  .grp .lbl{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1.6px;margin:0 0 8px 4px;
+    font-weight:600;opacity:0.85}
+  .grp .row{display:flex;flex-direction:column;gap:5px}
+  .btn{background:linear-gradient(135deg,rgba(50,60,48,0.7),rgba(35,42,32,0.85));border:1px solid rgba(255,255,255,0.08);
+    color:var(--text);border-radius:8px;padding:9px 10px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;
+    gap:10px;transition:all .15s;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04);
+    position:relative;overflow:hidden}
+  .btn::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04),transparent);
+    opacity:0;transition:opacity .15s}
+  .btn:hover::before{opacity:1}
+  .btn:hover{background:linear-gradient(135deg,rgba(58,70,55,0.8),rgba(42,50,40,0.9));
+    border-color:rgba(255,255,255,0.14);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+  .btn:active{transform:translateY(0);box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+  .btn.sel{border-color:var(--gold);background:linear-gradient(135deg,rgba(90,80,35,0.85),rgba(55,50,28,0.9));
+    color:#fff7d8;box-shadow:0 0 16px rgba(226,198,90,0.25),inset 0 1px 0 rgba(255,255,255,0.08)}
+  .btn .em{font-size:17px;width:24px;height:24px;text-align:center;flex-shrink:0;display:grid;place-items:center;
+    background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:6px;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,0.3)}
+  .btn .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;letter-spacing:0.2px}
+  .btn .cost{font-size:10.5px;color:var(--muted);white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums}
+  .btn.locked{opacity:.28;cursor:not-allowed;filter:grayscale(0.6)}
+  .btn.locked:hover{transform:none;background:linear-gradient(135deg,rgba(50,60,48,0.7),rgba(35,42,32,0.85))}
+  #right{width:320px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;
+    overflow-y:auto;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--shadow);position:relative;z-index:10}
+  #right::-webkit-scrollbar{width:6px}
+  #right::-webkit-scrollbar-track{background:transparent}
+  #right::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+  .card{padding:16px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,0.01);
+    transition:background .2s}
+  .card:hover{background:rgba(255,255,255,0.025)}
+  .card h3{margin:0 0 8px;font-size:14px;font-weight:650;display:flex;justify-content:space-between;
+    align-items:center;letter-spacing:0.3px}
+  .card .sub{font-size:12.5px;color:var(--muted);line-height:1.5}
+  .ev{font-size:10.5px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-weight:700;
+    margin-bottom:4px;opacity:0.9;text-shadow:0 0 12px rgba(226,198,90,0.2)}
+  #chapName{font-size:18px;font-weight:700;color:var(--text);margin:4px 0 8px;letter-spacing:0.2px;
+    text-shadow:0 2px 8px rgba(0,0,0,0.3)}
+  #chapStory{font-size:12.5px;color:var(--muted);line-height:1.55;margin:8px 0 14px}
+  #goalRow{display:flex;align-items:center;gap:10px;font-size:12.5px}
+  #goalBar{flex:1;height:10px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
+    overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3)}
+  #goalFill{height:100%;width:0;background:linear-gradient(90deg,#7cb868,#e0c055);border-radius:5px;
+    transition:width .4s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 10px rgba(124,184,104,0.3)}
+  .vbar{height:10px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
+    overflow:hidden;margin:6px 0;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3)}
+  .vbar > div{height:100%;transition:width .3s}
+  .lvldots{display:flex;gap:4px}
+  .lvldots i{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.3);border:1px solid var(--line2);
+    display:inline-block;transition:all .2s}
+  .lvldots i.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(226,198,90,0.5)}
+  .up{margin-top:10px;width:100%;background:linear-gradient(135deg,rgba(90,80,35,0.85),rgba(55,50,28,0.9));
+    border:1px solid var(--gold);color:#fff;padding:9px;border-radius:8px;font-size:12.5px;cursor:pointer;
+    text-align:center;font-weight:600;letter-spacing:0.3px;transition:all .15s;
+    box-shadow:0 4px 12px rgba(226,198,90,0.2),inset 0 1px 0 rgba(255,255,255,0.1)}
+  .up:hover:not(.no){background:linear-gradient(135deg,rgba(105,95,42,0.9),rgba(62,56,30,0.95));
+    transform:translateY(-1px);box-shadow:0 6px 16px rgba(226,198,90,0.3)}
+  .up.no{background:rgba(40,46,38,0.7);border-color:var(--line2);color:var(--muted);cursor:not-allowed;
+    box-shadow:none;opacity:0.6}
+  .dem{margin-top:8px;width:100%;background:rgba(255,255,255,0.02);border:1px solid var(--line);color:var(--muted);
+    padding:6px;border-radius:7px;font-size:11.5px;cursor:pointer;transition:all .15s}
+  .dem:hover{background:rgba(255,80,60,0.08);border-color:rgba(255,100,80,0.3);color:var(--bad)}
+  .costline{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:0.2px}
+  .costline .miss{color:var(--bad);font-weight:600}
+  #stock{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;font-size:12.5px}
+  #stock div{display:flex;gap:5px;align-items:center;background:rgba(0,0,0,0.2);border:1px solid var(--line);
+    border-radius:6px;padding:5px 6px;transition:all .15s}
+  #stock div:hover{background:rgba(0,0,0,0.3);border-color:var(--line2)}
+  #hint{font-size:11.5px;color:var(--muted);line-height:1.6}
+  #banner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(8,12,8,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:50;
+    animation:fadeIn .3s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  #bannerInner{background:linear-gradient(145deg,#2a3428,#1a2218);border:1px solid var(--gold);border-radius:14px;
+    padding:28px 32px;max-width:480px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 80px rgba(226,198,90,0.08);
+    animation:slideUp .4s cubic-bezier(0.22, 1, 0.36, 1)}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+  #bannerInner h2{margin:4px 0 6px;color:var(--gold);font-size:22px;font-weight:700;letter-spacing:0.4px;
+    text-shadow:0 0 30px rgba(226,198,90,0.4)}
+  #bannerInner p{font-size:14px;line-height:1.6;color:var(--text)}
+  #bannerInner .unl{font-size:13px;color:var(--accent);margin-top:12px;line-height:1.5;font-weight:500}
+  #bannerInner button{margin-top:18px;background:linear-gradient(135deg,rgba(80,100,65,0.9),rgba(55,70,42,0.95));
+    border:1px solid var(--gold);color:#fff;padding:11px 26px;border-radius:9px;font-size:14px;cursor:pointer;
+    font-weight:600;letter-spacing:0.4px;transition:all .15s;box-shadow:0 4px 16px rgba(226,198,90,0.25)}
+  #bannerInner button:hover{background:linear-gradient(135deg,rgba(95,120,75,0.95),rgba(65,85,50,1));
+    transform:translateY(-2px);box-shadow:0 8px 24px rgba(226,198,90,0.35)}
+  .small{font-size:11px;color:var(--muted);line-height:1.5}
+  #toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(35,45,32,0.96),rgba(25,32,24,0.98));
+    border:1px solid var(--line2);padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;
+    transition:all .3s cubic-bezier(0.22, 1, 0.36, 1);pointer-events:none;z-index:40;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    font-weight:500;letter-spacing:0.2px}
+  kbd{background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:4px;padding:2px 6px;
+    font-size:10.5px;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,0.2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="buildbar"></div>
+  <div id="left">
+    <div id="topbar"></div>
+    <div id="stage">
+      <canvas id="cv"></canvas>
+      <div id="toast"></div>
+      <div id="banner"><div id="bannerInner">
+        <div class="ev" id="bnEv">Evolution</div>
+        <h2 id="bnTitle"></h2>
+        <p id="bnText"></p>
+        <div class="unl" id="bnUnlock"></div>
+        <button onclick="closeBanner()">Weiter aufbauen</button>
+      </div></div>
+    </div>
+  </div>
+  <div id="right">
+    <div class="card">
+      <div class="ev" id="chapEv">Kapitel I</div>
+      <div id="chapName"></div>
+      <div id="chapStory"></div>
+      <div id="goalRow"><div id="goalBar"><div id="goalFill"></div></div><span id="goalTxt"></span></div>
+    </div>
+    <div class="card" id="insp">
+      <h3>Auswahl</h3>
+      <div id="inspBody" class="sub">Klick auf ein Feld, um es zu prüfen & auszubauen.</div>
+    </div>
+    <div class="card">
+      <h3>Lager <span class="small" id="stockCap"></span></h3>
+      <div id="stock"></div>
+    </div>
+    <div class="card">
+      <h3>So spielst du</h3>
+      <div id="hint">
+        • Gebäude <b>links</b> wählen → auf passendes Feld klicken.<br>
+        • <b>Wege ·</b> müssen alles mit dem <b>Lager 📦</b> verbinden.<br>
+        • <b>Ausbauen</b>: Feld anklicken → Stufe erhöhen (mehr Ertrag, teurer, mehr Arbeiter).<br>
+        • Höhere Gebäude brauchen verarbeitete Güter (Bretter, Ziegel…) — bau erst die Kette.<br>
+        • <b>Entnahme</b> senkt Vitalität; Förster/Kompost heben sie.<br>
+        • <b>Stein & Erz</b>-Betriebe brauchen <b>Nahrung</b> (Bergarbeiter) — sonst stehen sie still.<br>
+        • <kbd>Rechtsklick</kbd> abreißen · <kbd>Leertaste</kbd> Pause · <kbd>Rad</kbd> Zoom<br>
+        • <kbd>V</kbd> Vitalitäts-Layer · <kbd>Esc</kbd> Bau abbrechen
+      </div>
+    </div>
+    <div class="card">
+      <h3>Ruhmeshalle <span class="small" id="scoreAge"></span></h3>
+      <div id="stats" class="sub"></div>
+      <div id="aspList" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+<script>
+const SQ3=Math.sqrt(3);
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let SIZE=34,cam={x:0,y:0,zoom:1}; let networkDirty=false,hudDirty=true,lastHudTime=0;
+const ELEV={wasser:0,aue:.8,lichtung:1,hain:1.2,fels:3.8};
+
+// ---------------- Resources ----------------
+const RESMETA={
+  wood:['🪵','Holz'], planks:['📏','Bretter'], stone:['🪨','Stein'], ore:['🪧','Erz'],
+  coal:['⚫','Kohle'], iron:['⛓️','Eisen'], tools:['🔧','Werkzeug'], clay:['🟤','Lehm'],
+  bricks:['🧱','Ziegel'], pottery:['🏺','Töpferware'], grain:['🌾','Korn'], flour:['🥣','Mehl'],
+  bread:['🍞','Brot'], vegetables:['🥕','Gemüse'], water:['💧','Wasser'], milk:['🥛','Milch'],
+  cheese:['🧀','Käse'], wool:['🧶','Wolle'], cloth:['🧵','Stoff'], clothes:['👕','Kleidung'],
+  fish:['🐟','Fisch'], meat:['🍖','Fleisch'], furniture:['🪑','Möbel'], herbs:['🌿','Kräuter'],
+  honey:['🍯','Honig'], remedy:['⚗️','Heiltrank']
+};
+const RES={}; Object.keys(RESMETA).forEach(k=>RES[k]=0);
+RES.wood=200; RES.vegetables=120; RES.stone=60; RES.planks=20;
+const FOODS=['vegetables','bread','cheese','fish','meat'];
+const TOPRES=['wood','planks','stone','iron','tools'];
+
+// ---------------- Building defs ----------------
+// out/in at level1; scaled by outGrow^(lvl-1). cost scaled by costGrow^lvl on upgrade.
+// eco:true => output scales with vitality. vit => per-cycle vitality delta. neigh => +vit to neighbors.
+// caps => capacity array per level (wohnstaette pop, lager/speicher storage).
+function D(o){o.max=o.max||3;o.costGrow=o.costGrow||2.4;o.outGrow=o.outGrow||1.8;o.jobs=o.jobs??1;return o;}
+const DEFS={
+  weg:        D({name:'Weg',em:'·',road:true,cat:'Basis',max:3,jobs:0,cost:{wood:1},costGrow:2.2,desc:'Stufe 1 = Trampelpfad, 2 = befestigt, 3 = lebende Wurzeln.'}),
+ lager:      D({name:'Lager',em:'📦',cat:'Basis',jobs:0,max:5,cost:{wood:20,stone:10},caps:[160,320,560,900,1400],desc:'Herz des Wegenetzes & Stauraum. 5 Stufen.'}),
+ speicher:   D({name:'Speicher',em:'🗄️',cat:'Basis',jobs:0,max:3,cost:{wood:15,planks:8},caps:[120,240,420],desc:'Zusätzlicher Stauraum.'}),
+ wohnstaette:D({name:'Wohnstätte',em:'🏠',cat:'Wohnen',jobs:0,max:5,cost:{wood:10},caps:[8,18,32,48,72],desc:'Siedler-Kapazität. Stufe 5 = teuer, aber brutal viel Platz.'}),
+
+  holzfaeller:D({name:'Holzfäller',em:'🪓',cat:'Holz',cost:{wood:2},biomes:['hain'],eco:true,out:{wood:1.4},vit:-2.2,desc:'Holz aus Wald. Zehrt an der Vitalität.'}),
+ saegewerk:  D({name:'Sägewerk',em:'🪚',cat:'Holz',cost:{wood:12},in:{wood:2},out:{planks:1.4},desc:'Holz → Bretter.'}),
+ tischlerei: D({name:'Tischlerei',em:'🪑',cat:'Holz',cost:{planks:10,wood:8},in:{planks:2},out:{furniture:1},desc:'Bretter → Möbel (Wohlstand).'}),
+ foerster:   D({name:'Förster',em:'🌱',cat:'Holz',cost:{wood:6},biomes:['hain','lichtung'],vit:4.5,neigh:3.0,desc:'Forstet auf — hebt die Vitalität.'}),
+
+ steinbruch: D({name:'Steinbruch',em:'⛏️',cat:'Stein & Erz',cost:{wood:10},biomes:['fels'],eco:true,out:{stone:1.4},vit:-1.8,desc:'Stein aus Felsgrund.'}),
+ lehmgrube:  D({name:'Lehmgrube',em:'🕳️',cat:'Stein & Erz',cost:{wood:8},biomes:['aue','fels'],eco:true,out:{clay:1.6},vit:-0.8,desc:'Lehm für Ziegel & Töpfe.'}),
+ erzmine:    D({name:'Erzmine',em:'🪨',cat:'Stein & Erz',cost:{wood:14,planks:6},biomes:['fels'],eco:true,out:{ore:1.3},vit:-2.2,desc:'Erz aus dem Felsgrund.'}),
+ koehlerei:  D({name:'Köhlerei',em:'🔥',cat:'Stein & Erz',cost:{wood:10},in:{wood:2},out:{coal:1.5},desc:'Holz → Kohle.'}),
+ schmelze:   D({name:'Schmelze',em:'🌋',cat:'Stein & Erz',cost:{stone:12,planks:8},in:{ore:2,coal:1},out:{iron:1},desc:'Erz + Kohle → Eisen.'}),
+ schmiede:   D({name:'Schmiede',em:'⚒️',cat:'Stein & Erz',cost:{bricks:10,planks:8},in:{iron:1,coal:1},out:{tools:1},desc:'Eisen + Kohle → Werkzeug.'}),
+ ziegelei:   D({name:'Ziegelei',em:'🧱',cat:'Stein & Erz',cost:{wood:10,stone:6},in:{clay:2},out:{bricks:1.5},desc:'Lehm → Ziegel.'}),
+ toepferei:  D({name:'Töpferei',em:'🏺',cat:'Stein & Erz',cost:{wood:8,stone:4},in:{clay:2},out:{pottery:1},desc:'Lehm → Töpferware.'}),
+
+ getreidefeld:D({name:'Getreidefeld',em:'🌾',cat:'Acker',cost:{wood:5},biomes:['aue','lichtung'],eco:true,season:true,out:{grain:2.4},vit:-0.4,desc:'Korn. Ruht im Winter.'}),
+  gemuesehof: D({name:'Gemüsehof',em:'🥕',cat:'Acker',cost:{wood:4},biomes:['aue','lichtung'],eco:true,season:true,out:{vegetables:1.5},vit:-0.4,desc:'Gemüse — frühe Nahrung.'}),
+ muehle:     D({name:'Mühle',em:'🌀',cat:'Acker',cost:{wood:10,stone:5},in:{grain:2},out:{flour:1.6},desc:'Korn → Mehl.'}),
+ backhaus:   D({name:'Backhaus',em:'🍞',cat:'Acker',cost:{wood:10,planks:6},in:{flour:2},out:{bread:2.2},desc:'Mehl → Brot (sättigt stark).'}),
+ brunnen:    D({name:'Brunnen',em:'💧',cat:'Acker',cost:{wood:6,stone:4},out:{water:3},desc:'Wasser für Vieh & Sudhaus.'}),
+ fischerhuette:D({name:'Fischerhütte',em:'🎣',cat:'Acker',cost:{wood:8},adj:'wasser',out:{fish:1.6},desc:'Fisch — braucht ein Wasser-Nachbarfeld.'}),
+
+ kuhfarm:    D({name:'Kuhfarm',em:'🐄',cat:'Vieh & Stoff',cost:{planks:10,wood:10},biomes:['aue','lichtung'],in:{water:1},out:{milk:1.6},vit:-0.3,desc:'Milch. Braucht Wasser & Weide.'}),
+ kaeserei:   D({name:'Käserei',em:'🧀',cat:'Vieh & Stoff',cost:{planks:8,stone:6},in:{milk:2},out:{cheese:1.5},desc:'Milch → Käse.'}),
+ schaffarm:  D({name:'Schaffarm',em:'🐑',cat:'Vieh & Stoff',cost:{planks:10,wood:8},biomes:['aue','lichtung'],out:{wool:1.6},vit:-0.3,desc:'Wolle. Braucht Weide.'}),
+ weberei:    D({name:'Weberei',em:'🧶',cat:'Vieh & Stoff',cost:{planks:8,wood:6},in:{wool:2},out:{cloth:1.5},desc:'Wolle → Stoff.'}),
+ schneiderei:D({name:'Schneiderei',em:'👕',cat:'Vieh & Stoff',cost:{planks:8,bricks:4},in:{cloth:2},out:{clothes:1},desc:'Stoff → Kleidung.'}),
+ jagdhuette: D({name:'Jagdhütte',em:'🏹',cat:'Vieh & Stoff',cost:{wood:10,planks:4},biomes:['hain'],eco:true,out:{meat:1.6},vit:-1.0,desc:'Fleisch — verdrängt Wild, senkt Vitalität.'}),
+
+ imkerei:    D({name:'Imkerei',em:'🐝',cat:'Natur',cost:{wood:8},biomes:['aue','lichtung','hain'],out:{honey:1},vit:1,desc:'Honig. Bestäuber heben Vitalität; mehr Ertrag in blühenden Zonen.'}),
+ kompost:    D({name:'Kompostwerk',em:'♻️',cat:'Natur',cost:{wood:10},vit:1,neigh:2.4,desc:'Hebt die Vitalität der Nachbarfelder.'}),
+ kraeutergarten:D({name:'Kräutergarten',em:'🌿',cat:'Natur',cost:{planks:6,wood:6},biomes:['aue','lichtung','hain'],out:{herbs:1},vit:0.4,desc:'Kräuter. Wächst nur in gesunden Zonen besser.'}),
+ sudhaus:    D({name:'Sudhaus',em:'⚗️',cat:'Natur',cost:{bricks:10,pottery:6},in:{herbs:1,water:1},out:{remedy:1},desc:'Kräuter + Wasser → Heiltrank (Luxus).'}),
+  schrein:   D({name:'Hain-Schrein',em:'🛕',cat:'Natur',cost:{bricks:14,stone:10},vit:2,neigh:3.5,desc:'Mächtige Renaturierung im weiten Umkreis.'}),
+  schule:D({name:'Schule',em:'📚',cat:'Sozial',cost:{planks:12,pottery:4},jobs:2,desc:'Bildung. Zufriedenheit & Fortschritt.'}),
+  festplatz:D({name:'Festplatz',em:'🎪',cat:'Sozial',cost:{planks:10,cloth:6,bread:10},jobs:2,desc:'Feste & Kultur. Stärkt Gemeinschaft.'}),
+  heilstube:D({name:'Heilstube',em:'🏥',cat:'Sozial',cost:{bricks:12,remedy:4},jobs:2,desc:'Heilung. Reduziert Abwanderung.'}),
+  wildgehege:D({name:'Wildgehege',em:'🦌',cat:'Natur',cost:{wood:10,herbs:4},out:{meat:0.4},vit:1.2,desc:'Tiere beobachten statt jagen. Liefert etwas Fleisch & heilt Land.'}),
+  pilznetz:D({name:'Pilznetz-Lager',em:'🍄',cat:'Basis',jobs:0,max:2,cost:{herbs:10,pottery:6},caps:[300,520],biomes:['hain','aue','lichtung'],minVit:65,desc:'Lebendes Pilz-Lager. Nur in gesunden Zonen. Größerer Stauraum.'}),
+  eselstation:D({name:'Eselstation',em:'🐴',cat:'Logistik',cost:{wood:18,planks:10},jobs:1,out:{tools:0.3},vit:0.2,desc:'Träger-Schnellboote. Massentransporte & Werkzeug.'}),
+  marktplatz:D({name:'Marktplatz',em:'🏪',cat:'Basis',cost:{wood:12,planks:8},jobs:1,out:{},vit:0.5,neigh:1.5,desc:'Handelszentrum. Verteilt Waren effizient und verbindet Lager.'}),
+  teich:D({name:'Teich',em:'🏞️',cat:'Natur',cost:{wood:8,stone:4},vit:2.5,neigh:1.8,desc:'Wasserfläche. Lockert Vieh an, erhöht Fischertrag.'}),
+  // --- Monumente (Endgame) ---
+  hainbaum:D({name:'Hainbaum',em:'🌳',cat:'Monument',cost:{wood:150,planks:60,stone:50,bricks:30,remedy:10},jobs:0,max:1,vit:8,neigh:12,desc:'Der Große Hainbaum. Zentrum der Symbiose. +12 Vitalität im weiten Umkreis, epische Optik.'}),
+  kristall:D({name:'Kristallturm',em:'🔮',cat:'Monument',cost:{iron:50,tools:20,bricks:70,stone:80,remedy:8},jobs:0,max:1,vit:5,neigh:8,desc:'Kristalliner Turm der Weisheit. Verstärkt alle Gebäude im Umkreis +10%.'}),
+  erdzeichen:D({name:'Erdzeichen',em:'🪨',cat:'Monument',cost:{stone:150,bricks:100,iron:20,tools:10},jobs:0,max:1,vit:10,neigh:15,desc:'Uraltes Erdzeichen. Heilt Ödland und verwandelt es zurück in Hain.'}),
+};
+const CATS=['Basis','Wohnen','Holz','Stein & Erz','Acker','Vieh & Stoff','Natur','Sozial','Logistik','Monument'];
+
+// ---------------- Map ----------------
+const RAD=20,hexes=new Map();
+function key(q,r){return q+','+r}
+function biomeAt(q,r){
+  const n=Math.sin(q*0.4+r*0.3)+Math.sin(q*0.2-r*0.5)+Math.sin((q+r)*0.35)+Math.sin(q*0.6+r*0.15)*0.6+Math.sin(r*0.8)*0.4;
+  const dist=Math.sqrt(q*q+r*r);
+  if(dist>18) return 'fels';
+  if((q+r)>=-1&&(q+r)<=1&&Math.abs(q)>12) return 'wasser';
+  if(q>12&&r<-8) return 'wasser';
+  if(q<-12&&r>8) return 'wasser';
+  if(Math.sin(q*0.25)*Math.cos(r*0.3)>0.85&&dist>6) return 'wasser';
+  if(n>0.8) return 'lichtung';
+  if(n<-0.7) return 'aue';
+  return 'hain';
+}
+for(let q=-RAD;q<=RAD;q++)for(let r=-RAD;r<=RAD;r++){
+  if(Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r))>RAD)continue;
+  const b=biomeAt(q,r);
+  hexes.set(key(q,r),{q,r,biome:b,vit:b==='fels'?55:(b==='wasser'?100:90),b:null,lvl:1,connected:false});
+}
+const L0=hexes.get(key(3,-3)); L0.b='lager'; L0.lvl=1; L0.biome='lichtung'; L0.vit=95;
+let SORTED=[];
+function srand(seed){seed=seed>>>0||1;return function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};}
+function precompute(){
+  hexes.forEach(h=>{h.px=axialToPix(h.q,h.r);const sr=srand((h.q*73856093^h.r*19349663)>>>0);
+    h.elev=(ELEV[h.biome]||0)+sr()*2.5;
+    h.mountain=(h.biome==='fels'&&sr()>0.5);if(h.mountain)h.elev+=7+sr()*7;
+    generateDeco(h,sr);});
+  SORTED=[...hexes.values()].sort((a,b)=>a.px.y-b.px.y||a.px.x-b.px.x);
+  initCritters();
+}
+function generateDeco(h,rng){h.deco=[];if(h.b||h.biome==='wasser')return;
+  const R=SIZE*0.6;function pos(){const a=rng()*6.2832,d=Math.sqrt(rng())*R;return[Math.cos(a)*d,Math.sin(a)*d*0.72];}
+  if(h.biome==='hain'){const n=3+Math.floor(rng()*3);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'tree',s:0.8+rng()*0.5});}}
+  else if(h.biome==='lichtung'){const n=1+Math.floor(rng()*2);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'tree',s:0.7+rng()*0.4});}
+    for(let i=0;i<2;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:rng()>0.82?'flower':'tuft',s:0.55+rng()*0.4,c:rng()});}}
+  else if(h.biome==='aue'){for(let i=0;i<4;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:rng()>0.9?'flower':'tuft',s:0.55+rng()*0.45,c:rng()});}}
+  else if(h.biome==='fels'){const n=2+Math.floor(rng()*3);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'rock',s:0.7+rng()*0.7});}
+    if(h.mountain)h.deco.push({dx:0,dy:-1,t:'peak',s:1.1+rng()*0.5});}
+  h.deco.sort((a,b)=>a.dy-b.dy);}
+
+// ---------------- Geometry ----------------
+function axialToPix(q,r){return{x:SIZE*1.5*q,y:SIZE*SQ3*(r+q/2)};}
+function pixToAxial(x,y){
+  let q=(2/3*x)/SIZE,r=(-1/3*x+SQ3/3*y)/SIZE,xc=q,zc=r,yc=-xc-zc;
+  let rx=Math.round(xc),ry=Math.round(yc),rz=Math.round(zc);
+  const dx=Math.abs(rx-xc),dy=Math.abs(ry-yc),dz=Math.abs(rz-zc);
+  if(dx>dy&&dx>dz)rx=-ry-rz;else if(dy>dz)ry=-rx-rz;else rz=-rx-ry;
+  return{q:rx,r:rz};
+}
+function hexCorners(cx,cy){const p=[];for(let i=0;i<6;i++){const a=Math.PI/180*60*i;p.push([cx+SIZE*Math.cos(a),cy+SIZE*Math.sin(a)]);}return p;}
+const NB=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
+function neighbors(h){return NB.map(([dq,dr])=>hexes.get(key(h.q+dq,h.r+dr))).filter(Boolean);}
+
+// ---------------- Network ----------------
+function recomputeNetwork(){
+  hexes.forEach(h=>h.connected=false);
+  const st=[L0],seen=new Set([key(L0.q,L0.r)]);L0.connected=true;
+  while(st.length){const h=st.pop();for(const nb of neighbors(h)){const k=key(nb.q,nb.r);
+    if(seen.has(k)||!nb.b)continue;seen.add(k);nb.connected=true;st.push(nb);}}
+}
+function pathToLager(h){
+  const startKey=key(L0.q,L0.r);
+  const prev=new Map([[key(h.q,h.r),null]]),q=[h];
+  while(q.length){const c=q.shift();
+    if(key(c.q,c.r)===startKey){const path=[];let k=startKey;while(k!==null){const[a,b]=k.split(',').map(Number);path.push(hexes.get(key(a,b)));k=prev.get(k);}return path;}
+    for(const nb of neighbors(c)){if(!nb.b)continue;const kk=key(nb.q,nb.r);if(prev.has(kk))continue;prev.set(kk,key(c.q,c.r));q.push(nb);}}
+  return null;
+}
+
+// ---------------- Scaling helpers ----------------
+function scaledCost(d,lvl){const c={};for(const r in d.cost)c[r]=Math.round(d.cost[r]*Math.pow(d.costGrow,lvl)*buildMult);return c;}
+function buildCost(d){const c={};for(const r in d.cost)c[r]=Math.round(d.cost[r]*buildMult);return c;}
+function outMult(d,lvl){return Math.pow(d.outGrow,lvl-1);}
+function jobsFor(d,lvl){return (d.jobs||0)>0?(d.jobs+(lvl-1)):0;}
+function capFor(h){const d=DEFS[h.b];return d.caps?d.caps[h.lvl-1]:0;}
+function storageCap(){let c=0;hexes.forEach(h=>{if(h.b==='lager'||h.b==='speicher'||h.b==='pilznetz')c+=capFor(h);});return c;}
+
+// ---------------- Aspirations (Bestrebungen mit echten globalen Boni) ----------------
+const ASPIRATIONS=[
+  {id:'großer_hain',icon:'🌳',name:'Der große Hain',desc:'100 Zonen gleichzeitig blühend (Vit ≥ 80).',bonus:()=>({label:'+20% Vitalitätsregeneration',apply:()=>{appliedAsp.add('großer_hain');}}),target:()=>bluehendCount>=100},
+  {id:'renaturierer',icon:'🌿',name:'Renaturierer',desc:'Verwandle 30 verödete Zonen zurück in gesunde Biome.',bonus:()=>({label:'+15% Ertrag in verödeten Gebieten',apply:()=>{appliedAsp.add('renaturierer');}}),target:()=>renaturedCount>=30},
+  {id:'wuselnde_stadt',icon:'🏙️',name:'Wuselnde Stadt',desc:'150 Siedler bei >80% Zufriedenheit.',bonus:()=>({label:'+10% Bauproduktivität',apply:()=>{appliedAsp.add('wuselnde_stadt');}}),target:()=>pop>=150&&satisfaction>=0.8},
+  {id:'autark',icon:'🌾',name:'Vier Jahreszeiten autark',desc:'Überstehe ein volles Jahr ohne Nahrungsengpass.',bonus:()=>({label:'Winter mildert sich (−30% Feldruhe)',apply:()=>{appliedAsp.add('autark');}}),target:()=>autarkYears>=1},
+  {id:'symbiose_meister',icon:'🐝',name:'Symbiose-Meister',desc:'Alle 4 Tier-Symbiosen gleichzeitig aktiv.',bonus:()=>({label:'+25% Sonderwaren-Ertrag',apply:()=>{appliedAsp.add('symbiose_meister');}}),target:()=>activeSymbioses>=4},
+];
+let aspJustUnlocked=false;
+function checkAspirations(){if(aspJustUnlocked)return;let any=false;
+  ASPIRATIONS.forEach(a=>{if(appliedAsp.has(a.id))return;if(a.target()){appliedAsp.add(a.id);any=true;toast('🌟 Bestrebung erfüllt: '+a.name+' — '+a.bonus().label);aspJustUnlocked=true;setTimeout(()=>aspJustUnlocked=false,2500);}});
+  buildMult=appliedAsp.has('wuselnde_stadt')?0.9:1;
+  if(any)updateHUD();}
+function aspBonus(name){return appliedAsp.has(name)?1:0;}
+
+// ---------------- Sim ----------------
+let pop=4,paused=false,t=0,year=0,seasonIdx=1,bluehendCount=0,jobsUsed=0,hunger=0,dayTime=0,satisfaction=1,showVitLayer=false,autarkYears=0,activeSymbioses=0,hungerFreeStreak=0,buildMult=1,renaturedCount=0;
+const appliedAsp=new Set();
+const SEASON_TICKS=40,YEAR_TICKS=160;
+const SEASONS=['Frühling','Sommer','Herbst','Winter'];
+const SEASON_FIELD=[1.2,1.1,1.0,0.2],SEASON_REGEN=[1.2,1.1,0.8,0.4];
+const counts={};
+function housingCap(){let c=0;hexes.forEach(h=>{if(h.b==='wohnstaette')c+=capFor(h);});return c;}
+function yieldMult(v){return 0.35+0.65*Math.max(0,Math.min(1,v/100));}
+function foodTotal(){return FOODS.reduce((s,r)=>s+RES[r],0);}
+function consumeFood(a){let e=a;for(const r of FOODS){if(e<=0)break;const t=Math.min(RES[r],e);RES[r]-=t;e-=t;}return e<=0.001;}
+
+// Arbeits-Priorität: Nahrung & Nahrungsketten zuerst (Kolonie darf nie verhungern),
+// dann Rohstoffgewinnung, dann Veredelung/Luxus. Verhindert Engpässe beim Essen.
+function workPriority(h){const d=DEFS[h.b];
+  if(d.cat==='Acker') return 0;
+  if(h.b==='kuhfarm'||h.b==='jagdhuette') return 0;
+  if(!d.in) return 1;
+  return 2;}
+function simTick(){
+  t++;dayTime=(dayTime+1)%64;if(networkDirty){networkDirty=false;recomputeNetwork();}
+  seasonIdx=Math.floor((t%YEAR_TICKS)/SEASON_TICKS);if(t%YEAR_TICKS===0&&t>0)year++;
+  const regenMult=appliedAsp.has('großer_hain')?1.2:1;
+  const autarkWinterMult=appliedAsp.has('autark')?0.5:0.2; // milder Winter
+  const symbiosisMult=appliedAsp.has('symbiose_meister')?1.25:1;
+  const buildMult=appliedAsp.has('wuselnde_stadt')?0.9:1;
+  for(const k in counts)delete counts[k];
+  hexes.forEach(h=>{h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;});
+  if(t%18===0&&chap>=4){
+    hexes.forEach(h=>{
+      if(h.b==='imkerei'&&h.connected&&h.vit>70){
+        neighbors(h).forEach(nb=>{
+          if((nb.b==='getreidefeld'||nb.b==='gemuesehof')&&nb.connected) nb._pollBoost=6;
+        });
+      }
+      if(h.b==='erzmine'&&h.connected&&h.vit>40&&Math.random()<0.1){
+        h._oreBoost=5;
+      }
+    });
+    if(bluehendCount>25&&Math.random()<0.18){
+      const candidates=[...hexes.values()].filter(h=>!h.b&&h.biome==='aue'&&h.vit>30);
+      if(candidates.length){
+        const h2=candidates[Math.floor(Math.random()*candidates.length)];
+        h2._prevBiome=h2.biome;h2.biome='hain';h2.deco=[];
+        generateDeco(h2,srand((h2.q*73856093^h2.r*19349663)>>>0));
+      }
+    }
+  }
+  hexes.forEach(h=>{
+    if(h.b==='marktplatz'&&h.connected){
+      neighbors(h).forEach(nb=>{if(nb.b&&nb.b!=='weg') nb._marketBoost=Math.max(nb._marketBoost,0.15);});
+    }
+    if(h.b==='teich'&&h.connected){
+      neighbors(h).forEach(nb=>{
+        if(nb.biome!=='wasser') nb.vit=Math.min(100,nb.vit+0.04);
+        if(nb.b==='fischerhuette'&&nb.connected) nb._pollBoost=Math.max(nb._pollBoost||0,4);
+      });
+    }
+  });
+  const cap=storageCap();
+  // verbundene Job-Gebäude sammeln, nach Priorität sortieren
+  const work=[];hexes.forEach(h=>{const d=DEFS[h.b];if(!d||d.road||d.jobs===0)return;work.push(h);});
+  work.sort((a,b)=>workPriority(a)-workPriority(b));
+  let idle=pop;jobsUsed=0;
+  for(const h of work){
+    const d=DEFS[h.b],need=jobsFor(d,h.lvl);
+    h._stalled=false;h._noFood=false;h._noInput=false;
+    if(!h.connected||idle<need){h._active=false;continue;}
+    // Bergarbeiter brauchen gelieferte Nahrung
+    if(d.cat==='Stein & Erz'){const up=0.12*need;
+      if(foodTotal()<up){h._active=false;h._noFood=true;continue;}
+      consumeFood(up);}
+    let m=outMult(d,h.lvl);
+    if(d.eco)m*=yieldMult(h.vit);
+    if(d.season)m*=(seasonIdx===3?autarkWinterMult:SEASON_FIELD[seasonIdx]);
+    if(h.b==='imkerei'||h.b==='kraeutergarten')m*=(h.vit>=80?1.6:h.vit<40?0.5:1);
+    if(h._pollBoost>0){m*=1.5;h._pollBoost=Math.max(0,h._pollBoost-1);}
+    if(h.b==='erzmine'&&h._oreBoost>0){m*=1.6;h._oreBoost=Math.max(0,h._oreBoost-1);}
+    if(h._marketBoost>0)m*=(1+h._marketBoost);
+    // Lager für Output voll? → sauber pausieren, Input wird NICHT verschwendet
+    if(d.out){let anyRoom=false;for(const r in d.out)if(RES[r]<cap-0.5){anyRoom=true;break;}
+      if(!anyRoom){h._active=false;h._stalled=true;continue;}}
+    // Input verfügbar? sonst warten (Arbeiter bleibt frei für andere Betriebe)
+    if(d.in){let ok=true;for(const r in d.in)if(RES[r]<d.in[r]*m){ok=false;break;}
+      if(!ok){h._active=false;h._noInput=true;continue;}}
+    // alles klar → Arbeiter festlegen & produzieren
+    idle-=need;jobsUsed+=need;counts[h.b]=(counts[h.b]||0)+1;h._active=true;
+    if(d.in)for(const r in d.in)RES[r]-=d.in[r]*m;
+    if(d.out){for(const r in d.out){let amt=d.out[r]*m;if(['honey','herbs','remedy'].includes(r))amt*=symbiosisMult;RES[r]=Math.min(cap,RES[r]+amt);}}
+    if(d.vit)h.vit=Math.max(0,Math.min(100,h.vit+d.vit));
+    if(d.neigh)for(const nb of neighbors(h))if(nb.biome!=='wasser')nb.vit=Math.min(100,nb.vit+d.neigh);
+    if(d.out)spawnCarrier(h);
+  }
+  hexes.forEach(h=>{
+    if(h.b==='weg'){
+      if(h.lvl>=3) h.vit=Math.min(100,h.vit+0.06);
+      else if(h.connected) h.vit=Math.max(0,h.vit-0.03);
+    }
+  });
+  // regen + bluehend
+  let blue=0;hexes.forEach(h=>{if(h.biome==='wasser')return;
+    h.vit=Math.min(100,h.vit+0.5*SEASON_REGEN[seasonIdx]*(0.5+0.5*h.vit/100)*regenMult);
+    if(h.vit>=80)blue++;});
+  bluehendCount=blue;
+  // population — bewusst langsames, regionales Wachstum. Neue Siedler sind ein
+  // Ergebnis guter Versorgung, kein Automatik-Turbo. So bleibt jeder Ausbau ein Erlebnis.
+  const hc=housingCap(),eat=pop*0.5,ft=foodTotal();
+  let e=eat;for(const r of FOODS){if(e<=0)break;const take=Math.min(RES[r]||0,e);RES[r]-=take;e-=take;}
+   if(e<=0.001){ // satt
+    hunger=Math.max(0,hunger-1);
+    hungerFreeStreak++;
+    if(hungerFreeStreak>=YEAR_TICKS){autarkYears++;hungerFreeStreak=0;toast('🏆 Ein Jahr autark überstanden!');}
+    let variety=FOODS.filter(r=>RES[r]>0).length;
+    let sat=1;
+    if(pop>12&&![...hexes.values()].some(h=>h.b==='schule'&&h.connected))sat-=0.12;
+    if(pop>24&&![...hexes.values()].some(h=>h.b==='festplatz'&&h.connected))sat-=0.1;
+    if(pop>40&&![...hexes.values()].some(h=>h.b==='heilstube'&&h.connected))sat-=0.12;
+    sat=Math.max(0.35,sat);
+    satisfaction=sat;
+    const interval=Math.max(5,Math.round((14-variety*2)*sat));
+    if(pop<hc&&ft>pop*sat*1.5&&variety>=2&&t%interval===0&&Math.random()<sat)pop++;
+  } else { // Unterversorgung — mit Karenzzeit, nie unter 2 (minimale Arbeitskraft halten)
+    hunger++;hungerFreeStreak=0;
+    if(hunger>=12&&t%2===0&&pop>2){pop--;hunger=6;toast('⚠️ Nahrung wird knapp — ein Siedler wandert ab.');}
+  }
+  for(const r in RES)RES[r]=Math.max(0,Math.round(RES[r]*10)/10);
+  let renatured=0;hexes.forEach(h=>{if(h.biome==='hain'&&h.vit>=60&&(h._prevBiome==='aue'||h._prevBiome==='fels'))renatured++;});
+  renaturedCount+=renatured;
+  let sym=0;if([...hexes.values()].some(h=>h.b==='imkerei'&&h.connected&&h.vit>70))sym++;
+  if([...hexes.values()].some(h=>h.b==='erzmine'&&h.connected&&h.vit>40))sym++;
+  if(bluehendCount>50)sym++;
+  if([...hexes.values()].some(h=>h.b==='teich'&&h.connected))sym++;
+  activeSymbioses=sym;
+  checkAspirations();checkChapter();hudDirty=true;
+}
+
+// ---------------- Carriers & Siedler ----------------
+const carriers=[],critters=[];
+function initCritters(){critters.length=0;const land=[...hexes.values()].filter(h=>h.biome!=='wasser');
+  // Hasen/Felderhasen als Wild — etwas Leben in der Natur (unabhängig von Bevölkerung)
+  for(let i=0;i<5;i++){const h=land[Math.floor(Math.random()*land.length)];const x=h.px.x,y=h.px.y-h.elev;
+    critters.push({x,y,tx:x,ty:y,ph:Math.random()*6,sp:0.35+Math.random()*0.3,wait:Math.random()*3});}}
+function stepCritters(dt){const s=dt/1000;for(const c of critters){const dx=c.tx-c.x,dy=c.ty-c.y,d=Math.hypot(dx,dy);
+  if(d<2){c.wait-=s;if(c.wait<=0){const land=SORTED.filter(h=>h.biome!=='wasser'&&!h.b);const h=land[Math.floor(Math.random()*land.length)];
+    if(h){c.tx=h.px.x+(Math.random()-0.5)*SIZE;c.ty=h.px.y-h.elev+(Math.random()-0.5)*SIZE;}c.wait=1.5+Math.random()*4;}}
+  else{c.x+=dx/d*c.sp*dt*0.045;c.y+=dy/d*c.sp*dt*0.045;c.ph+=dt*0.02;}}}
+// Wandernde Siedler: Bevölkerung, die zu Gebäuden pilgert, auf Wegen läuft & arbeitet.
+// Skaliert mit pop — mehr Kolonisten = mehr wuselndes Leben (Die-Siedler-Gefühl).
+const villagers=[];
+const VCOLORS=['#c47a4a','#a85e3a','#7b8c52','#b5772f','#6a7d8c','#9a6b4a','#5e7b4e','#c89b5e','#7a9a6e','#8a6b3a'];
+function syncVillagers(){
+  // Ziel-Anzahl: ~60% der Bevölkerung als sichtbare Figuren, mind. 3 (Start), max 60 (Performance)
+  const target=Math.max(3,Math.min(60,Math.ceil(pop*0.6)));
+  while(villagers.length<target){
+    const job=[...hexes.values()].filter(h=>h.b&&h.b!=='weg'&&DEFS[h.b]&&DEFS[h.b].jobs!==0);
+    const home=L0;
+    const dest=job.length?job[Math.floor(Math.random()*job.length)]:home;
+    villagers.push({
+      x:home.px.x+(Math.random()-0.5)*20, y:home.px.y-home.elev+(Math.random()-0.5)*20,
+      tx:dest.px.x+(Math.random()-0.5)*SIZE*0.6, ty:dest.px.y-dest.elev+(Math.random()-0.5)*SIZE*0.4,
+      ph:Math.random()*6, sp:0.28+Math.random()*0.22, col:VCOLORS[Math.floor(Math.random()*VCOLORS.length)],
+      wait:Math.random()*4, mode:0, haul:Math.random()>0.6
+    });
+  }
+  while(villagers.length>target) villagers.pop();
+}
+function pickVillagerDest(v){
+  const spots=[];
+  hexes.forEach(h=>{if(h.b&&h.b!=='weg'&&DEFS[h.b]&&DEFS[h.b].jobs!==0){spots.push(h);}
+    else if(h.b==='weg'){spots.push(h);spots.push(h);} }); // Wege doppelt = häufiger begangen
+  if(spots.length===0){for(const h of hexes.values()){if(h.biome!=='wasser'){spots.push(h);break;}} if(!spots.length)spots.push(L0);}
+  const dest=spots[Math.floor(Math.random()*spots.length)]||L0;
+  v.tx=dest.px.x+(Math.random()-0.5)*SIZE*0.7; v.ty=dest.px.y-dest.elev+(Math.random()-0.5)*SIZE*0.5;
+  v.mode = (dest.b==='weg')?1:0; // auf Wegen = Lastenträger-Look
+}
+function stepVillagers(dt){
+  const s=dt/1000;
+  for(const v of villagers){
+    const dx=v.tx-v.x, dy=v.ty-v.y, d=Math.hypot(dx,dy);
+    if(d<3){ v.wait-=s; if(v.wait<=0){ pickVillagerDest(v); v.wait=1+Math.random()*4; v.ph=Math.random()*6; } }
+    else { v.x+=dx/d*v.sp*dt*0.05; v.y+=dy/d*v.sp*dt*0.05; v.ph+=dt*0.018; }
+  }
+}
+function spawnCarrier(h){if(carriers.length>180||Math.random()>0.6)return;
+  const p=pathToLager(h);if(!p||p.length<2)return;
+  carriers.push({pts:p.slice().reverse().map(x=>axialToPix(x.q,x.r)),seg:0,tt:0,sp:0.02+Math.random()*0.01});}
+function stepCarriers(dt){for(let i=carriers.length-1;i>=0;i--){const c=carriers[i];c.tt+=c.sp*dt*0.06;
+  if(c.tt>=1){c.tt=0;c.seg++;if(c.seg>=c.pts.length-1)carriers.splice(i,1);}}}
+
+// ---------------- Chapters ----------------
+const CH=[
+ {ev:'Kapitel I',name:'Das Erwachen',story:'Eine Handvoll Siedler erreicht den Hain. Schlag Holz, bau Gemüsehöfe und verbinde alles mit Wegen zum Lager.',
+  goal:()=>({c:pop,n:8,t:'Siedler '+pop+' / 8'}),unlock:['saegewerk','foerster','getreidefeld','muehle','backhaus','brunnen'],
+  done:'Aus Sammlern werden Pflanzer. Bretter und Brot warten.'},
+ {ev:'Kapitel II',name:'Wurzeln schlagen',story:'Sägewerk, Mühle, Backhaus — die erste echte Kette. Pflanz mit dem Förster nach, was du nimmst.',
+  goal:()=>({c:Math.min(pop,16)+(RES.planks>=20?80:0)+(RES.bread>=20?80:0),n:176,t:'Siedler 16 ('+pop+') + Bretter '+Math.floor(RES.planks)+'/20 + Brot '+Math.floor(RES.bread)+'/20'}),
+   unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich'],
+  done:'Stein, Lehm und Vieh erweitern dein Reich.'},
+ {ev:'Kapitel III',name:'Handwerk & Vieh',story:'Brennöfen und Weiden: Ziegel, Töpferware, Milch und Käse. Bau das Lager aus, bevor es überquillt.',
+  goal:()=>({c:Math.min(pop,28)+(RES.cheese>=20?70:0)+(RES.bricks>=25?70:0),n:168,t:'Siedler 28 ('+pop+') + Käse '+Math.floor(RES.cheese)+'/20 + Ziegel '+Math.floor(RES.bricks)+'/25'}),
+  unlock:['koehlerei','erzmine','schmelze','schmiede'],
+  done:'Die Schmieden glühen. Das Zeitalter des Eisens beginnt.'},
+ {ev:'Kapitel IV',name:'Eisen & Industrie',story:'Erz → Eisen → Werkzeug. Werkzeug schaltet die anspruchsvollsten Bauten überhaupt erst auf.',
+  goal:()=>({c:Math.min(pop,44)+(RES.tools>=25?90:0),n:134,t:'Siedler 44 ('+pop+') + Werkzeug '+Math.floor(RES.tools)+'/25'}),
+  unlock:['schaffarm','weberei','schneiderei','tischlerei','jagdhuette','fischerhuette'],
+  done:'Stoff, Kleidung und Möbel — dein Volk lebt im Wohlstand.'},
+ {ev:'Kapitel V',name:'Wohlstand',story:'Kleidung und Möbel heben den Lebensstandard. Wachse zur echten Stadt heran.',
+  goal:()=>({c:Math.min(pop,64)+(RES.clothes>=18?50:0)+(RES.furniture>=18?50:0),n:164,t:'Siedler 64 ('+pop+') + Kleidung '+Math.floor(RES.clothes)+'/18 + Möbel '+Math.floor(RES.furniture)+'/18'}),
+   unlock:['imkerei','kompost','kraeutergarten','sudhaus','schrein','schule','festplatz','heilstube','wildgehege','eselstation','pilznetz'],
+  done:'Nun beginnt die wahre Symbiose mit dem Hain.'},
+  {ev:'Kapitel VI',name:'Symbiose',story:'Bring den Hain zum Leuchten: viele Zonen gleichzeitig blühend (Vitalität ≥ 80) und Heiltränke im Lager.',
+   goal:()=>({c:Math.min(bluehendCount,34)+(RES.remedy>=18?100:0),n:134,t:'Blühend '+bluehendCount+'/34 + Heiltrank '+Math.floor(RES.remedy)+'/18'}),
+   unlock:[],done:'Du bist Hainmeister:in. Wald und Stadt sind eins.'},
+  {ev:'Kapitel VII',name:'Hainmeister',story:'Freier Aufbau. Setz dir eigene Ziele — größer, grüner, vollkommen autark. Maximiere alle Stufen!',
+   goal:()=>({c:1,n:1,t:'Sandbox — frei aufbauen & grinden'}),unlock:['hainbaum','kristall','erdzeichen'],done:''}
+];
+let chap=0;
+const unlocked=new Set(['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof']);
+function checkChapter(){if(chap>=CH.length-1)return;const g=CH[chap].goal();if(g.c>=g.n)advance();}
+function advance(){const c=CH[chap];c.unlock.forEach(u=>unlocked.add(u));chap++;const n=CH[chap];
+  showBanner(c.ev+' abgeschlossen',n.name,c.done,
+    c.unlock.length?('Freigeschaltet: '+c.unlock.map(u=>DEFS[u].em+' '+DEFS[u].name).join(' · ')):'');
+  buildPalette();}
+
+// ---------------- UI ----------------
+function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='';
+  TOPRES.forEach(r=>tb.insertAdjacentHTML('beforeend',`<div class="res"><span class="ic">${RESMETA[r][0]}</span><b id="r_${r}">0</b></div>`));
+  tb.insertAdjacentHTML('beforeend',`<div class="res"><span class="ic">🍽️</span><b id="r_food">0</b></div>`);
+  tb.insertAdjacentHTML('beforeend',`<div class="res"><span class="ic">👥</span><b id="r_pop">0</b><span class="small" id="r_cap"></span></div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="store">📦<div id="storeBar"><div id="storeFill"></div></div><span id="storeTxt"></span></div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="season"></div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="vitToggle" style="margin-left:10px;font-size:11px;cursor:pointer;opacity:${showVitLayer?1:0.5};border:1px solid ${showVitLayer?'var(--gold)':'var(--line2)'};padding:2px 6px;border-radius:4px;user-select:none" onclick="window._toggleVitLayer()">🧪 V</div>`);
+  if(chap>=CH.length-1) tb.insertAdjacentHTML('beforeend',`<div id="prestigeBtn" style="margin-left:10px;font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="doPrestige()">👑 Neuer Anfang</div>`);
+}
+let buildMode=null,selHex=null;
+function affordable(c){for(const r in c)if(RES[r]<c[r])return false;return true;}
+function costStr(c){return Object.keys(c).map(r=>`<span class="${RES[r]<c[r]?'miss':''}">${RESMETA[r][0]}${c[r]}</span>`).join(' ');}
+function buildPalette(){const p=document.getElementById('buildbar');p.innerHTML='<h4>Gebäude</h4>';
+  CATS.forEach(cat=>{const keys=Object.keys(DEFS).filter(k=>DEFS[k].cat===cat);if(!keys.length)return;
+    const g=document.createElement('div');g.className='grp';
+    g.innerHTML=`<div class="lbl">${cat}</div>`;const row=document.createElement('div');row.className='row';
+    keys.forEach(k=>{const d=DEFS[k],lck=!unlocked.has(k);
+      const cost=Object.keys(d.cost||{}).map(r=>RESMETA[r][0]+d.cost[r]).join(' ');
+      const el=document.createElement('div');el.className='btn'+(lck?' locked':'')+(buildMode===k?' sel':'');
+      el.innerHTML=`<span class="em">${d.em}</span><span class="nm">${k==='weg'?'Weg':d.name}</span><span class="cost">${lck?'🔒':cost}</span>`;
+      el.title=d.name+' — '+d.desc+(lck?' (gesperrt)':'');
+      if(!lck)el.onclick=()=>{buildMode=(buildMode===k?null:k);buildPalette();};
+      row.appendChild(el);});
+    g.appendChild(row);p.appendChild(g);});
+}
+function vcolHTML(v){const t=Math.max(0,Math.min(1,v/100));return`rgb(${Math.round(138-(138-63)*t)},${Math.round(90+(160-90)*t)},${Math.round(54+(86-54)*t)})`;}
+function updateHUD(){
+  TOPRES.forEach(r=>{const e=document.getElementById('r_'+r);if(e)e.textContent=Math.floor(RES[r]);});
+  document.getElementById('r_food').textContent=Math.floor(foodTotal());
+  document.getElementById('r_pop').textContent=pop;
+  document.getElementById('r_cap').textContent='('+jobsUsed+'⚒/'+housingCap()+'🏠)';
+  const cap=storageCap(),used=Object.values(RES).reduce((a,b)=>a+b,0);
+  document.getElementById('storeFill').style.width=Math.min(100,100*used/(cap||1))+'%';
+  document.getElementById('storeTxt').textContent=Math.floor(used)+'/'+cap;
+  const dayPhase=['Nacht','Morgen','Tag','Abend'][Math.floor(dayTime/16)%4];
+  document.getElementById('season').innerHTML=`<b>${SEASONS[seasonIdx]}</b> · Jahr ${year+1}<br><span class="small">Feld ×${SEASON_FIELD[seasonIdx]} · ${dayPhase}</span>`;
+  const c=CH[chap],g=c.goal();
+  document.getElementById('chapEv').textContent=c.ev;document.getElementById('chapName').textContent=c.name;
+  document.getElementById('chapStory').textContent=c.story;document.getElementById('goalTxt').textContent=g.t;
+  document.getElementById('goalFill').style.width=Math.min(100,100*g.c/g.n)+'%';
+  // stock
+  const sc=document.getElementById('stock');sc.innerHTML='';
+  Object.keys(RESMETA).forEach(r=>{if(RES[r]>0)sc.insertAdjacentHTML('beforeend',`<div title="${RESMETA[r][1]}">${RESMETA[r][0]}<b>${Math.floor(RES[r])}</b></div>`);});
+  document.getElementById('stockCap').textContent=Math.floor(used)+' / '+cap;
+  // stats
+  const st=document.getElementById('stats');if(st){
+    st.innerHTML=`<div><b>Bevölkerung:</b> ${pop} | <b>Blühend:</b> ${bluehendCount}</div>
+      <div><b>Renaturierte Zonen:</b> ${renaturedCount} | <b>Autarkjahre:</b> ${autarkYears}</div>
+      <div><b>Aktive Symbiosen:</b> ${activeSymbioses}/4 | <b>Bestrebungen:</b> ${appliedAsp.size}</div>`;
+    document.getElementById('scoreAge').textContent='(Tag '+(t%YEAR_TICKS)+', Jahr '+year+')';
+  }
+  const al=document.getElementById('aspList');if(al){
+    al.innerHTML=ASPIRATIONS.map(a=>`<div style="font-size:11px;margin:3px 0;color:${appliedAsp.has(a.id)?'var(--gold)':'var(--muted)'}">${a.icon} ${a.name}: ${appliedAsp.has(a.id)?'✓ '+a.bonus().label:a.desc}</div>`).join('');
+  }
+  renderInspector();
+}
+function renderInspector(){const el=document.getElementById('inspBody');
+  if(!selHex){el.className='sub';el.innerHTML='Klick auf ein Feld, um es zu prüfen & auszubauen.';return;}
+  const h=selHex,d=h.b?DEFS[h.b]:null;
+  const bn={hain:'Hain (Wald)',aue:'Aue (Wiese)',fels:'Felsgrund',wasser:'Wasser',lichtung:'Lichtung'}[h.biome];
+  let s=`<div class="row"><span>Biom</span><span>${bn}</span></div>`;
+  if(h.biome!=='wasser'){const st=h.vit>=80?'Blühend':h.vit>=50?'Gesund':h.vit>=25?'Erschöpft':'Verödet';
+    s+=`<div class="row"><span>Vitalität</span><span>${Math.round(h.vit)} · ${st}</span></div><div class="vbar"><div style="width:${h.vit}%;background:${vcolHTML(h.vit)}"></div></div>`;}
+  if(d){
+    s+=`<div class="row"><span>Gebäude</span><span>${d.em} ${d.name}</span></div>`;
+    if(d.max>1){let dots='';for(let i=0;i<d.max;i++)dots+=`<i class="${i<h.lvl?'on':''}"></i>`;
+      s+=`<div class="row"><span>Stufe ${h.lvl}/${d.max}</span><span class="lvldots">${dots}</span></div>`;}
+    if(d.jobs>0&&!d.road){s+=`<div class="row"><span>Arbeiter</span><span>${jobsFor(d,h.lvl)}</span></div>`;
+      s+=`<div class="row"><span>Status</span><span style="color:${h._active?'var(--accent)':'var(--bad)'}">${h._active?'aktiv':(h._noFood?'keine Nahrung':(h._noInput?'wartet auf Rohstoff':(h._stalled?'Lager voll':(h.connected?'kein Personal':'nicht verbunden'))))}</span></div>`;}
+    const io=[];if(d.in)io.push('rein '+Object.keys(d.in).map(r=>RESMETA[r][0]+ (d.in[r]*outMult(d,h.lvl)).toFixed(1)).join(' '));
+    if(d.out)io.push('raus '+Object.keys(d.out).map(r=>RESMETA[r][0]+ (d.out[r]*outMult(d,h.lvl)).toFixed(1)).join(' '));
+    if(d.caps)io.push('Kapazität '+d.caps[h.lvl-1]);
+    if(io.length)s+=`<div class="small" style="margin-top:5px">${io.join(' · ')}</div>`;
+    s+=`<div class="small" style="margin-top:4px">${d.desc}</div>`;
+    if(h.b!=='lager'||d.max>1){}
+    if(h.lvl<d.max){const cost=scaledCost(d,h.lvl),ok=affordable(cost)&&h.connected;
+      s+=`<div class="up ${ok?'':'no'}" onclick="${ok?'doUpgrade()':''}">⬆ Ausbauen → Stufe ${h.lvl+1}</div><div class="costline">${costStr(cost)}${h.connected?'':' · <span class="miss">nicht verbunden</span>'}</div>`;}
+    else s+=`<div class="small" style="margin-top:8px;color:var(--gold)">★ Maximale Stufe erreicht</div>`;
+    if(h.b!=='lager')s+=`<div class="dem" onclick="doDemolish()">Abreißen (½ zurück)</div>`;
+  } else s+=`<div class="small" style="margin-top:6px">Leeres Feld.${buildMode?' Klick erneut zum Bauen.':''}</div>`;
+  el.className='';el.innerHTML=s;
+}
+function doUpgrade(){const h=selHex,d=DEFS[h.b],cost=scaledCost(d,h.lvl);
+  if(!affordable(cost)||!h.connected)return;for(const r in cost)RES[r]-=cost[r];h.lvl++;toast(d.name+' → Stufe '+h.lvl);hudDirty=true;}
+function doDemolish(){if(!selHex||!selHex.b||selHex.b==='lager')return;const d=DEFS[selHex.b];
+  for(const r in d.cost)RES[r]+=Math.floor(d.cost[r]*selHex.lvl/2);selHex.b=null;selHex.lvl=1;
+  generateDeco(selHex,srand((selHex.q*73856093^selHex.r*19349663)>>>0));networkDirty=true;hudDirty=true;}
+function doPrestige(){
+  if(!confirm('Neuer Anfang? Du behältst alle Bestrebungen als dauerhafte Boni, startest aber mit einer frischen Kolonie.'))return;
+  appliedAsp.clear();buildMult=1;renaturedCount=0;autarkYears=0;activeSymbioses=0;hungerFreeStreak=0;
+  hexes.forEach(h=>{if(h.b&&h.b!=='lager'){h.b=null;h.lvl=1;generateDeco(h,srand((h.q*73856093^h.r*19349663)>>>0));}});
+  Object.keys(RES).forEach(r=>RES[r]=0);
+  const bonus=appliedAsp.size*100;
+  RES.wood=400+bonus;RES.vegetables=240+bonus;RES.stone=120+bonus;RES.planks=80+bonus;
+  pop=8;jobsUsed=0;hunger=0;chap=0;satisfaction=1;
+  const startUnlocks=['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof'];
+  const newUnlocked=new Set(startUnlocks);CH[0].unlock.forEach(u=>newUnlocked.add(u));
+  unlocked.clear();startUnlocks.forEach(u=>unlocked.add(u));CH[0].unlock.forEach(u=>unlocked.add(u));
+  networkDirty=true;buildPalette();hudDirty=true;toast('👑 Neuer Anfang — die Bestrebungen stärken dich!');
+}
+
+// ---------------- Banner / toast ----------------
+function showBanner(ev,ti,tx,unl){document.getElementById('bnEv').textContent=ev;document.getElementById('bnTitle').textContent=ti;
+  document.getElementById('bnText').textContent=tx;document.getElementById('bnUnlock').textContent=unl||'';
+  document.getElementById('banner').style.display='flex';paused=true;}
+function closeBanner(){document.getElementById('banner').style.display='none';paused=false;}
+let toastT;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>e.style.opacity=0,2200);}
+window._toggleVitLayer=()=>{showVitLayer=!showVitLayer;
+  const el=document.getElementById('vitToggle');
+  if(el){el.style.opacity=showVitLayer?'1':'0.5';el.style.borderColor=showVitLayer?'var(--gold)':'var(--line2)';}
+  toast(showVitLayer?'🧪 Vitalitäts-Layer an':'🧪 Vitalitäts-Layer aus');};
+
+// ---------------- Placement ----------------
+function canPlace(h,k){const d=DEFS[k];
+  if(d.road)return!h.b&&h.biome!=='wasser';
+  if(h.b||h.biome==='wasser')return false;
+  if(d.biomes&&!d.biomes.includes(h.biome))return false;
+  if(d.adj&&!neighbors(h).some(n=>n.biome===d.adj))return false;
+  if(d.minVit&&h.vit<d.minVit)return false;
+  if(d.cat==='Monument'&&chap<CH.length-1)return false;
+  return affordable(d.cost);}
+function place(h,k){const d=DEFS[k];
+  if(!canPlace(h,k)){
+    if(h.b)toast('Feld ist belegt.');
+    else if(d.biomes&&!d.biomes.includes(h.biome))toast(d.name+' braucht: '+d.biomes.map(b=>({hain:'Wald',aue:'Wiese',fels:'Fels',lichtung:'Lichtung'}[b])).join('/'));
+    else if(d.adj)toast(d.name+' braucht ein Wasser-Nachbarfeld.');
+    else if(d.minVit)toast(d.name+' braucht Vitalität ≥ '+d.minVit+' (aktuell: '+Math.round(h.vit)+').');
+    else toast('Zu wenig Ressourcen.');return;}
+  for(const r in d.cost)RES[r]-=d.cost[r];h.b=k;h.lvl=1;h.deco=[];networkDirty=true;selHex=h;hudDirty=true;}
+
+// ---------------- Input ----------------
+function evToHex(e){const rect=cv.getBoundingClientRect();
+  const x=(e.clientX-rect.left-cv.width/2/dpr)/cam.zoom-cam.x,y=(e.clientY-rect.top-cv.height/2/dpr)/cam.zoom-cam.y;
+  const a=pixToAxial(x,y+6);return hexes.get(key(a.q,a.r));}
+let dragging=false,dragMoved=false,last={x:0,y:0};
+cv.addEventListener('mousedown',e=>{if(e.button===0){dragging=true;dragMoved=false;last={x:e.clientX,y:e.clientY};}});
+window.addEventListener('mousemove',e=>{if(!dragging)return;const dx=e.clientX-last.x,dy=e.clientY-last.y;
+  if(Math.abs(dx)+Math.abs(dy)>3){dragMoved=true;cam.x+=dx/cam.zoom;cam.y+=dy/cam.zoom;last={x:e.clientX,y:e.clientY};}});
+window.addEventListener('mouseup',e=>{if(e.button!==0){dragging=false;return;}dragging=false;if(dragMoved)return;
+  const h=evToHex(e);if(!h)return;if(buildMode)place(h,buildMode);else{selHex=h;renderInspector();}});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();const h=evToHex(e);if(h&&h.b&&h.b!=='lager'){selHex=h;doDemolish();}});
+cv.addEventListener('wheel',e=>{e.preventDefault();cam.zoom=Math.max(0.45,Math.min(2.4,cam.zoom*(e.deltaY<0?1.1:0.9)));},{passive:false});
+window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();paused=!paused;toast(paused?'⏸ Pause':'▶ Weiter');}
+  if(e.key==='Escape'){buildMode=null;buildPalette();}
+  if(e.key==='v'||e.key==='V'){showVitLayer=!showVitLayer;toast(showVitLayer?'🧪 Vitalitäts-Layer an':'🧪 Vitalitäts-Layer aus');}
+});
+let hoverHex=null;cv.addEventListener('mousemove',e=>{if(!dragging)hoverHex=evToHex(e);});
+
+// ---------------- Render ----------------
+let dpr=window.devicePixelRatio||1;
+function resize(){const st=document.getElementById('stage');dpr=window.devicePixelRatio||1;
+  const w=st.clientWidth||(window.innerWidth-248-320-40);
+  const h=st.clientHeight||(window.innerHeight-60);
+  cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+'px';cv.style.height=h+'px';}
+window.addEventListener('resize',resize);
+const BIO={hain:[49,111,61],aue:[111,144,77],fels:[119,119,110],lichtung:[134,163,83],wasser:[35,94,116]},DEAD=[120,93,62];
+function vcol(b,v){if(b==='wasser')return'rgb(37,111,138)';const t=Math.max(0,Math.min(1,v/100)),H=BIO[b];
+  return`rgb(${Math.round(DEAD[0]+(H[0]-DEAD[0])*t)},${Math.round(DEAD[1]+(H[1]-DEAD[1])*t)},${Math.round(DEAD[2]+(H[2]-DEAD[2])*t)})`;}
+function shade(c,f){let m;if(c[0]==='#'){const n=parseInt(c.slice(1),16);m=[n>>16&255,n>>8&255,n&255];}else m=c.match(/\d+/g).map(Number);
+  return`rgb(${Math.max(0,Math.min(255,Math.round(m[0]*f)))},${Math.max(0,Math.min(255,Math.round(m[1]*f)))},${Math.max(0,Math.min(255,Math.round(m[2]*f)))})`;}
+function rgba(c,a){return c.replace('rgb(','rgba(').replace(')',','+a+')');}
+const FLOWERCOL=['#a84e54','#b89945','#95699b','#d9cfb4','#a9663d'];
+const ROOF={Basis:'#79623a',Wohnen:'#9b3f2f',Holz:'#77512e','Stein & Erz':'#555d63',Acker:'#b87a32','Vieh & Stoff':'#85663d',Natur:'#3e7445',Sozial:'#7a5c8a',Logistik:'#5c6a7a'};
+let tnow=0;
+function shadowEll(x,y,rx,ry,a=.22){ctx.fillStyle=`rgba(0,0,0,${a})`;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,7);ctx.fill();}
+function poly(points){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();}
+function strokePoly(points){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.stroke();}
+function fillPoly(points){poly(points);ctx.fill();}
+function hexPath(cx,cy){const p=hexCorners(cx,cy);poly(p);return p;}
+function seeded(h,n=0){const c=h._seedCache&&h._seedCache[n]; if(c!==undefined)return c; let x=((h.q*73856093)^(h.r*19349663)^(n*83492791))>>>0; x=(x*1664525+1013904223)>>>0; const r=x/4294967295; if(h._seedCache)h._seedCache[n]=r; return r;}
+function terrainSpeckles(h,bx,by,topCol){
+  const count=h.biome==='fels'?11:(h.biome==='wasser'?0:12);
+  ctx.save();ctx.beginPath();ctx.ellipse(bx,by,SIZE*1.08,SIZE*.9,seeded(h,4)*.25,0,7);ctx.clip();
+  for(let i=0;i<count;i++){const a=seeded(h,i)*6.283,d=Math.sqrt(seeded(h,i+31))*SIZE*.82;
+    const x=bx+Math.cos(a)*d,y=by+Math.sin(a)*d*.78;
+    ctx.fillStyle=i%3===0?rgba(shade(topCol,.72),.18):rgba(shade(topCol,1.22),.13);
+    ctx.beginPath();ctx.ellipse(x,y,1.4+seeded(h,i+70)*3,.7+seeded(h,i+88)*2,seeded(h,i+7)*3,0,7);ctx.fill();}
+  ctx.restore();
+}
+function drawTerrainWash(){
+  ctx.save();
+  ctx.globalCompositeOperation='soft-light';
+  for(const h of SORTED){const bx=h.px.x,by=h.px.y-h.elev,base=vcol(h.biome,h.vit);if(Math.abs(bx+camX)>VIEW_W+SIZE*2||Math.abs(by+camY)>VIEW_H+SIZE*2)continue;
+    const g=ctx.createRadialGradient(bx,by,2,bx,by,SIZE*1.75);
+    g.addColorStop(0,rgba(shade(base,1.08),.42));
+    g.addColorStop(.62,rgba(base,.2));
+    g.addColorStop(1,rgba(base,0));
+    ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(bx,by,SIZE*1.22,SIZE*.95,seeded(h,12)*.7,0,7);ctx.fill();}
+  ctx.restore();
+  ctx.save();
+  ctx.globalCompositeOperation='multiply';
+  for(const h of SORTED){if(h.biome==='wasser')continue;const bx=h.px.x,by=h.px.y-h.elev;if(Math.abs(bx+camX)>VIEW_W+SIZE*2||Math.abs(by+camY)>VIEW_H+SIZE*2)continue;
+    neighbors(h).forEach((nb,i)=>{if(!nb||nb.biome===h.biome||nb.biome==='wasser')return;
+      const nx=nb.px.x,ny=nb.px.y-nb.elev;
+      const mx=(bx+nx)/2,my=(by+ny)/2,c=vcol(h.biome,h.vit);
+      ctx.strokeStyle=rgba(shade(c,.86),.16);ctx.lineWidth=SIZE*.34;
+      ctx.beginPath();ctx.moveTo(mx-(ny-by)*.12,my+(nx-bx)*.12);ctx.lineTo(mx+(ny-by)*.12,my-(nx-bx)*.12);ctx.stroke();});}
+  ctx.restore();
+}
+function drawTile(h){
+  const bx=h.px.x,by=h.px.y-h.elev;
+  if(showVitLayer&&h.biome!=='wasser'){
+    ctx.fillStyle=vcolHTML(h.vit);
+    ctx.beginPath();ctx.ellipse(bx,by,SIZE*1.1,SIZE*.9,0,0,7);ctx.fill();
+    if(h.b){
+      ctx.fillStyle='rgba(0,0,0,0.75)';
+      ctx.font=(SIZE*0.38)+'px sans-serif';
+      ctx.fillText(DEFS[h.b].em,bx,by);
+    }
+    return;
+  }
+  const topCol=vcol(h.biome,h.vit);
+  const rx=h.biome==='wasser'?SIZE*1.48:SIZE*1.42,ry=h.biome==='wasser'?SIZE*1.26:SIZE*1.16;
+  const g=ctx.createRadialGradient(bx-SIZE*.16,by-SIZE*.18,2,bx,by,SIZE*1.58);
+  if(h.biome==='wasser'){g.addColorStop(0,'rgba(67,126,146,.88)');g.addColorStop(.72,rgba(topCol,.86));g.addColorStop(1,'rgba(32,91,111,.78)');}
+  else{g.addColorStop(0,rgba(shade(topCol,1.06),.88));g.addColorStop(.72,rgba(topCol,.84));g.addColorStop(1,rgba(shade(topCol,.92),.78));}
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(bx,by,rx,ry,seeded(h,5)*.22,0,7);ctx.fill();
+  if(h.biome!=='wasser')terrainSpeckles(h,bx,by,topCol);
+  else{ctx.save();ctx.beginPath();ctx.ellipse(bx,by,rx*.98,ry*.92,seeded(h,5)*.22,0,7);ctx.clip();
+    ctx.globalAlpha=.1;ctx.strokeStyle='#d7e7df';ctx.lineWidth=1.25;
+    for(let k=0;k<3;k++){const yy=by-10+k*8+Math.sin(tnow*1.35+h.q*.7+k)*1.8;ctx.beginPath();ctx.moveTo(bx-SIZE*.78,yy);ctx.bezierCurveTo(bx-SIZE*.25,yy-3,bx+SIZE*.25,yy+3,bx+SIZE*.78,yy);ctx.stroke();}
+    ctx.globalAlpha=1;ctx.restore();}
+}
+function drawTree(x,y,s,vit){const sz=SIZE*0.5*s,t=Math.max(0,Math.min(1,vit/100));
+  shadowEll(x,y+1,sz*0.5,sz*0.18,.24);
+  const bark=ctx.createLinearGradient(x-sz*.1,y-sz*.5,x+sz*.12,y);bark.addColorStop(0,'#7b5530');bark.addColorStop(1,'#402b1a');
+  ctx.fillStyle=bark;ctx.fillRect(x-sz*0.075,y-sz*0.48,sz*0.15,sz*0.5);
+  ctx.globalAlpha=0.35+0.65*t;
+  const g=`rgb(${Math.round(106-(106-35)*t)},${Math.round(90+(128-90)*t)},${Math.round(50+(68-50)*t)})`,gl=`rgb(${Math.round(144-(144-75)*t)},${Math.round(126+(168-126)*t)},${Math.round(73+(82-73)*t)})`;
+  const sw=Math.sin(tnow*1.4+x*0.05)*sz*0.07;
+  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x+sw,y-sz*.6,sz*.43,sz*.5,0,0,7);ctx.ellipse(x-sz*.3+sw,y-sz*.4,sz*.34,sz*.36,0,0,7);ctx.ellipse(x+sz*.32+sw,y-sz*.4,sz*.34,sz*.36,0,0,7);ctx.fill();
+  ctx.fillStyle=gl;ctx.beginPath();ctx.ellipse(x-sz*.12+sw,y-sz*.78,sz*.24,sz*.18,-.35,0,7);ctx.fill();ctx.globalAlpha=1;}
+function drawRock(x,y,s){const sz=SIZE*0.34*s;shadowEll(x,y+1,sz*0.9,sz*0.3);
+  ctx.fillStyle='#7b8088';ctx.beginPath();ctx.moveTo(x-sz,y);ctx.lineTo(x-sz*0.5,y-sz*0.9);ctx.lineTo(x+sz*0.3,y-sz);ctx.lineTo(x+sz,y-sz*0.2);ctx.lineTo(x+sz*0.6,y+sz*0.2);ctx.lineTo(x-sz*0.6,y+sz*0.2);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#9aa0a7';ctx.beginPath();ctx.moveTo(x-sz*0.5,y-sz*0.9);ctx.lineTo(x+sz*0.3,y-sz);ctx.lineTo(x+sz*0.1,y-sz*0.5);ctx.lineTo(x-sz*0.3,y-sz*0.45);ctx.closePath();ctx.fill();}
+function drawPeak(x,y,s){const sz=SIZE*0.95*s;shadowEll(x,y+2,sz*0.5,sz*0.16);
+  ctx.fillStyle='#787e86';ctx.beginPath();ctx.moveTo(x-sz*0.55,y);ctx.lineTo(x,y-sz);ctx.lineTo(x+sz*0.55,y);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#9097a0';ctx.beginPath();ctx.moveTo(x,y-sz);ctx.lineTo(x+sz*0.55,y);ctx.lineTo(x+sz*0.18,y);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#f2f5fa';ctx.beginPath();ctx.moveTo(x,y-sz);ctx.lineTo(x-sz*0.17,y-sz*0.66);ctx.lineTo(x+sz*0.02,y-sz*0.72);ctx.lineTo(x+sz*0.2,y-sz*0.64);ctx.closePath();ctx.fill();}
+function drawTuft(x,y,s,vit){const sz=SIZE*0.26*s,t=Math.max(0,Math.min(1,vit/100));
+  ctx.strokeStyle=`rgb(${Math.round(104-(104-61)*t)},${Math.round(108+(137-108)*t)},${Math.round(67+(72-67)*t)})`;ctx.lineWidth=1.15;
+  for(let i=-1;i<2;i++){ctx.beginPath();ctx.moveTo(x+i*sz*0.4,y);ctx.quadraticCurveTo(x+i*sz*0.4+sz*0.2,y-sz,x+i*sz*0.5,y-sz*1.2);ctx.stroke();}}
+function drawFlower(x,y,s,c,vit){drawTuft(x,y,s*0.7,vit);const sz=SIZE*0.12*s,fy=y-SIZE*0.28*s;
+  ctx.globalAlpha=.62;ctx.fillStyle=FLOWERCOL[Math.floor(c*FLOWERCOL.length)%FLOWERCOL.length];ctx.beginPath();ctx.ellipse(x,fy,sz*.75,sz*.55,0,0,7);ctx.fill();ctx.globalAlpha=1;}
+function drawDeco(h){const bx=h.px.x,by=h.px.y-h.elev;
+  for(const d of h.deco){const x=bx+d.dx,y=by+d.dy;
+    if(d.t==='tree')drawTree(x,y,d.s,h.vit);else if(d.t==='rock')drawRock(x,y,d.s);
+    else if(d.t==='peak')drawPeak(x,y,d.s);else if(d.t==='flower')drawFlower(x,y,d.s,d.c,h.vit);else drawTuft(x,y,d.s,h.vit);}}
+function drawField(h,bx,by){const crop=h.b==='getreidefeld'?'#cfaa43':'#5f9a45',winter=seasonIdx===3;
+  shadowEll(bx,by+2,SIZE*.66,SIZE*.22,.27);
+  const soil=ctx.createRadialGradient(bx,by-4,2,bx,by-2,SIZE*.66);soil.addColorStop(0,'#7a5934');soil.addColorStop(1,'#4b351f');
+  ctx.fillStyle=soil;ctx.beginPath();ctx.ellipse(bx,by-2,SIZE*.66,SIZE*.36,0,0,7);ctx.fill();
+  for(let i=-3;i<=3;i++){ctx.strokeStyle=i%2?'#8a653c':'#3f2d1c';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(bx-SIZE*.56,by-2+i*SIZE*.09);ctx.quadraticCurveTo(bx,by-7+i*SIZE*.09,bx+SIZE*.56,by-2+i*SIZE*.09);ctx.stroke();}
+  if(!winter){ctx.fillStyle=crop;for(let i=-2;i<=2;i++)for(let j=-4;j<=4;j++){const x=bx+j*SIZE*.13,y=by-3+i*SIZE*.1;
+    if((x-bx)*(x-bx)/((SIZE*.6)*(SIZE*.6))+(y-by+2)*(y-by+2)/((SIZE*.31)*(SIZE*.31))>1)continue;
+    ctx.beginPath();ctx.ellipse(x,y-2,1.2,4,Math.sin(j)*.3,0,7);ctx.fill();}}}
+function drawWell(bx,by){shadowEll(bx,by+2,SIZE*0.32,SIZE*0.12);
+  ctx.fillStyle='#8a8f96';ctx.beginPath();ctx.ellipse(bx,by-4,SIZE*0.26,SIZE*0.13,0,0,7);ctx.fill();
+  ctx.fillStyle='#2f4f5e';ctx.beginPath();ctx.ellipse(bx,by-5,SIZE*0.17,SIZE*0.085,0,0,7);ctx.fill();
+  ctx.strokeStyle='#6b4a28';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx-SIZE*0.2,by-5);ctx.lineTo(bx-SIZE*0.15,by-SIZE*0.7);ctx.moveTo(bx+SIZE*0.2,by-5);ctx.lineTo(bx+SIZE*0.15,by-SIZE*0.7);ctx.stroke();
+  ctx.fillStyle='#8a5a2b';ctx.beginPath();ctx.moveTo(bx-SIZE*0.3,by-SIZE*0.6);ctx.lineTo(bx,by-SIZE*0.9);ctx.lineTo(bx+SIZE*0.3,by-SIZE*0.6);ctx.closePath();ctx.fill();}
+function drawLevelBadge(h,x,y){const d=DEFS[h.b];if(!d||d.max<=1||h.lvl<=1)return;
+  ctx.fillStyle='#e1bf60';ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(40,29,12,.55)';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#1b2017';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(h.lvl,x,y+0.5);}
+function drawHouseBody(bx,by,w,wh,rh,roof,wall='#d6c096'){
+  const base=ctx.createLinearGradient(bx-w/2,by-wh,bx+w/2,by);base.addColorStop(0,shade(wall,1.08));base.addColorStop(.55,wall);base.addColorStop(1,shade(wall,.78));
+  ctx.fillStyle=base;ctx.fillRect(bx-w/2,by-wh,w,wh);
+  // Fachwerk-Balken (horizontal + vertikal) — gibt Struktur & Massivität
+  ctx.fillStyle='rgba(67,47,26,.22)';for(let i=1;i<4;i++)ctx.fillRect(bx-w/2+i*w/4,by-wh+2,1,wh-4);
+  ctx.fillRect(bx-w/2+1,by-wh*0.55,w-2,1);
+  // Fenster (warm beleuchtet) — zwei pro Haus, lassen es "bewohnt" wirken
+  const wy=by-wh*0.6,ww=w*0.13,whh=wh*0.22;
+  ctx.fillStyle='#3a2a16';ctx.fillRect(bx-w*0.28-ww/2,wy-ww,ww,whh+2);ctx.fillRect(bx+w*0.28-ww/2,wy-ww,ww,whh+2);
+  ctx.fillStyle='rgba(255,219,130,.78)';ctx.fillRect(bx-w*0.28-ww/2+1,wy-ww+1,ww-2,whh);ctx.fillRect(bx+w*0.28-ww/2+1,wy-ww+1,ww-2,whh);
+  ctx.strokeStyle='rgba(40,28,14,.6)';ctx.lineWidth=.8;ctx.beginPath();
+  ctx.moveTo(bx-w*0.28,wy-ww+1);ctx.lineTo(bx-w*0.28,wy-ww+whh);ctx.moveTo(bx+w*0.28,wy-ww+1);ctx.lineTo(bx+w*0.28,wy-ww+whh);ctx.stroke();
+  // Tür mittig (dunkles Holz)
+  ctx.fillStyle='#3d2814';ctx.fillRect(bx-w*0.05,by-wh*0.5,w*0.1,wh*0.5);
+  ctx.fillStyle='#6a4a26';ctx.fillRect(bx-w*0.045,by-wh*0.5+1,w*0.09,wh*0.5-2);
+  ctx.strokeStyle='rgba(61,43,24,.46)';ctx.lineWidth=1;ctx.strokeRect(bx-w/2,by-wh,w,wh);
+  // Dach — First markieren für realistische Dachform
+  ctx.fillStyle=roof;ctx.beginPath();ctx.moveTo(bx-w/2-w*.13,by-wh);ctx.lineTo(bx,by-wh-rh);ctx.lineTo(bx+w/2+w*.13,by-wh);ctx.closePath();ctx.fill();
+  const rg=ctx.createLinearGradient(bx,by-wh-rh,bx+w*.5,by-wh);rg.addColorStop(0,shade(roof,1.35));rg.addColorStop(1,shade(roof,.82));
+  ctx.fillStyle=rg;ctx.beginPath();ctx.moveTo(bx,by-wh-rh);ctx.lineTo(bx+w/2+w*.13,by-wh);ctx.lineTo(bx+w*.08,by-wh);ctx.closePath();ctx.fill();
+  // Dachfirst (dunkle Linie oben) — markanter Giebel
+  ctx.strokeStyle='rgba(30,20,10,.5)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(bx,by-wh-rh);ctx.lineTo(bx,by-wh);ctx.stroke();
+}
+function drawChimney(x,y,s){ctx.fillStyle='#6a4d36';ctx.fillRect(x,y,s*.16,s*.4);ctx.fillStyle='rgba(47,40,32,.28)';ctx.beginPath();ctx.ellipse(x+s*.08,y-3,3,5,0,0,7);ctx.fill();}
+function drawMillWheel(x,y,s){ctx.strokeStyle='#5b3f26';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,s,0,7);ctx.stroke();for(let i=0;i<6;i++){const a=i*Math.PI/3+tnow*.25;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a)*s,y+Math.sin(a)*s);ctx.stroke();}}
+function drawYardDetails(h,bx,by,sc){const d=DEFS[h.b];
+  if(h.b==='muehle'){ctx.fillStyle='#ded2b3';for(let i=0;i<4;i++){const a=i*Math.PI/2+tnow*.45;ctx.beginPath();ctx.moveTo(bx,by-SIZE*1.18*sc);ctx.lineTo(bx+Math.cos(a)*SIZE*.36*sc,by-SIZE*1.18*sc+Math.sin(a)*SIZE*.36*sc);ctx.lineWidth=3;ctx.strokeStyle='#ded2b3';ctx.stroke();}}
+  if(['saegewerk','holzfaeller','tischlerei','foerster'].includes(h.b)){ctx.fillStyle='#7a4e2b';for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(bx-SIZE*.34+i*SIZE*.12,by-2,SIZE*.11,SIZE*.045,.25,0,7);ctx.fill();ctx.strokeStyle='#c39155';ctx.stroke();}}
+  if(['steinbruch','erzmine','lehmgrube'].includes(h.b)){ctx.fillStyle='#6d7170';for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(bx-SIZE*.4+i*8,by-2);ctx.lineTo(bx-SIZE*.35+i*8,by-11-seeded(h,i)*6);ctx.lineTo(bx-SIZE*.25+i*8,by-1);ctx.closePath();ctx.fill();}}
+  if(['koehlerei','schmelze','ziegelei','backhaus','schmiede'].includes(h.b)){drawChimney(bx+SIZE*.28*sc,by-SIZE*.95*sc,SIZE*sc);
+    ctx.fillStyle='rgba(55,46,34,.35)';ctx.beginPath();ctx.ellipse(bx+SIZE*.31*sc,by-SIZE*1.4*sc,3+Math.sin(tnow*2)*1.5,10,0,0,7);ctx.fill();}
+  if(['kuhfarm','schaffarm','jagdhuette'].includes(h.b)){ctx.strokeStyle='#7b5b36';ctx.lineWidth=1.5;for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(bx+i*8,by-2);ctx.lineTo(bx+i*8+4,by-13);ctx.stroke();}}
+  if(h.b==='imkerei'){ctx.fillStyle='#d4a642';for(let i=0;i<3;i++){ctx.fillRect(bx-SIZE*.35+i*SIZE*.16,by-13,SIZE*.11,SIZE*.13);ctx.fillStyle='#654322';ctx.fillRect(bx-SIZE*.35+i*SIZE*.16,by-9,SIZE*.11,1);ctx.fillStyle='#d4a642';}}
+  if(['kompost','kraeutergarten','schrein','sudhaus'].includes(h.b)){ctx.strokeStyle='rgba(112,185,90,.72)';ctx.lineWidth=2;for(let i=0;i<5;i++){const a=tnow*.8+i*1.25;ctx.beginPath();ctx.arc(bx,by-SIZE*.45,10+i*2,a,a+.75);ctx.stroke();}}
+}
+function drawBuildingSprite(h){const d=DEFS[h.b],bx=h.px.x,by=h.px.y-h.elev;
+  if(h.b==='getreidefeld'||h.b==='gemuesehof'){drawField(h,bx,by);drawLevelBadge(h,bx+SIZE*0.45,by-SIZE*0.45);return;}
+  if(h.b==='brunnen'){drawWell(bx,by);drawLevelBadge(h,bx+SIZE*0.3,by-SIZE*0.75);return;}
+  if(h.b==='teich'){
+    ctx.fillStyle='rgba(45,100,120,0.6)';ctx.beginPath();ctx.ellipse(bx,by,SIZE*0.9,SIZE*0.55,0,0,7);ctx.fill();
+    ctx.strokeStyle='rgba(120,180,200,0.4)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='rgba(60,140,160,0.5)';for(let i=0;i<5;i++){
+      const lx=bx+Math.cos(i*1.3+tnow*0.3)*SIZE*0.35,ly=by+Math.sin(i*1.3+tnow*0.3)*SIZE*0.2;
+      ctx.beginPath();ctx.ellipse(lx,ly,3,1.5,i,0,7);ctx.fill();}
+    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.55);return;}
+  if(h.b==='marktplatz'){
+    const awningY=by-wh-rh-SIZE*0.15;
+    ctx.fillStyle='rgba(180,100,60,0.7)';ctx.fillRect(bx-w*0.6,awningY,w*1.2,SIZE*0.12);
+    ctx.fillStyle='rgba(200,120,75,0.5)';ctx.fillRect(bx-w*0.6,awningY+SIZE*0.12,w*1.2,2);
+  }
+  if(h.b==='hainbaum'){
+    ctx.save();ctx.translate(bx,by);
+    ctx.fillStyle='rgba(60,40,20,0.5)';ctx.fillRect(-4, -SIZE*0.6, 8, SIZE*0.6);
+    ctx.fillStyle='rgba(80,140,60,0.85)';ctx.beginPath();ctx.arc(0, -SIZE*0.7, SIZE*0.55, 0, 7);ctx.fill();
+    ctx.fillStyle='rgba(50,110,40,0.7)';ctx.beginPath();ctx.arc(-SIZE*0.25, -SIZE*0.85, SIZE*0.35, 0, 7);ctx.fill();
+    ctx.fillStyle='rgba(60,130,45,0.7)';ctx.beginPath();ctx.arc(SIZE*0.25, -SIZE*0.8, SIZE*0.38, 0, 7);ctx.fill();
+    ctx.fillStyle='rgba(255,220,100,0.9)';ctx.beginPath();ctx.arc(0, -SIZE*0.75, SIZE*0.12, 0, 7);ctx.fill();
+    ctx.restore();
+    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.6);return;}
+  if(h.b==='kristall'){
+    ctx.save();ctx.translate(bx,by);
+    ctx.fillStyle='rgba(80,60,100,0.8)';ctx.fillRect(-3, -SIZE*0.5, 6, SIZE*0.5);
+    ctx.fillStyle='rgba(150,100,220,0.9)';ctx.beginPath();ctx.moveTo(-SIZE*0.2, -SIZE*0.5);ctx.lineTo(0, -SIZE*0.9);
+    ctx.lineTo(SIZE*0.2, -SIZE*0.5);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(200,160,255,0.8)';ctx.beginPath();ctx.moveTo(0, -SIZE*0.9);ctx.lineTo(SIZE*0.25, -SIZE*0.45);
+    ctx.lineTo(0, -SIZE*0.4);ctx.lineTo(-SIZE*0.25, -SIZE*0.45);ctx.closePath();ctx.fill();
+    ctx.restore();
+    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.5);return;}
+  if(h.b==='erdzeichen'){
+    ctx.save();ctx.translate(bx,by);
+    ctx.fillStyle='rgba(100,80,60,0.8)';
+    for(let i=0;i<6;i++){const a=Math.PI/3*i;ctx.beginPath();ctx.arc(Math.cos(a)*SIZE*0.3, Math.sin(a)*SIZE*0.25, 4, 0, 7);ctx.fill();}
+    ctx.fillStyle='rgba(140,110,80,0.9)';ctx.beginPath();ctx.arc(0,0,SIZE*0.2,0,7);ctx.fill();
+    ctx.fillStyle='rgba(200,180,140,0.7)';ctx.beginPath();ctx.arc(0,0,SIZE*0.1,0,7);ctx.fill();
+    ctx.restore();
+    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.35);return;}
+  const big=h.b==='lager'?1.45:(h.b==='speicher'?1.16:1),sc=(.9+(h.lvl-1)*.075)*big,w=SIZE*.78*sc,wh=SIZE*.52*sc,rh=SIZE*.38*sc,rc=ROOF[d.cat]||'#7b5632';
+  shadowEll(bx,by+3,w*.72,SIZE*.18*sc,.32);
+  drawHouseBody(bx,by,w,wh,rh,rc,d.cat==='Stein & Erz'?'#b8b3a3':'#d7c298');
+  drawYardDetails(h,bx,by,sc);
+  if(d.jobs>0&&!h._active&&h.b!=='lager'){ctx.fillStyle='rgba(40,20,15,.42)';ctx.fillRect(bx-w/2,by-wh-rh,w+w*0.1,wh+rh);
+    ctx.fillStyle='#e07a4d';ctx.beginPath();ctx.arc(bx+w/2,by-wh-rh*0.5,4,0,7);ctx.fill();}
+  else if(d.jobs>0&&h._active&&h.b!=='lager')drawCarrier(bx-w*0.62,by-1,tnow*6+h.q*1.3);
+  drawLevelBadge(h,bx+w/2-2,by-wh-rh*0.45);}
+function drawRoadSegment(x1,y1,x2,y2,connected){
+  const wob=Math.sin((x1+x2)*.03+tnow*.6)*1.5;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo((x1+x2)/2+wob,(y1+y2)/2-2,(x2+x1)/2,(y2+y1)/2);
+  ctx.strokeStyle=connected?'rgba(62,43,25,.55)':'rgba(38,33,24,.48)';ctx.lineWidth=8;ctx.stroke();
+  ctx.strokeStyle=connected?'#b79a65':'#75674a';ctx.lineWidth=5;ctx.stroke();
+  ctx.strokeStyle=connected?'#e1cfa0':'#9a8c67';ctx.lineWidth=1.4;ctx.stroke();
+}
+function drawCarrier(x,y,ph){shadowEll(x,y+1,3.5,1.5);const bob=Math.sin(ph)*1.2;
+  ctx.strokeStyle='#5b4326';ctx.lineWidth=1.5;ctx.beginPath();
+  ctx.moveTo(x-1.4,y-1);ctx.lineTo(x-1.4+Math.cos(ph)*1.8,y+3);ctx.moveTo(x+1.4,y-1);ctx.lineTo(x+1.4-Math.cos(ph)*1.8,y+3);ctx.stroke();
+  ctx.fillStyle='#7d9a4e';ctx.fillRect(x-2.4,y-6+bob,4.8,6);
+  ctx.fillStyle='#b5772f';ctx.fillRect(x+1.8,y-5+bob,3,4);
+  ctx.fillStyle='#f0d6ad';ctx.beginPath();ctx.arc(x,y-7.5+bob,2.3,0,7);ctx.fill();}
+function drawRabbit(x,y,ph){const drift=Math.sin(ph)*1.1;shadowEll(x,y+1,3.2,1.1,.15);
+  ctx.fillStyle='rgba(80,69,48,.82)';ctx.beginPath();ctx.ellipse(x,y-3+drift,3.4,2.1,-.15,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(x+2.6,y-4+drift,1.45,0,7);ctx.fill();}
+// Detaillierter Siedler: Körper (Tunic), Kopf, ggf. Hut & getragenes Gut. Farben variieren.
+function drawVillager(v){
+  const x=v.x,y=v.y,ph=v.ph,col=v.col,haul=v.mode===1&&v.haul;
+  const bob=Math.sin(ph)*1.3;
+  shadowEll(x,y+1,3.6,1.5,.26);
+  // Beine
+  ctx.strokeStyle='#3d2c1a';ctx.lineWidth=1.7;ctx.beginPath();
+  ctx.moveTo(x-1.5,y-1);ctx.lineTo(x-1.5+Math.cos(ph)*2,y+3.5);
+  ctx.moveTo(x+1.5,y-1);ctx.lineTo(x+1.5-Math.cos(ph)*2,y+3.5);ctx.stroke();
+  // Körper / Tunika
+  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x-3,y+1+bob);ctx.lineTo(x-2.6,y-7+bob);
+  ctx.lineTo(x+2.6,y-7+bob);ctx.lineTo(x+3,y+1+bob);ctx.closePath();ctx.fill();
+  // Gürtel/Akzent
+  ctx.fillStyle=shade(col,.7);ctx.fillRect(x-3,y-2+bob,6,1.4);
+  // Arme (leicht schwingend)
+  ctx.strokeStyle=shade(col,.85);ctx.lineWidth=1.5;ctx.beginPath();
+  ctx.moveTo(x-2.6,y-5+bob);ctx.lineTo(x-3.6+Math.sin(ph)*1.2,y-1+bob);
+  ctx.moveTo(x+2.6,y-5+bob);ctx.lineTo(x+3.6-Math.sin(ph)*1.2,y-1+bob);ctx.stroke();
+  // Kopf
+  ctx.fillStyle='#f0d2a8';ctx.beginPath();ctx.arc(x,y-9+bob,2.6,0,7);ctx.fill();
+  // Hut (Mütze) — Brauntöne, gibt Figur
+  ctx.fillStyle='#5a3d22';ctx.beginPath();ctx.moveTo(x-2.8,y-9.5+bob);
+  ctx.lineTo(x+2.8,y-9.5+bob);ctx.lineTo(x,y-13+bob);ctx.closePath();ctx.fill();
+  // getragene Last (kleiner Sack/Kiste) für Lastenträger auf Wegen
+  if(haul){ctx.fillStyle='#8a6b3a';ctx.fillRect(x-2.2,y-15+bob,4.4,5);
+    ctx.strokeStyle='#5a4326';ctx.lineWidth=0.8;ctx.strokeRect(x-2.2,y-15+bob,4.4,5);}
+}
+function draw(){
+  tnow=performance.now()/1000;
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.save();ctx.translate(cv.width/2/dpr,cv.height/2/dpr);ctx.scale(cam.zoom,cam.zoom);ctx.translate(cam.x,cam.y);
+  ctx.lineCap='round';ctx.textAlign='center';ctx.textBaseline='middle';
+  VIEW_W=(cv.width/dpr)/2/cam.zoom+SIZE*2, VIEW_H=(cv.height/dpr)/2/cam.zoom+SIZE*2; camX=cam.x; camY=cam.y; const rr=RAD*SIZE*1.7;
+  const sea=ctx.createRadialGradient(0,-RAD*SIZE*.15,rr*.2,0,RAD*SIZE*.15,rr);
+  sea.addColorStop(0,'#457f8d');sea.addColorStop(.55,'#255d73');sea.addColorStop(1,'#133645');
+  ctx.fillStyle=sea;ctx.beginPath();ctx.ellipse(0,RAD*SIZE*0.18,rr,rr*0.84,0,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(229,238,215,.18)';ctx.lineWidth=2;
+  for(let i=0;i<9;i++){const y=-RAD*SIZE*.42+i*SIZE*.32+Math.sin(tnow*.55+i)*4;ctx.beginPath();ctx.moveTo(-rr*.7,y);ctx.bezierCurveTo(-rr*.25,y+7,rr*.2,y-7,rr*.7,y+1);ctx.stroke();}
+  ctx.save();
+  ctx.filter='blur(6px)';
+  for(const h of SORTED){const bx=h.px.x,by=h.px.y-h.elev;if(Math.abs(bx+camX)>VIEW_W||Math.abs(by+camY)>VIEW_H)continue;drawTile(h);}
+  ctx.restore();
+  drawTerrainWash();
+  for(const h of SORTED){const bx=h.px.x,by=h.px.y-h.elev;if(Math.abs(bx+camX)>VIEW_W||Math.abs(by+camY)>VIEW_H)continue;
+    if(h.b==='weg'){const p={x:h.px.x,y:h.px.y-h.elev};
+      neighbors(h).forEach(nb=>{if(nb.b){const q={x:nb.px.x,y:nb.px.y-nb.elev};
+        drawRoadSegment(p.x,p.y,(p.x+q.x)/2,(p.y+q.y)/2,h.connected);}});
+      if(h.lvl>=2){
+        ctx.fillStyle='rgba(160,130,80,0.35)';
+        ctx.beginPath();ctx.ellipse(p.x,p.y,SIZE*0.35,SIZE*0.25,0,0,7);ctx.fill();
+      }
+      if(h.lvl>=3){
+        ctx.fillStyle='rgba(110,180,90,0.45)';
+        ctx.beginPath();ctx.ellipse(p.x,p.y,SIZE*0.45,SIZE*0.3,0,0,7);ctx.fill();
+        ctx.strokeStyle='rgba(80,140,60,0.4)';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(p.x,p.y,SIZE*0.3,0,7);ctx.stroke();
+      }
+    }
+    if(h.b&&h.b!=='weg')drawBuildingSprite(h);else if(!h.b)drawDeco(h);
+  }
+  carriers.forEach(c=>{const a=c.pts[c.seg],b=c.pts[c.seg+1];if(!a||!b)return;
+    const x=a.x+(b.x-a.x)*c.tt,y=a.y+(b.y-a.y)*c.tt;drawCarrier(x,y,tnow*9+c.seg);});
+  // Siedler tiefensortiert mitzeichnen (damit sie hinter Gebäuden verschwinden)
+  villagers.sort((a,b)=>a.y-b.y);
+  villagers.forEach(drawVillager);
+  critters.forEach(c=>drawRabbit(c.x,c.y,c.ph));
+  if(selHex){const cs=hexCorners(selHex.px.x,selHex.px.y-selHex.elev);
+    ctx.beginPath();cs.forEach((c,i)=>i?ctx.lineTo(c[0],c[1]):ctx.moveTo(c[0],c[1]));ctx.closePath();
+    ctx.lineWidth=4;ctx.strokeStyle='rgba(33,24,8,.55)';ctx.stroke();
+    ctx.lineWidth=2;ctx.strokeStyle='#f0ce69';ctx.stroke();}
+  if(hoverHex&&buildMode){const px=hoverHex.px.x,py=hoverHex.px.y-hoverHex.elev,ok=canPlace(hoverHex,buildMode),cs=hexCorners(px,py);
+    ctx.beginPath();cs.forEach((c,i)=>i?ctx.lineTo(c[0],c[1]):ctx.moveTo(c[0],c[1]));ctx.closePath();
+    ctx.fillStyle=ok?'rgba(126,185,103,.34)':'rgba(210,89,65,.34)';ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle=ok?'rgba(231,211,117,.9)':'rgba(230,118,82,.9)';ctx.stroke();
+    ctx.font=(SIZE*0.5)+'px sans-serif';ctx.globalAlpha=.9;ctx.fillStyle='#20190e';ctx.fillText(DEFS[buildMode].em,px,py-SIZE*0.2);ctx.globalAlpha=1;}
+  ctx.restore();
+  const W=cv.width/dpr,Hh=cv.height/dpr;
+  ctx.fillStyle=['rgba(150,210,120,.05)','rgba(255,230,150,.04)','rgba(214,132,52,.08)','rgba(205,225,255,.14)'][seasonIdx];ctx.fillRect(0,0,W,Hh);
+  if(seasonIdx===3){ctx.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<45;i++){const sx=(i*97+(tnow*18))%W,sy=((i*53)+(tnow*32))%Hh;ctx.fillRect(sx,sy,2,2);}}
+  const vg=ctx.createRadialGradient(W/2,Hh/2,Math.min(W,Hh)*0.35,W/2,Hh/2,Math.max(W,Hh)*0.72);
+  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.28)');ctx.fillStyle=vg;ctx.fillRect(0,0,W,Hh);
+  const dayPhase=Math.floor(dayTime/16)%4;
+  const dayOverlays=['rgba(8,12,28,','rgba(20,25,40,','rgba(0,0,0,','rgba(25,15,20,'];
+  const dayAlphas=[0.25,0.12,0.06,0.22];
+  ctx.fillStyle=dayOverlays[dayPhase]+dayAlphas[dayPhase]+')';ctx.fillRect(0,0,W,Hh);
+}
+let lastFrame=performance.now();
+function frame(now){const dt=Math.min(50,now-lastFrame);lastFrame=now;if(!paused){stepCarriers(dt);stepCritters(dt);stepVillagers(dt);}if(hudDirty&&now-lastHudTime>80){lastHudTime=now;hudDirty=false;updateHUD();}draw();requestAnimationFrame(frame);}
+setInterval(()=>{if(!paused)simTick();},2400);
+// Siedler-Population regelmäßig an tatsächliche Bevölkerung anpassen (beim Tick)
+setInterval(()=>{if(!paused)syncVillagers();},3000);
+
+// ---------------- Savegame (3 Slots mit Namen) ----------------
+const SAVE_KEY='wurzelwerk_save_v1';
+const SLOT_NAMES=['Reise I','Reise II','Reise III'];
+function getSaveSlots(){try{const raw=localStorage.getItem(SAVE_KEY);return raw?JSON.parse(raw):{slots:[null,null,null],meta:[]};}catch(e){return{slots:[null,null,null],meta:[]};}}
+function persistSaveSlots(s){try{localStorage.setItem(SAVE_KEY,JSON.stringify(s));}catch(e){toast('⚠️ Speichern fehlgeschlagen');}}
+function captureState(){
+  const hexData={};
+  hexes.forEach((h,k)=>{hexData[k]={q:h.q,r:h.r,biome:h.biome,vit:h.vit,b:h.b,lvl:h.lvl};});
+  return {
+    t,year,seasonIdx,dayTime,pop,hunger,satisfaction,bluehendCount,jobsUsed,
+    RES:{...RES},unlocked:[...unlocked],chap,
+    appliedAsp:[...appliedAsp],renaturedCount,autarkYears,activeSymbioses,hungerFreeStreak,buildMult,
+    hexData,cam:{...cam},showVitLayer
+  };
+}
+function applyState(s){
+  t=s.t;year=s.year;seasonIdx=s.seasonIdx;dayTime=s.dayTime;pop=s.pop;hunger=s.hunger;
+  satisfaction=s.satisfaction;bluehendCount=s.bluehendCount;jobsUsed=s.jobsUsed;
+  Object.assign(RES,s.RES);
+  unlocked.clear();s.unlocked.forEach(u=>unlocked.add(u));
+  chap=s.chap;
+  appliedAsp.clear();s.appliedAsp.forEach(a=>appliedAsp.add(a));
+  renaturedCount=s.renaturedCount;autarkYears=s.autarkYears;activeSymbioses=s.activeSymbioses;
+  hungerFreeStreak=s.hungerFreeStreak;buildMult=s.buildMult;
+  if(s.cam){cam.x=s.cam.x;cam.y=s.cam.y;cam.zoom=s.cam.zoom||1;}
+  showVitLayer=!!s.showVitLayer;
+  hexes.forEach((h,k)=>{const d=s.hexData[k];if(d){h.biome=d.biome;h.vit=d.vit;h.b=d.b;h.lvl=d.lvl;}h._seedCache=h._seedCache||{};});
+  networkDirty=true;buildPalette();hudDirty=true;
+}
+function saveGame(slotIdx,name){
+  const slots=getSaveSlots();
+  slots.slots[slotIdx]=captureState();
+  slots.meta[slotIdx]={name,savedAt:new Date().toISOString(),t,year,pop,chap};
+  persistSaveSlots(slots);toast('💾 Gespeichert: '+name);
+}
+function loadGame(slotIdx){
+  const slots=getSaveSlots();
+  if(!slots.slots[slotIdx]){toast('📭 Leerer Slot');return;}
+  applyState(slots.slots[slotIdx]);
+  networkDirty=true;buildPalette();hudDirty=true;
+  toast('📂 Geladen: '+slots.meta[slotIdx].name);
+}
+function deleteGame(slotIdx){
+  const slots=getSaveSlots();
+  slots.slots[slotIdx]=null;slots.meta[slotIdx]=null;
+  persistSaveSlots(slots);toast('🗑️ Gelöscht');
+}
+function autoSave(){saveGame(0,SLOT_NAMES[0]+' (Auto)');}
+
+// ---------------- UI-Erweiterungen für Save/Load ----------------
+function buildTopbarSaveControls(){
+  const tb=document.getElementById('topbar');
+  if(!tb)return;
+  let wrap=document.getElementById('saveControls');
+  if(!wrap){wrap=document.createElement('div');wrap.id='saveControls';wrap.style.cssText='display:flex;gap:6px;margin-left:8px;';tb.appendChild(wrap);}
+  wrap.innerHTML='';
+  const slots=getSaveSlots();
+  SLOT_NAMES.forEach((name,i)=>{
+    const btn=document.createElement('button');
+    btn.textContent=(slots.meta[i]?slots.meta[i].name:name);
+    btn.title='Slot '+(i+1)+': '+(slots.meta[i]?slots.meta[i].savedAt:'leer');
+    btn.style.cssText='font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);transition:all .15s';
+    btn.onmouseenter=()=>{btn.style.background='rgba(255,255,255,0.08)';btn.style.color='var(--text)';};
+    btn.onmouseleave=()=>{btn.style.background='rgba(255,255,255,0.04)';btn.style.color='var(--muted)';};
+    btn.onclick=()=>{
+      const action=prompt('Slot '+(i+1)+' — "s" = Speichern, "l" = Laden, "d" = Löschen:', 's');
+      if(action==='s'){
+        const customName=prompt('Name für diesen Spielstand:', name);
+        if(customName)saveGame(i,customName||name);
+      }else if(action==='l'){loadGame(i);}
+      else if(action==='d'){if(confirm('Wirklich löschen?'))deleteGame(i);}
+      buildTopbarSaveControls();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+// ---------------- Initialize ----------------
+buildTopbar();buildPalette();
+buildTopbarSaveControls();
+resize();  cam.x=0; cam.y=0;
+  precompute();recomputeNetwork();updateHUD();
+syncVillagers(); // erste Siedler spawnen lassen
+selHex=L0;renderInspector();
+showBanner('Willkommen','Wurzelwerk',
+  'Baue eine Kolonie in Symbiose mit dem lebenden Hain. Starte mit 🪓 Holzfäller & 🥕 Gemüsehof, verbinde sie per · Wegen mit dem Lager 📦, und bau 🏠 Wohnstätten. Jedes Gebäude lässt sich ausbauen — höhere Stufen kosten brutal, liefern aber massiv. Erfülle die Kapitelziele, um den ganzen Tech-Baum freizuschalten!',
+  '7 Evolutions-Kapitel · Monumente · Aspirationen · 3 Savegames · Autosave');
+setInterval(()=>{if(!paused&&t%120===0)autoSave();},2400);
+requestAnimationFrame(function firstFrame(){
+  resize();
+  draw();
+  requestAnimationFrame(frame);
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
