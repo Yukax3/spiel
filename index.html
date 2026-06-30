@@ -167,6 +167,8 @@
   #statsBtn{right:12px;}
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:25;display:none;}
   .overlay.show{display:block;}
+  #settingsModal input[type=range]{-webkit-appearance:none;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;outline:none}
+  #settingsModal input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 6px rgba(226,198,90,0.4)}
 </style>
 </head>
 <body>
@@ -180,6 +182,8 @@
     <div id="stage">
         <canvas id="cv"></canvas>
         <div id="toast"></div>
+        <audio id="bgm" preload="auto" loop><source src="audio/ost.mp3" type="audio/mpeg"></audio>
+        <div id="settingsModal" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,12,8,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:60;animation:fadeIn .3s"><div style="background:linear-gradient(145deg,#2a3428,#1a2218);border:1px solid var(--gold);border-radius:14px;padding:24px 28px;max-width:420px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 80px rgba(226,198,90,0.08);animation:slideUp .4s cubic-bezier(0.22, 1, 0.36, 1)"><h2 style="margin:4px 0 12px;color:var(--gold);font-size:20px;font-weight:700;letter-spacing:0.4px">Sandbox-Einstellungen</h2><div style="display:flex;flex-direction:column;gap:12px"><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Startressourcen</span><span id="prefResLabel" style="color:var(--muted)">Normal</span></label><input id="prefRes" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="0" style="width:100%;accent-color:var(--gold)"></div><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Jahreszeit-Härte</span><span id="seasonHarshLabel" style="color:var(--muted)">Normal</span></label><input id="seasonHarsh" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="1" style="width:100%;accent-color:var(--gold)"></div><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Raubbau-Bonus</span><span id="raubbauLabel" style="color:var(--muted)">Normal</span></label><input id="raubbauBonus" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="1" style="width:100%;accent-color:var(--gold)"></div></div><button id="applySettings" onclick="applySandbox()" style="margin-top:16px;width:100%;background:linear-gradient(135deg,rgba(80,100,65,0.9),rgba(55,70,42,0.95));border:1px solid var(--gold);color:#fff;padding:10px;border-radius:9px;font-size:14px;cursor:pointer;font-weight:600;letter-spacing:0.4px;transition:all .15s;box-shadow:0 4px 16px rgba(226,198,90,0.25)">Spiel starten</button></div></div>
         <audio id="bgm" preload="auto" loop><source src="audio/ost.mp3" type="audio/mpeg"></audio>
 
       <div id="banner"><div id="bannerInner">
@@ -334,6 +338,7 @@ for(let q=-RAD;q<=RAD;q++)for(let r=-RAD;r<=RAD;r++){
   const b=biomeAt(q,r);
   hexes.set(key(q,r),{q,r,biome:b,vit:b==='fels'?55:(b==='wasser'?100:90),b:null,lvl:1,connected:false});
 }
+const L0=hexes.get(key(3,-3));
 let SORTED=[];
 function srand(seed){seed=seed>>>0||1;return function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};}
 function precompute(){
@@ -402,17 +407,20 @@ const ASPIRATIONS=[
 let aspJustUnlocked=false;
 function checkAspirations(){if(aspJustUnlocked)return;let any=false;
   ASPIRATIONS.forEach(a=>{if(appliedAsp.has(a.id))return;if(a.target()){appliedAsp.add(a.id);any=true;toast('🌟 Bestrebung erfüllt: '+a.name+' — '+a.bonus().label);aspJustUnlocked=true;setTimeout(()=>aspJustUnlocked=false,2500);}});
-  buildMult=appliedAsp.has('wuselnde_stadt')?0.9:1;
+  buildMult=baseBuildMult*(appliedAsp.has('wuselnde_stadt')?0.9:1);
   if(any)updateHUD();}
 function aspBonus(name){return appliedAsp.has(name)?1:0;}
 
 // ---------------- Sim ----------------
-let pop=4,paused=false,t=0,year=0,seasonIdx=1,bluehendCount=0,jobsUsed=0,hunger=0,dayTime=0,satisfaction=1,showVitLayer=false,autarkYears=0,activeSymbioses=0,hungerFreeStreak=0,buildMult=1,renaturedCount=0;
+let pop=4,paused=false,t=0,year=0,seasonIdx=1,bluehendCount=0,jobsUsed=0,hunger=0,dayTime=0,satisfaction=1,showVitLayer=false,autarkYears=0,activeSymbioses=0,hungerFreeStreak=0,buildMult=1,renaturedCount=0,prestigeLevel=0,baseBuildMult=1;
 const appliedAsp=new Set();
 const SEASON_TICKS=40,YEAR_TICKS=160;
 const SEASONS=['Frühling','Sommer','Herbst','Winter'];
 const SEASON_FIELD=[1.2,1.1,1.0,0.2],SEASON_REGEN=[1.2,1.1,0.8,0.4];
 const counts={};
+const SANDBOX_KEY='wz_sandbox_v1';
+function loadSandbox(){try{const raw=localStorage.getItem(SANDBOX_KEY);return raw?JSON.parse(raw):null;}catch(e){return null;}}
+function saveSandbox(s){try{localStorage.setItem(SANDBOX_KEY,JSON.stringify(s));}catch(e){}}
 function housingCap(){let c=0;hexes.forEach(h=>{if(h.b==='wohnstaette')c+=capFor(h);});return c;}
 function yieldMult(v){return 0.35+0.65*Math.max(0,Math.min(1,v/100));}
 function foodTotal(){return FOODS.reduce((s,r)=>s+RES[r],0);}
@@ -602,11 +610,11 @@ const CH=[
    done:'Aus Sammlern werden Pflanzer. Bretter und Brot warten.'},
   {ev:'Kapitel II',name:'Wurzeln schlagen',story:'Sägewerk, Mühle, Backhaus — die erste echte Kette. Pflanz mit dem Förster nach, was du nimmst.',
    goal:()=>({c:Math.min(pop,16)+(RES.planks>=20?80:0)+(RES.bread>=20?80:0),n:176,t:'Siedler 16 ('+pop+') + Bretter '+Math.floor(RES.planks)+'/20 + Brot '+Math.floor(RES.bread)+'/20'}),
-    unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich'],
-  done:'Stein, Lehm und Vieh erweitern dein Reich.'},
+    unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich','kompost'],
+  done:'Stein, Lehm und Vieh erweitern dein Reich. Der Kompost hält deine Felsgrund-Zonen im Gleichgewicht.'},
  {ev:'Kapitel III',name:'Handwerk & Vieh',story:'Brennöfen und Weiden: Ziegel, Töpferware, Milch und Käse. Bau das Lager aus, bevor es überquillt.',
   goal:()=>({c:Math.min(pop,28)+(RES.cheese>=20?70:0)+(RES.bricks>=25?70:0),n:168,t:'Siedler 28 ('+pop+') + Käse '+Math.floor(RES.cheese)+'/20 + Ziegel '+Math.floor(RES.bricks)+'/25'}),
-  unlock:['koehlerei','erzmine','schmelze','schmiede','werkstatt'],
+  unlock:['koehlerei','erzmine','schmelze','schmiede'],
   done:'Die Schmieden glühen. Das Zeitalter des Eisens beginnt.'},
  {ev:'Kapitel IV',name:'Eisen & Industrie',story:'Erz → Eisen → Werkzeug. Werkzeug schaltet die anspruchsvollsten Bauten überhaupt erst auf.',
   goal:()=>({c:Math.min(pop,44)+(RES.tools>=25?90:0),n:134,t:'Siedler 44 ('+pop+') + Werkzeug '+Math.floor(RES.tools)+'/25'}),
@@ -614,11 +622,11 @@ const CH=[
   done:'Stoff, Kleidung und Möbel — dein Volk lebt im Wohlstand.'},
  {ev:'Kapitel V',name:'Wohlstand',story:'Kleidung und Möbel heben den Lebensstandard. Wachse zur echten Stadt heran.',
    goal:()=>({c:Math.min(pop,64)+(RES.clothes>=18?50:0)+(RES.furniture>=18?50:0),n:164,t:'Siedler 64 ('+pop+') + Kleidung '+Math.floor(RES.clothes)+'/18 + Möbel '+Math.floor(RES.furniture)+'/18'}),
-    unlock:['imkerei','kompost','kraeutergarten','sudhaus','schrein','schule','festplatz','heilstube','wildgehege','eselstation','pilznetz','heilzelt','apothek'],
+    unlock:['imkerei','kraeutergarten','sudhaus','schrein','schule','festplatz','heilstube','wildgehege','eselstation','pilznetz','heilzelt','apothek'],
    done:'Nun beginnt die wahre Symbiose mit dem Hain.'},
   {ev:'Kapitel VI',name:'Medizin',story:'Heilzelt und Apotheke erschließen die heilende Essenz des Hains. Produziere Medizin und fördere die Gesundheit deines Volkes.',
-   goal:()=>({c:Math.min(bluehendCount,34)+(RES.medicine>=25?100:0),n:150,t:'Blühend '+bluehendCount+'/34 + Medizin '+Math.floor(RES.medicine)+'/25'}),
-   unlock:['medizin_tempel'],done:'Die heilende Kraft des Hains fließt durch deine Hände.'},
+   goal:()=>({c:Math.min(bluehendCount,34)+(RES.medicine>=25?100:0),n:134,t:'Blühend '+bluehendCount+'/34 + Medizin '+Math.floor(RES.medicine)+'/25'}),
+   unlock:['medizintempel'],done:'Die heilende Kraft des Hains fließt durch deine Hände.'},
   {ev:'Kapitel VII',name:'Hainmeister',story:'Freier Aufbau. Setz dir eigene Ziele — größer, grüner, vollkommen autark. Maximiere alle Stufen!',
    goal:()=>({c:1,n:1,t:'Sandbox — frei aufbauen & grinden'}),unlock:['hainbaum','kristall','erdzeichen','medizintempel'],done:'Die Essenz des Hains erwacht.'}
 ];
@@ -626,6 +634,7 @@ let chap=0;
 const unlocked=new Set(['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof']);
 function checkChapter(){if(chap>=CH.length-1)return;const g=CH[chap].goal();if(g.c>=g.n)advance();}
 function advance(){const c=CH[chap];c.unlock.forEach(u=>unlocked.add(u));chap++;const n=CH[chap];
+  if(chap>=CH.length-1)n.unlock.forEach(u=>unlocked.add(u)); // letztes Kapitel wird nie "abgeschlossen" -> eigene Freischaltungen sofort anwenden
   showBanner(c.ev+' abgeschlossen',n.name,c.done,
     c.unlock.length?('Freigeschaltet: '+c.unlock.map(u=>DEFS[u].em+' '+DEFS[u].name).join(' · ')):'');
   buildPalette();}
@@ -635,6 +644,7 @@ function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='
   TOPRES.forEach(r=>tb.insertAdjacentHTML('beforeend',`<div class="res"><span class="ic">${RESMETA[r][0]}</span><b id="r_${r}">0</b></div>`));
   tb.insertAdjacentHTML('beforeend',`<div class="res"><span class="ic">🍽️</span><b id="r_food">0</b></div>`);
   tb.insertAdjacentHTML('beforeend',`<div class="res"><span class="ic">👥</span><b id="r_pop">0</b><span class="small" id="r_cap"></span></div>`);
+  tb.insertAdjacentHTML('beforeend',`<div class="res" style="gap:4px" title="Zufriedenheit"><span class="ic">😊</span><div style="width:60px;height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden"><div id="satFill" style="height:100%;width:100%;background:linear-gradient(90deg,#e07a52,#88d080);border-radius:4px;transition:width .3s"></div></div></div>`);
   tb.insertAdjacentHTML('beforeend',`<div id="store">📦<div id="storeBar"><div id="storeFill"></div></div><span id="storeTxt"></span></div>`);
   tb.insertAdjacentHTML('beforeend',`<div id="season"></div>`);
   tb.insertAdjacentHTML('beforeend',`<div id="vitToggle" style="margin-left:10px;font-size:11px;cursor:pointer;opacity:${showVitLayer?1:0.5};border:1px solid ${showVitLayer?'var(--gold)':'var(--line2)'};padding:2px 6px;border-radius:4px;user-select:none" onclick="window._toggleVitLayer()">🧪 V</div>`);
@@ -642,12 +652,52 @@ function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='
   tb.insertAdjacentHTML('beforeend',`<div id="saveBtn" style="margin-left:10px;font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickSave()">💾 Save</div>`);
   tb.insertAdjacentHTML('beforeend',`<div id="loadBtn" style="margin-left:6px;font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickLoad()">📂 Load</div>`);
   tb.insertAdjacentHTML('beforeend',`<div id="bgmToggle" style="margin-left:6px;font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="window._toggleBGM()">🎵</div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="settingsBtn" style="margin-left:6px;font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="showSettings()">⚙️</div>`);
 }
 function toggleBGM(){bgmMuted=!bgmMuted;const bgm=document.getElementById('bgm');bgm.volume=bgmMuted?0:0.6;if(!bgmMuted)bgm.play().catch(()=>{});updateBgmBtn();localStorage.setItem('wz_bgm_muted',bgmMuted?'1':'0');}
 function updateBgmBtn(){const btn=document.getElementById('bgmToggle');if(btn)btn.textContent=bgmMuted?'🔇':'🎵';}
 function initBGM(){updateBgmBtn();if(bgmMuted){document.getElementById('bgm').volume=0;return;}const startBGM=()=>{if(bgmStarted)return;bgmStarted=true;document.getElementById('bgm').play().catch(()=>{});document.removeEventListener('click',startBGM);};document.addEventListener('click',startBGM);}
 window._toggleBGM=toggleBGM;
-
+let ambientCtx=null,ambientGain=null,ambientNodes={};
+function initAmbient(){
+  try{
+    ambientCtx=new(window.AudioContext||window.webkitAudioContext)();
+    ambientGain=ambientCtx.createGain();ambientGain.gain.value=0.06;ambientGain.connect(ambientCtx.destination);
+    ambientNodes.wind=ambientCtx.createGain();ambientNodes.wind.gain.value=0.3;ambientNodes.wind.connect(ambientGain);
+    ambientNodes.birds=ambientCtx.createGain();ambientNodes.birds.gain.value=0;ambientNodes.birds.connect(ambientGain);
+    ambientNodes.water=ambientCtx.createGain();ambientNodes.water.gain.value=0;ambientNodes.water.connect(ambientGain);
+    const bufSize=ambientCtx.sampleRate*2;
+    const noise=ambientCtx.createBuffer(1,bufSize,ambientCtx.sampleRate);
+    const data=noise.getChannelData(0);for(let i=0;i<bufSize;i++)data[i]=Math.random()*2-1;
+    const wind=ambientCtx.createBufferSource();wind.buffer=noise;wind.loop=true;
+    const windFilter=ambientCtx.createBiquadFilter();windFilter.type='lowpass';windFilter.frequency.value=400;windFilter.Q.value=1;wind.connect(windFilter);windFilter.connect(ambientNodes.wind);wind.start();
+    const water=ambientCtx.createBufferSource();water.buffer=noise;water.loop=true;
+    const waterFilter=ambientCtx.createBiquadFilter();waterFilter.type='bandpass';waterFilter.frequency.value=800;waterFilter.Q.value=0.5;
+    const waterMod=ambientCtx.createOscillator();waterMod.frequency.value=0.1;waterMod.type='sine';
+    const waterModGain=ambientCtx.createGain();waterModGain.gain.value=300;
+    waterMod.connect(waterModGain);waterModGain.connect(waterFilter.frequency);waterMod.start();
+    water.connect(waterFilter);waterFilter.connect(ambientNodes.water);water.start();
+    const chirpOsc=ambientCtx.createOscillator();chirpOsc.type='sine';chirpOsc.frequency.value=2200;
+    const chirpGain=ambientCtx.createGain();chirpGain.gain.value=0;
+    const chirpLFO=ambientCtx.createOscillator();chirpLFO.frequency.value=3+Math.random()*4;chirpLFO.type='sine';
+    const chirpLFOGain=ambientCtx.createGain();chirpLFOGain.gain.value=600;
+    chirpLFO.connect(chirpLFOGain);chirpLFOGain.connect(chirpOsc.frequency);chirpLFO.start();
+    chirpOsc.connect(chirpGain);chirpGain.connect(ambientNodes.birds);chirpOsc.start();
+    ambientNodes._wind=wind;ambientNodes._birds=chirpGain;ambientNodes._water=water;ambientNodes._waterFilter=waterFilter;
+  }catch(e){}
+}
+let lastAmbientUpdate=0;
+function updateAmbient(now){
+  if(!ambientCtx||ambientCtx.state==='closed')return;
+  if(now-lastAmbientUpdate<2000)return;lastAmbientUpdate=now;
+  let avgVit=0,count=0,waterNear=false;
+  hexes.forEach(h=>{if(h.biome!=='wasser'){avgVit+=h.vit;count++;}else waterNear=true;});
+  avgVit=count>0?avgVit/count:50;
+  const vitNorm=Math.max(0,Math.min(1,avgVit/100));
+  ambientNodes.birds.gain.setTargetAtTime(vitNorm*0.12,ambientCtx.currentTime,2);
+  ambientNodes.water.gain.setTargetAtTime(waterNear?0.08:0,ambientCtx.currentTime,2);
+  ambientNodes.wind.gain.setTargetAtTime((1-vitNorm)*0.15+(waterNear?0.02:0),ambientCtx.currentTime,2);
+}
 let buildMode=null,selHex=null;
 function affordable(c){for(const r in c)if(RES[r]<c[r])return false;return true;}
 function costStr(c){return Object.keys(c).map(r=>`<span class="${RES[r]<c[r]?'miss':''}">${RESMETA[r][0]}${c[r]}</span>`).join(' ');}
@@ -679,20 +729,20 @@ function updateHUD(){
   document.getElementById('chapEv').textContent=c.ev;document.getElementById('chapName').textContent=c.name;
   document.getElementById('chapStory').textContent=c.story;document.getElementById('goalTxt').textContent=g.t;
   document.getElementById('goalFill').style.width=Math.min(100,100*g.c/g.n)+'%';
-  // stock
   const sc=document.getElementById('stock');sc.innerHTML='';
   Object.keys(RESMETA).forEach(r=>{if(RES[r]>0)sc.insertAdjacentHTML('beforeend',`<div title="${RESMETA[r][1]}">${RESMETA[r][0]}<b>${Math.floor(RES[r])}</b></div>`);});
   document.getElementById('stockCap').textContent=Math.floor(used)+' / '+cap;
-  // stats
   const st=document.getElementById('stats');if(st){
-    st.innerHTML=`<div><b>Bevölkerung:</b> ${pop} | <b>Blühend:</b> ${bluehendCount}</div>
-      <div><b>Renaturierte Zonen:</b> ${renaturedCount} | <b>Autarkjahre:</b> ${autarkYears}</div>
+    const satPct=Math.round(satisfaction*100);
+    st.innerHTML=`<div><b>Prestige-Stufe:</b> ${prestigeLevel} | <b>Bevölkerung:</b> ${pop} | <b>Blühend:</b> ${bluehendCount}</div>
+      <div><b>Zufriedenheit:</b> ${satPct}% | <b>Renaturierte Zonen:</b> ${renaturedCount} | <b>Autarkjahre:</b> ${autarkYears}</div>
       <div><b>Aktive Symbiosen:</b> ${activeSymbioses}/4 | <b>Bestrebungen:</b> ${appliedAsp.size}</div>`;
     document.getElementById('scoreAge').textContent='(Tag '+(t%YEAR_TICKS)+', Jahr '+year+')';
   }
   const al=document.getElementById('aspList');if(al){
     al.innerHTML=ASPIRATIONS.map(a=>`<div style="font-size:11px;margin:3px 0;color:${appliedAsp.has(a.id)?'var(--gold)':'var(--muted)'}">${a.icon} ${a.name}: ${appliedAsp.has(a.id)?'✓ '+a.bonus().label:a.desc}</div>`).join('');
   }
+  const satEl=document.getElementById('satFill');if(satEl)satEl.style.width=Math.round(satisfaction*100)+'%';
   renderInspector();
 }
 function renderInspector(){const el=document.getElementById('inspBody');
@@ -721,6 +771,67 @@ function renderInspector(){const el=document.getElementById('inspBody');
   } else s+=`<div class="small" style="margin-top:6px">Leeres Feld.${buildMode?' Klick erneut zum Bauen.':''}</div>`;
   el.className='';el.innerHTML=s;
 }
+function showSettings(){
+  const modal=document.getElementById('settingsModal');
+  if(!modal)return;
+  modal.style.display='flex';
+  const saved=loadSandbox()||{res:0,harsh:1,raub:1};
+  document.getElementById('prefRes').value=saved.res;
+  document.getElementById('seasonHarsh').value=saved.harsh;
+  document.getElementById('raubbauBonus').value=saved.raub;
+  updateSettingsLabels();
+}
+function hideSettings(){document.getElementById('settingsModal').style.display='none';}
+function updateSettingsLabels(){
+  const resLbl=['Normal','Reich','Knapp'][parseInt(document.getElementById('prefRes').value)];
+  const harshLbl=['Mild','Normal','Hart'][parseInt(document.getElementById('seasonHarsh').value)];
+  const raubLbl=['Schwach','Normal','Stark'][parseInt(document.getElementById('raubbauBonus').value)];
+  document.getElementById('prefResLabel').textContent=resLbl;
+  document.getElementById('seasonHarshLabel').textContent=harshLbl;
+  document.getElementById('raubbauLabel').textContent=raubLbl;
+}
+function applySandbox(){
+  const res=parseInt(document.getElementById('prefRes').value);
+  const harsh=parseInt(document.getElementById('seasonHarsh').value);
+  const raub=parseInt(document.getElementById('raubbauBonus').value);
+  saveSandbox({res,harsh,raub});
+  hideSettings();
+  initAmbient();
+  startNewGame({res,harsh,raub});
+}
+function applySandboxSettings(s){
+  const mults=[0.6,1,1.6][s.res||1];
+  RES.wood=Math.floor(400*mults);RES.vegetables=Math.floor(240*mults);RES.stone=Math.floor(120*mults);RES.planks=Math.floor(80*mults);
+  const hIdx=s.harsh||1;
+  SEASON_FIELD[0]=[1.3,1.2,1.1][hIdx];
+  SEASON_FIELD[1]=[1.15,1.1,1.0][hIdx];
+  SEASON_FIELD[2]=[1.0,1.0,0.85][hIdx];
+  SEASON_FIELD[3]=[0.3,0.2,0.1][hIdx];
+  SEASON_REGEN[0]=[1.3,1.2,1.1][hIdx];
+  SEASON_REGEN[1]=[1.15,1.1,1.0][hIdx];
+  SEASON_REGEN[2]=[1.0,1.0,0.85][hIdx];
+  SEASON_REGEN[3]=[0.3,0.2,0.1][hIdx];
+  baseBuildMult=1+((s.raub||1)-1)*0.5;
+  buildMult=baseBuildMult*(appliedAsp.has('wuselnde_stadt')?0.9:1);
+}
+function startNewGame(settings){
+  prestigeLevel=0;appliedAsp.clear();baseBuildMult=1;buildMult=1;renaturedCount=0;autarkYears=0;activeSymbioses=0;hungerFreeStreak=0;chap=0;satisfaction=1;
+  hexes.forEach(h=>{h.vit=95;h.b=null;h.lvl=1;h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;});
+  Object.keys(RES).forEach(r=>RES[r]=0);
+  const startUnlocks=['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof'];
+  unlocked.clear();startUnlocks.forEach(u=>unlocked.add(u));CH[0].unlock.forEach(u=>unlocked.add(u));
+  pop=8;jobsUsed=0;hunger=0;
+  precompute();
+  applySandboxSettings(settings);
+  if(L0){L0.b='lager';L0.lvl=1;L0.biome='lichtung';L0.vit=95;}
+  const L1=hexes.get(key(2,-3));if(L1){L1.b='wohnstaette';L1.lvl=1;L1.biome='lichtung';L1.vit=90;}
+  const L2=hexes.get(key(3,-4));if(L2){L2.b='weg';L2.lvl=1;L2.biome='lichtung';L2.vit=90;}
+  recomputeNetwork();updateHUD();networkDirty=true;buildPalette();hudDirty=true;selHex=L0;renderInspector();
+}
+function toggleBuildbar(){
+  const bb=document.getElementById('buildbar'),ov=document.getElementById('overlay'),rt=document.getElementById('right');
+  const open=bb.classList.toggle('open');rt.classList.remove('open');ov.classList.toggle('show',open);
+}
 function doUpgrade(){const h=selHex;if(!h||!h.b)return;const d=DEFS[h.b];if(!d||h.lvl>=d.max)return;const cost=scaledCost(d,h.lvl);
   if(!affordable(cost))return;if(!h.connected)return;for(const r in cost)if(!(r in RES)||RES[r]<(cost[r]||0))return;
   for(const r in cost)RES[r]-=cost[r];h.lvl++;toast(d.name+' → Stufe '+h.lvl);hudDirty=true;selHex=h;renderInspector();}
@@ -729,16 +840,18 @@ function doDemolish(){if(!selHex||!selHex.b||selHex.b==='lager')return;const d=D
   generateDeco(selHex,srand((selHex.q*73856093^selHex.r*19349663)>>>0));networkDirty=true;hudDirty=true;}
 function doPrestige(){
   if(!confirm('Neuer Anfang? Du behältst alle Bestrebungen als dauerhafte Boni, startest aber mit einer frischen Kolonie.'))return;
-  appliedAsp.clear();buildMult=1;renaturedCount=0;autarkYears=0;activeSymbioses=0;hungerFreeStreak=0;
+  appliedAsp.clear();baseBuildMult=1;buildMult=1;renaturedCount=0;autarkYears=0;activeSymbioses=0;hungerFreeStreak=0;
+  prestigeLevel++;
   hexes.forEach(h=>{if(h.b&&h.b!=='lager'){h.b=null;h.lvl=1;generateDeco(h,srand((h.q*73856093^h.r*19349663)>>>0));}});
   Object.keys(RES).forEach(r=>RES[r]=0);
   const bonus=appliedAsp.size*100;
-  RES.wood=400+bonus;RES.vegetables=240+bonus;RES.stone=120+bonus;RES.planks=80+bonus;
+  const preMult=1+prestigeLevel*0.2;
+  RES.wood=Math.floor((400+bonus)*preMult);RES.vegetables=Math.floor((240+bonus)*preMult);RES.stone=Math.floor((120+bonus)*preMult);RES.planks=Math.floor((80+bonus)*preMult);
   pop=8;jobsUsed=0;hunger=0;chap=0;satisfaction=1;
   const startUnlocks=['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof'];
   const newUnlocked=new Set(startUnlocks);CH[0].unlock.forEach(u=>newUnlocked.add(u));
   unlocked.clear();startUnlocks.forEach(u=>unlocked.add(u));CH[0].unlock.forEach(u=>unlocked.add(u));
-  networkDirty=true;buildPalette();hudDirty=true;toast('👑 Neuer Anfang — die Bestrebungen stärken dich!');
+  networkDirty=true;buildPalette();hudDirty=true;toast('👑 Neuer Anfang (Stufe '+prestigeLevel+') — die Bestrebungen stärken dich!');
 }
 
 // ---------------- Banner / toast ----------------
@@ -769,9 +882,6 @@ function place(h,k){const d=DEFS[k];
     else if(d.minVit)toast(d.name+' braucht Vitalität ≥ '+d.minVit+' (aktuell: '+Math.round(h.vit)+').');
     else toast('Zu wenig Ressourcen.');return;}
   for(const r in d.cost)RES[r]-=d.cost[r];h.b=k;h.lvl=1;h.deco=[];networkDirty=true;selHex=h;hudDirty=true;buildMode=null;buildPalette();}
-function toggleBuildbar(){
-  const bb=document.getElementById('buildbar'),ov=document.getElementById('overlay'),rt=document.getElementById('right');
-  const open=bb.classList.toggle('open');rt.classList.remove('open');ov.classList.toggle('show',open);}
 function toggleRight(){
   const rt=document.getElementById('right'),ov=document.getElementById('overlay'),bb=document.getElementById('buildbar');
   const open=rt.classList.toggle('open');bb.classList.remove('open');ov.classList.toggle('show',open);}
@@ -1099,7 +1209,7 @@ function draw(){
   ctx.fillStyle=dayOverlays[dayPhase]+dayAlphas[dayPhase]+')';ctx.fillRect(0,0,W,Hh);
 }
 let lastFrame=performance.now();
-function frame(now){const dt=Math.min(50,now-lastFrame);lastFrame=now;if(!paused){stepCarriers(dt);stepCritters(dt);stepVillagers(dt);}if(hudDirty&&now-lastHudTime>80){lastHudTime=now;hudDirty=false;updateHUD();}draw();requestAnimationFrame(frame);}
+function frame(now){const dt=Math.min(50,now-lastFrame);lastFrame=now;if(!paused){stepCarriers(dt);stepCritters(dt);stepVillagers(dt);}if(hudDirty&&now-lastHudTime>80){lastHudTime=now;hudDirty=false;updateHUD();}updateAmbient(now);draw();requestAnimationFrame(frame);}
 setInterval(()=>{if(!paused)simTick();},2400);
 // Siedler-Population regelmäßig an tatsächliche Bevölkerung anpassen (beim Tick)
 setInterval(()=>{if(!paused)syncVillagers();},3000);
@@ -1114,7 +1224,7 @@ function captureState(){
   hexes.forEach((h,k)=>{hexData[k]={q:h.q,r:h.r,biome:h.biome,vit:h.vit,b:h.b,lvl:h.lvl};});
   return {
     t,year,seasonIdx,dayTime,pop,hunger,satisfaction,bluehendCount,jobsUsed,
-    RES:{...RES},unlocked:[...unlocked],chap,
+    RES:{...RES},unlocked:[...unlocked],chap,prestigeLevel,baseBuildMult,
     appliedAsp:[...appliedAsp],renaturedCount,autarkYears,activeSymbioses,hungerFreeStreak,buildMult,
     hexData,cam:{...cam},showVitLayer
   };
@@ -1124,7 +1234,7 @@ function applyState(s){
   satisfaction=s.satisfaction;bluehendCount=s.bluehendCount;jobsUsed=s.jobsUsed;
   Object.assign(RES,s.RES);
   unlocked.clear();s.unlocked.forEach(u=>unlocked.add(u));
-  chap=s.chap;
+  chap=s.chap;prestigeLevel=s.prestigeLevel||0;baseBuildMult=s.baseBuildMult||1;
   appliedAsp.clear();s.appliedAsp.forEach(a=>appliedAsp.add(a));
   renaturedCount=s.renaturedCount;autarkYears=s.autarkYears;activeSymbioses=s.activeSymbioses;
   hungerFreeStreak=s.hungerFreeStreak;buildMult=s.buildMult;
@@ -1187,20 +1297,22 @@ function buildTopbarSaveControls(){
 buildTopbar();buildPalette();
 buildTopbarSaveControls();
 resize();  cam.x=0; cam.y=0;
-  precompute();const L0=hexes.get(key(3,-3));if(L0){L0.b='lager';L0.lvl=1;L0.biome='lichtung';L0.vit=95;}const L1=hexes.get(key(2,-3));if(L1){L1.b='wohnstaette';L1.lvl=1;L1.biome='lichtung';L1.vit=90;}const L2=hexes.get(key(3,-4));if(L2){L2.b='weg';L2.lvl=1;L2.biome='lichtung';L2.vit=90;}recomputeNetwork();updateHUD();
-syncVillagers(); // erste Siedler spawnen lassen
-selHex=L0;renderInspector();
-setTimeout(()=>{resize();draw();},30);
-showBanner('Willkommen','Wurzelwerk',
-  'Baue eine Kolonie in Symbiose mit dem lebenden Hain. Starte mit 🪓 Holzfäller & 🥕 Gemüsehof, verbinde sie per · Wegen mit dem Lager 📦, und bau 🛖 Siedlerhütten für Unterkunft. Jedes Gebäude lässt sich ausbauen — höhere Stufen kosten brutal, liefern aber massiv. Erfülle die Kapitelziele, um den ganzen Tech-Baum freizuschalten!',
-  '7 Evolutions-Kapitel · Monumente · Aspirationen · 3 Savegames · Autosave');
-setInterval(()=>{if(!paused&&t%120===0)autoSave();},2400);
-requestAnimationFrame(function firstFrame(){
-  resize();
-  draw();
-  initBGM();
-  requestAnimationFrame(frame);
-});
+const slots=getSaveSlots();
+if(slots.slots[0]){
+  applyState(slots.slots[0]);
+  precompute();
+  recomputeNetwork();updateHUD();buildPalette();networkDirty=true;hudDirty=true;
+  syncVillagers();selHex=hexes.get(key(3,-3));renderInspector();
+  setTimeout(()=>{resize();draw();},30);
+  showBanner('Willkommen zurück','Wurzelwerk','Deine Kolonie erwartet dich.','Prestige-Stufe: '+prestigeLevel);
+  setInterval(()=>{if(!paused&&t%120===0)autoSave();},2400);
+  requestAnimationFrame(function firstFrame(){resize();draw();initBGM();initAmbient();requestAnimationFrame(frame);});
+}else{
+  precompute();
+  showSettings();
+  setInterval(()=>{if(!paused&&t%120===0)autoSave();},2400);
+  requestAnimationFrame(function firstFrame(){resize();draw();initBGM();requestAnimationFrame(frame);});
+}
 </script>
 <script>
 if ('serviceWorker' in navigator) {
