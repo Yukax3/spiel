@@ -95,11 +95,12 @@
   #chapName{font-size:18px;font-weight:700;color:var(--text);margin:4px 0 8px;letter-spacing:0.2px;
     text-shadow:0 2px 8px rgba(0,0,0,0.3)}
   #chapStory{font-size:12.5px;color:var(--muted);line-height:1.55;margin:8px 0 14px}
-  #goalRow{display:flex;align-items:center;gap:10px;font-size:12.5px}
-  #goalBar{flex:1;height:10px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
-    overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3)}
+  #goalRow{display:flex;align-items:center;gap:10px;font-size:12.5px;margin-top:8px}
+  #goalBar{flex:1;height:12px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
+    overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);position:relative}
   #goalFill{height:100%;width:0;background:linear-gradient(90deg,#7cb868,#e0c055);border-radius:5px;
-    transition:width .4s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 10px rgba(124,184,104,0.3)}
+    transition:width .5s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 12px rgba(124,184,104,0.4)}
+  #goalTxt{font-size:11.5px;color:var(--muted);min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
   .vbar{height:10px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
     overflow:hidden;margin:6px 0;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3)}
   .vbar > div{height:100%;transition:width .3s}
@@ -177,8 +178,10 @@
   <div id="left">
     <div id="topbar"></div>
     <div id="stage">
-      <canvas id="cv"></canvas>
-      <div id="toast"></div>
+        <canvas id="cv"></canvas>
+        <div id="toast"></div>
+        <audio id="bgm" preload="auto" loop><source src="audio/ost.mp3" type="audio/mpeg"></audio>
+
       <div id="banner"><div id="bannerInner">
         <div class="ev" id="bnEv">Evolution</div>
         <h2 id="bnTitle"></h2>
@@ -227,6 +230,8 @@
 const SQ3=Math.sqrt(3);
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 let SIZE=34,cam={x:0,y:0,zoom:1}; let networkDirty=false,hudDirty=true,lastHudTime=0;
+let bgmMuted=localStorage.getItem('wz_bgm_muted')==='1';
+let bgmStarted=false;
 const ELEV={wasser:0,aue:.8,lichtung:1,hain:1.2,fels:3.8};
 
 // ---------------- Resources ----------------
@@ -237,7 +242,7 @@ const RESMETA={
   bread:['🍞','Brot'], vegetables:['🥕','Gemüse'], water:['💧','Wasser'], milk:['🥛','Milch'],
   cheese:['🧀','Käse'], wool:['🧶','Wolle'], cloth:['🧵','Stoff'], clothes:['👕','Kleidung'],
   fish:['🐟','Fisch'], meat:['🍖','Fleisch'], furniture:['🪑','Möbel'], herbs:['🌿','Kräuter'],
-  honey:['🍯','Honig'], remedy:['⚗️','Heiltrank']
+  honey:['🍯','Honig'], remedy:['⚗️','Heiltrank'], essence:['✨','Essenz'], medicine:['💊','Medizin']
 };
 const RES={}; Object.keys(RESMETA).forEach(k=>RES[k]=0);
 RES.wood=200; RES.vegetables=120; RES.stone=60; RES.planks=20;
@@ -296,15 +301,15 @@ const DEFS={
   eselstation:D({name:'Eselstation',em:'🐴',cat:'Logistik',cost:{wood:18,planks:10},jobs:1,out:{tools:0.3},vit:0.2,desc:'Träger-Schnellboote. Massentransporte & Werkzeug.'}),
   marktplatz:D({name:'Marktplatz',em:'🏪',cat:'Basis',cost:{wood:12,planks:8},jobs:1,out:{},vit:0.5,neigh:1.5,desc:'Handelszentrum. Verteilt Waren effizient und verbindet Lager.'}),
   teich:D({name:'Teich',em:'🏞️',cat:'Natur',cost:{wood:8,stone:4},vit:2.5,neigh:1.8,desc:'Wasserfläche. Lockert Vieh an, erhöht Fischertrag.'}),
-  siedlerhuette:D({name:'Siedlerhütte',em:'🛖',cat:'Wohnen',cost:{wood:6},jobs:0,max:3,caps:[4,10,20],desc:'Einfache Behausung. Schnell gebaut, günstig. 3 Stufen.'}),
-  werkstatt:D({name:'Werkstatt',em:'🔨',cat:'Holz',cost:{wood:8,planks:4},jobs:1,out:{tools:0.4},vit:-0.3,desc:'Kleine Handwerksstube. Liefert langsam aber stetig Werkzeug.'}),
-  feldsteinbruch:D({name:'Feldsteinbruch',em:'🪨',cat:'Stein & Erz',cost:{wood:6},biomes:['lichtung','aue'],eco:true,out:{stone:0.9},vit:-0.8,desc:'Oberflächenstein. Schnell aufgebaut, geringere Vitalitätskosten als Tiefbergbau.'}),
+  heilzelt:D({name:'Heilzelt',em:'🏕️',cat:'Natur',cost:{herbs:8,wood:6},biomes:['sumpf','hain','aue'],jobs:1,out:{essence:0.6},vit:1.2,desc:'Sammelt heilende Essenz aus Sumpf und Kräutern. Anteiligt an der Medizin-Kette.'}),
+  apothek:D({name:'Apotheke',em:'🔮',cat:'Sozial',cost:{pottery:10,essence:12},jobs:2,out:{medicine:0.8},desc:'Verwandelt Essenz zu Medizin. Reduziert Abwanderung.'}),
   // --- Monumente (Endgame) ---
   hainbaum:D({name:'Hainbaum',em:'🌳',cat:'Monument',cost:{wood:150,planks:60,stone:50,bricks:30,remedy:10},jobs:0,max:1,vit:8,neigh:12,desc:'Der Große Hainbaum. Zentrum der Symbiose. +12 Vitalität im weiten Umkreis, epische Optik.'}),
   kristall:D({name:'Kristallturm',em:'🔮',cat:'Monument',cost:{iron:50,tools:20,bricks:70,stone:80,remedy:8},jobs:0,max:1,vit:5,neigh:8,desc:'Kristalliner Turm der Weisheit. Verstärkt alle Gebäude im Umkreis +10%.'}),
   erdzeichen:D({name:'Erdzeichen',em:'🪨',cat:'Monument',cost:{stone:150,bricks:100,iron:20,tools:10},jobs:0,max:1,vit:10,neigh:15,desc:'Uraltes Erdzeichen. Heilt Ödland und verwandelt es zurück in Hain.'}),
+  medizintempel:D({name:'Medizintempel',em:'🏥',cat:'Medizin',cost:{essence:50,medicine:30,bricks:40,remedy:20},jobs:3,max:1,vit:5,neigh:10,out:{medicine:1.5},desc:'Heiligtum der Medizin. Erzeugt kontinuierlich Medizin aus reiner Essenz. Endgame-Gebäude.'}),
 };
-const CATS=['Basis','Wohnen','Holz','Stein & Erz','Acker','Vieh & Stoff','Natur','Sozial','Logistik','Monument'];
+const CATS=['Basis','Wohnen','Holz','Stein & Erz','Acker','Vieh & Stoff','Natur','Sozial','Medizin','Logistik','Monument'];
 
 // ---------------- Map ----------------
 const RAD=20,hexes=new Map();
@@ -317,8 +322,11 @@ function biomeAt(q,r){
   if(q>12&&r<-8) return 'wasser';
   if(q<-12&&r>8) return 'wasser';
   if(Math.sin(q*0.25)*Math.cos(r*0.3)>0.85&&dist>6) return 'wasser';
-  if(n>0.8) return 'lichtung';
-  if(n<-0.7) return 'aue';
+  if(Math.sin(q*1.1)*Math.sin(r*0.9)>0.55&&dist>10) return 'frost';
+  if(Math.sin(q*0.6+r*0.7)>0.9&&dist>7&&Math.cos(q*0.3-r*0.4)>0.2) return 'sumpf';
+  if(Math.sin(q*0.3)*Math.cos(r*0.5)>0.75&&dist>9) return 'wuiste';
+  if(n>0.85&&Math.sin(q*0.3+r*0.2)>0.3) return 'lichtung';
+  if(n<-0.75&&dist<13) return 'aue';
   return 'hain';
 }
 for(let q=-RAD;q<=RAD;q++)for(let r=-RAD;r<=RAD;r++){
@@ -326,9 +334,6 @@ for(let q=-RAD;q<=RAD;q++)for(let r=-RAD;r<=RAD;r++){
   const b=biomeAt(q,r);
   hexes.set(key(q,r),{q,r,biome:b,vit:b==='fels'?55:(b==='wasser'?100:90),b:null,lvl:1,connected:false});
 }
-const L0=hexes.get(key(3,-3)); L0.b='lager'; L0.lvl=1; L0.biome='lichtung'; L0.vit=95;
-const L1=hexes.get(key(2,-3)); L1.b='siedlerhuette'; L1.lvl=1; L1.biome='lichtung'; L1.vit=90;
-const L2=hexes.get(key(3,-4)); L2.b='weg'; L2.lvl=1; L2.biome='lichtung'; L2.vit=90;
 let SORTED=[];
 function srand(seed){seed=seed>>>0||1;return function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};}
 function precompute(){
@@ -593,11 +598,11 @@ function stepCarriers(dt){for(let i=carriers.length-1;i>=0;i--){const c=carriers
 // ---------------- Chapters ----------------
 const CH=[
  {ev:'Kapitel I',name:'Das Erwachen',story:'Eine Handvoll Siedler erreicht den Hain. Schlag Holz, bau Gemüsehöfe und verbinde alles mit Wegen zum Lager.',
-  goal:()=>({c:pop,n:8,t:'Siedler '+pop+' / 8'}),unlock:['saegewerk','foerster','getreidefeld','muehle','backhaus','brunnen','siedlerhuette'],
+  goal:()=>({c:pop,n:8,t:'Siedler '+pop+' / 8'}),unlock:['saegewerk','foerster','getreidefeld','muehle','backhaus','brunnen','wohnstaette'],
    done:'Aus Sammlern werden Pflanzer. Bretter und Brot warten.'},
   {ev:'Kapitel II',name:'Wurzeln schlagen',story:'Sägewerk, Mühle, Backhaus — die erste echte Kette. Pflanz mit dem Förster nach, was du nimmst.',
    goal:()=>({c:Math.min(pop,16)+(RES.planks>=20?80:0)+(RES.bread>=20?80:0),n:176,t:'Siedler 16 ('+pop+') + Bretter '+Math.floor(RES.planks)+'/20 + Brot '+Math.floor(RES.bread)+'/20'}),
-    unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich','feldsteinbruch'],
+    unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich'],
   done:'Stein, Lehm und Vieh erweitern dein Reich.'},
  {ev:'Kapitel III',name:'Handwerk & Vieh',story:'Brennöfen und Weiden: Ziegel, Töpferware, Milch und Käse. Bau das Lager aus, bevor es überquillt.',
   goal:()=>({c:Math.min(pop,28)+(RES.cheese>=20?70:0)+(RES.bricks>=25?70:0),n:168,t:'Siedler 28 ('+pop+') + Käse '+Math.floor(RES.cheese)+'/20 + Ziegel '+Math.floor(RES.bricks)+'/25'}),
@@ -608,17 +613,17 @@ const CH=[
   unlock:['schaffarm','weberei','schneiderei','tischlerei','jagdhuette','fischerhuette'],
   done:'Stoff, Kleidung und Möbel — dein Volk lebt im Wohlstand.'},
  {ev:'Kapitel V',name:'Wohlstand',story:'Kleidung und Möbel heben den Lebensstandard. Wachse zur echten Stadt heran.',
-  goal:()=>({c:Math.min(pop,64)+(RES.clothes>=18?50:0)+(RES.furniture>=18?50:0),n:164,t:'Siedler 64 ('+pop+') + Kleidung '+Math.floor(RES.clothes)+'/18 + Möbel '+Math.floor(RES.furniture)+'/18'}),
-   unlock:['imkerei','kompost','kraeutergarten','sudhaus','schrein','schule','festplatz','heilstube','wildgehege','eselstation','pilznetz'],
-  done:'Nun beginnt die wahre Symbiose mit dem Hain.'},
-  {ev:'Kapitel VI',name:'Symbiose',story:'Bring den Hain zum Leuchten: viele Zonen gleichzeitig blühend (Vitalität ≥ 80) und Heiltränke im Lager.',
-   goal:()=>({c:Math.min(bluehendCount,34)+(RES.remedy>=18?100:0),n:134,t:'Blühend '+bluehendCount+'/34 + Heiltrank '+Math.floor(RES.remedy)+'/18'}),
-   unlock:[],done:'Du bist Hainmeister:in. Wald und Stadt sind eins.'},
+   goal:()=>({c:Math.min(pop,64)+(RES.clothes>=18?50:0)+(RES.furniture>=18?50:0),n:164,t:'Siedler 64 ('+pop+') + Kleidung '+Math.floor(RES.clothes)+'/18 + Möbel '+Math.floor(RES.furniture)+'/18'}),
+    unlock:['imkerei','kompost','kraeutergarten','sudhaus','schrein','schule','festplatz','heilstube','wildgehege','eselstation','pilznetz','heilzelt','apothek'],
+   done:'Nun beginnt die wahre Symbiose mit dem Hain.'},
+  {ev:'Kapitel VI',name:'Medizin',story:'Heilzelt und Apotheke erschließen die heilende Essenz des Hains. Produziere Medizin und fördere die Gesundheit deines Volkes.',
+   goal:()=>({c:Math.min(bluehendCount,34)+(RES.medicine>=25?100:0),n:150,t:'Blühend '+bluehendCount+'/34 + Medizin '+Math.floor(RES.medicine)+'/25'}),
+   unlock:['medizin_tempel'],done:'Die heilende Kraft des Hains fließt durch deine Hände.'},
   {ev:'Kapitel VII',name:'Hainmeister',story:'Freier Aufbau. Setz dir eigene Ziele — größer, grüner, vollkommen autark. Maximiere alle Stufen!',
-   goal:()=>({c:1,n:1,t:'Sandbox — frei aufbauen & grinden'}),unlock:['hainbaum','kristall','erdzeichen'],done:''}
+   goal:()=>({c:1,n:1,t:'Sandbox — frei aufbauen & grinden'}),unlock:['hainbaum','kristall','erdzeichen','medizintempel'],done:'Die Essenz des Hains erwacht.'}
 ];
 let chap=0;
-const unlocked=new Set(['weg','lager','speicher','wohnstaette','siedlerhuette','holzfaeller','gemuesehof','feldsteinbruch']);
+const unlocked=new Set(['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof']);
 function checkChapter(){if(chap>=CH.length-1)return;const g=CH[chap].goal();if(g.c>=g.n)advance();}
 function advance(){const c=CH[chap];c.unlock.forEach(u=>unlocked.add(u));chap++;const n=CH[chap];
   showBanner(c.ev+' abgeschlossen',n.name,c.done,
@@ -634,7 +639,15 @@ function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='
   tb.insertAdjacentHTML('beforeend',`<div id="season"></div>`);
   tb.insertAdjacentHTML('beforeend',`<div id="vitToggle" style="margin-left:10px;font-size:11px;cursor:pointer;opacity:${showVitLayer?1:0.5};border:1px solid ${showVitLayer?'var(--gold)':'var(--line2)'};padding:2px 6px;border-radius:4px;user-select:none" onclick="window._toggleVitLayer()">🧪 V</div>`);
   if(chap>=CH.length-1) tb.insertAdjacentHTML('beforeend',`<div id="prestigeBtn" style="margin-left:10px;font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="doPrestige()">👑 Neuer Anfang</div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="saveBtn" style="margin-left:10px;font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickSave()">💾 Save</div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="loadBtn" style="margin-left:6px;font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickLoad()">📂 Load</div>`);
+  tb.insertAdjacentHTML('beforeend',`<div id="bgmToggle" style="margin-left:6px;font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="window._toggleBGM()">🎵</div>`);
 }
+function toggleBGM(){bgmMuted=!bgmMuted;const bgm=document.getElementById('bgm');bgm.volume=bgmMuted?0:0.6;if(!bgmMuted)bgm.play().catch(()=>{});updateBgmBtn();localStorage.setItem('wz_bgm_muted',bgmMuted?'1':'0');}
+function updateBgmBtn(){const btn=document.getElementById('bgmToggle');if(btn)btn.textContent=bgmMuted?'🔇':'🎵';}
+function initBGM(){updateBgmBtn();if(bgmMuted){document.getElementById('bgm').volume=0;return;}const startBGM=()=>{if(bgmStarted)return;bgmStarted=true;document.getElementById('bgm').play().catch(()=>{});document.removeEventListener('click',startBGM);};document.addEventListener('click',startBGM);}
+window._toggleBGM=toggleBGM;
+
 let buildMode=null,selHex=null;
 function affordable(c){for(const r in c)if(RES[r]<c[r])return false;return true;}
 function costStr(c){return Object.keys(c).map(r=>`<span class="${RES[r]<c[r]?'miss':''}">${RESMETA[r][0]}${c[r]}</span>`).join(' ');}
@@ -722,7 +735,7 @@ function doPrestige(){
   const bonus=appliedAsp.size*100;
   RES.wood=400+bonus;RES.vegetables=240+bonus;RES.stone=120+bonus;RES.planks=80+bonus;
   pop=8;jobsUsed=0;hunger=0;chap=0;satisfaction=1;
-  const startUnlocks=['weg','lager','speicher','wohnstaette','siedlerhuette','holzfaeller','gemuesehof','feldsteinbruch'];
+  const startUnlocks=['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof'];
   const newUnlocked=new Set(startUnlocks);CH[0].unlock.forEach(u=>newUnlocked.add(u));
   unlocked.clear();startUnlocks.forEach(u=>unlocked.add(u));CH[0].unlock.forEach(u=>unlocked.add(u));
   networkDirty=true;buildPalette();hudDirty=true;toast('👑 Neuer Anfang — die Bestrebungen stärken dich!');
@@ -786,12 +799,12 @@ let hoverHex=null;cv.addEventListener('pointermove',e=>{if(!dragging)hoverHex=ev
 // ---------------- Render ----------------
 let dpr=window.devicePixelRatio||1;
 function resize(){const st=document.getElementById('stage');dpr=window.devicePixelRatio||1;
-  const w=st.clientWidth||(window.innerWidth-248-320);dpr=Math.min(dpr,2);
+  const w=st.clientWidth||window.innerWidth;dpr=Math.min(dpr,2);
   const h=st.clientHeight||(window.innerHeight-60);
   cv.width=Math.max(1,Math.floor(w*dpr));cv.height=Math.max(1,Math.floor(h*dpr));cv.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
 window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,50));
-const BIO={hain:[49,111,61],aue:[111,144,77],fels:[119,119,110],lichtung:[134,163,83],wasser:[35,94,116]},DEAD=[120,93,62];
-function vcol(b,v){if(b==='wasser')return'rgb(37,111,138)';const t=Math.max(0,Math.min(1,v/100)),H=BIO[b];
+const BIO={hain:[49,111,61],aue:[111,144,77],fels:[119,119,110],lichtung:[134,163,83],wasser:[35,94,116],frost:[180,200,220],sumpf:[80,100,70],wuiste:[160,140,100]},DEAD=[120,93,62];
+function vcol(b,v){if(b==='wasser')return'rgb(37,111,138)';if(b==='frost')return`rgb(${Math.round(140+(180-140)*v/100)},${Math.round(160+(200-160)*v/100)},${Math.round(180+(220-180)*v/100)})`;if(b==='sumpf')return`rgb(${Math.round(60+(80-60)*v/100)},${Math.round(80+(100-80)*v/100)},${Math.round(55+(70-55)*v/100)})`;if(b==='wuiste')return`rgb(${Math.round(130+(160-130)*v/100)},${Math.round(110+(140-110)*v/100)},${Math.round(80+(100-80)*v/100)})`;const t=Math.max(0,Math.min(1,v/100)),H=BIO[b];
   return`rgb(${Math.round(DEAD[0]+(H[0]-DEAD[0])*t)},${Math.round(DEAD[1]+(H[1]-DEAD[1])*t)},${Math.round(DEAD[2]+(H[2]-DEAD[2])*t)})`;}
 function shade(c,f){let m;if(c[0]==='#'){const n=parseInt(c.slice(1),16);m=[n>>16&255,n>>8&255,n&255];}else m=c.match(/\d+/g).map(Number);
   return`rgb(${Math.max(0,Math.min(255,Math.round(m[0]*f)))},${Math.max(0,Math.min(255,Math.round(m[1]*f)))},${Math.max(0,Math.min(255,Math.round(m[2]*f)))})`;}
@@ -1139,6 +1152,8 @@ function deleteGame(slotIdx){
   persistSaveSlots(slots);toast('🗑️ Gelöscht');
 }
 function autoSave(){saveGame(0,SLOT_NAMES[0]+' (Auto)');}
+function quickSave(){saveGame(0,SLOT_NAMES[0]+' (Quick)');}
+function quickLoad(){loadGame(0);}
 
 // ---------------- UI-Erweiterungen für Save/Load ----------------
 function buildTopbarSaveControls(){
@@ -1172,7 +1187,7 @@ function buildTopbarSaveControls(){
 buildTopbar();buildPalette();
 buildTopbarSaveControls();
 resize();  cam.x=0; cam.y=0;
-  precompute();recomputeNetwork();updateHUD();
+  precompute();const L0=hexes.get(key(3,-3));if(L0){L0.b='lager';L0.lvl=1;L0.biome='lichtung';L0.vit=95;}const L1=hexes.get(key(2,-3));if(L1){L1.b='wohnstaette';L1.lvl=1;L1.biome='lichtung';L1.vit=90;}const L2=hexes.get(key(3,-4));if(L2){L2.b='weg';L2.lvl=1;L2.biome='lichtung';L2.vit=90;}recomputeNetwork();updateHUD();
 syncVillagers(); // erste Siedler spawnen lassen
 selHex=L0;renderInspector();
 setTimeout(()=>{resize();draw();},30);
@@ -1183,6 +1198,7 @@ setInterval(()=>{if(!paused&&t%120===0)autoSave();},2400);
 requestAnimationFrame(function firstFrame(){
   resize();
   draw();
+  initBGM();
   requestAnimationFrame(frame);
 });
 </script>
