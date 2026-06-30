@@ -1162,7 +1162,7 @@ function draw(){
   ctx.strokeStyle='rgba(229,238,215,.18)';ctx.lineWidth=2;
   for(let i=0;i<9;i++){const y=-RAD*SIZE*.42+i*SIZE*.32+Math.sin(tnow*.55+i)*4;ctx.beginPath();ctx.moveTo(-rr*.7,y);ctx.bezierCurveTo(-rr*.25,y+7,rr*.2,y-7,rr*.7,y+1);ctx.stroke();}
   ctx.save();
-  ctx.filter='blur(6px)';
+  ctx.filter='blur('+Math.min(22,6/cam.zoom)+'px)';
   for(const h of SORTED){const bx=h.px.x,by=h.px.y-h.elev;if(Math.abs(bx+camX)>VIEW_W||Math.abs(by+camY)>VIEW_H)continue;drawTile(h);}
   ctx.restore();
   drawTerrainWash();
