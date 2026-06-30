@@ -296,6 +296,9 @@ const DEFS={
   eselstation:D({name:'Eselstation',em:'🐴',cat:'Logistik',cost:{wood:18,planks:10},jobs:1,out:{tools:0.3},vit:0.2,desc:'Träger-Schnellboote. Massentransporte & Werkzeug.'}),
   marktplatz:D({name:'Marktplatz',em:'🏪',cat:'Basis',cost:{wood:12,planks:8},jobs:1,out:{},vit:0.5,neigh:1.5,desc:'Handelszentrum. Verteilt Waren effizient und verbindet Lager.'}),
   teich:D({name:'Teich',em:'🏞️',cat:'Natur',cost:{wood:8,stone:4},vit:2.5,neigh:1.8,desc:'Wasserfläche. Lockert Vieh an, erhöht Fischertrag.'}),
+  siedlerhuette:D({name:'Siedlerhütte',em:'🛖',cat:'Wohnen',cost:{wood:6},jobs:0,max:3,caps:[4,10,20],desc:'Einfache Behausung. Schnell gebaut, günstig. 3 Stufen.'}),
+  werkstatt:D({name:'Werkstatt',em:'🔨',cat:'Holz',cost:{wood:8,planks:4},jobs:1,out:{tools:0.4},vit:-0.3,desc:'Kleine Handwerksstube. Liefert langsam aber stetig Werkzeug.'}),
+  feldsteinbruch:D({name:'Feldsteinbruch',em:'🪨',cat:'Stein & Erz',cost:{wood:6},biomes:['lichtung','aue'],eco:true,out:{stone:0.9},vit:-0.8,desc:'Oberflächenstein. Schnell aufgebaut, geringere Vitalitätskosten als Tiefbergbau.'}),
   // --- Monumente (Endgame) ---
   hainbaum:D({name:'Hainbaum',em:'🌳',cat:'Monument',cost:{wood:150,planks:60,stone:50,bricks:30,remedy:10},jobs:0,max:1,vit:8,neigh:12,desc:'Der Große Hainbaum. Zentrum der Symbiose. +12 Vitalität im weiten Umkreis, epische Optik.'}),
   kristall:D({name:'Kristallturm',em:'🔮',cat:'Monument',cost:{iron:50,tools:20,bricks:70,stone:80,remedy:8},jobs:0,max:1,vit:5,neigh:8,desc:'Kristalliner Turm der Weisheit. Verstärkt alle Gebäude im Umkreis +10%.'}),
@@ -324,6 +327,8 @@ for(let q=-RAD;q<=RAD;q++)for(let r=-RAD;r<=RAD;r++){
   hexes.set(key(q,r),{q,r,biome:b,vit:b==='fels'?55:(b==='wasser'?100:90),b:null,lvl:1,connected:false});
 }
 const L0=hexes.get(key(3,-3)); L0.b='lager'; L0.lvl=1; L0.biome='lichtung'; L0.vit=95;
+const L1=hexes.get(key(2,-3)); L1.b='siedlerhuette'; L1.lvl=1; L1.biome='lichtung'; L1.vit=90;
+const L2=hexes.get(key(3,-4)); L2.b='weg'; L2.lvl=1; L2.biome='lichtung'; L2.vit=90;
 let SORTED=[];
 function srand(seed){seed=seed>>>0||1;return function(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};}
 function precompute(){
@@ -516,7 +521,7 @@ function simTick(){
     sat=Math.max(0.35,sat);
     satisfaction=sat;
     const interval=Math.max(5,Math.round((14-variety*2)*sat));
-    if(pop<hc&&ft>pop*sat*1.5&&variety>=2&&t%interval===0&&Math.random()<sat)pop++;
+    if(pop<hc&&ft>pop*sat*1.5&&variety>=1&&t%interval===0&&Math.random()<sat)pop++;
   } else { // Unterversorgung — mit Karenzzeit, nie unter 2 (minimale Arbeitskraft halten)
     hunger++;hungerFreeStreak=0;
     if(hunger>=12&&t%2===0&&pop>2){pop--;hunger=6;toast('⚠️ Nahrung wird knapp — ein Siedler wandert ab.');}
@@ -588,15 +593,15 @@ function stepCarriers(dt){for(let i=carriers.length-1;i>=0;i--){const c=carriers
 // ---------------- Chapters ----------------
 const CH=[
  {ev:'Kapitel I',name:'Das Erwachen',story:'Eine Handvoll Siedler erreicht den Hain. Schlag Holz, bau Gemüsehöfe und verbinde alles mit Wegen zum Lager.',
-  goal:()=>({c:pop,n:8,t:'Siedler '+pop+' / 8'}),unlock:['saegewerk','foerster','getreidefeld','muehle','backhaus','brunnen'],
-  done:'Aus Sammlern werden Pflanzer. Bretter und Brot warten.'},
- {ev:'Kapitel II',name:'Wurzeln schlagen',story:'Sägewerk, Mühle, Backhaus — die erste echte Kette. Pflanz mit dem Förster nach, was du nimmst.',
-  goal:()=>({c:Math.min(pop,16)+(RES.planks>=20?80:0)+(RES.bread>=20?80:0),n:176,t:'Siedler 16 ('+pop+') + Bretter '+Math.floor(RES.planks)+'/20 + Brot '+Math.floor(RES.bread)+'/20'}),
-   unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich'],
+  goal:()=>({c:pop,n:8,t:'Siedler '+pop+' / 8'}),unlock:['saegewerk','foerster','getreidefeld','muehle','backhaus','brunnen','siedlerhuette'],
+   done:'Aus Sammlern werden Pflanzer. Bretter und Brot warten.'},
+  {ev:'Kapitel II',name:'Wurzeln schlagen',story:'Sägewerk, Mühle, Backhaus — die erste echte Kette. Pflanz mit dem Förster nach, was du nimmst.',
+   goal:()=>({c:Math.min(pop,16)+(RES.planks>=20?80:0)+(RES.bread>=20?80:0),n:176,t:'Siedler 16 ('+pop+') + Bretter '+Math.floor(RES.planks)+'/20 + Brot '+Math.floor(RES.bread)+'/20'}),
+    unlock:['steinbruch','lehmgrube','toepferei','ziegelei','kuhfarm','kaeserei','speicher','marktplatz','teich','feldsteinbruch'],
   done:'Stein, Lehm und Vieh erweitern dein Reich.'},
  {ev:'Kapitel III',name:'Handwerk & Vieh',story:'Brennöfen und Weiden: Ziegel, Töpferware, Milch und Käse. Bau das Lager aus, bevor es überquillt.',
   goal:()=>({c:Math.min(pop,28)+(RES.cheese>=20?70:0)+(RES.bricks>=25?70:0),n:168,t:'Siedler 28 ('+pop+') + Käse '+Math.floor(RES.cheese)+'/20 + Ziegel '+Math.floor(RES.bricks)+'/25'}),
-  unlock:['koehlerei','erzmine','schmelze','schmiede'],
+  unlock:['koehlerei','erzmine','schmelze','schmiede','werkstatt'],
   done:'Die Schmieden glühen. Das Zeitalter des Eisens beginnt.'},
  {ev:'Kapitel IV',name:'Eisen & Industrie',story:'Erz → Eisen → Werkzeug. Werkzeug schaltet die anspruchsvollsten Bauten überhaupt erst auf.',
   goal:()=>({c:Math.min(pop,44)+(RES.tools>=25?90:0),n:134,t:'Siedler 44 ('+pop+') + Werkzeug '+Math.floor(RES.tools)+'/25'}),
@@ -613,7 +618,7 @@ const CH=[
    goal:()=>({c:1,n:1,t:'Sandbox — frei aufbauen & grinden'}),unlock:['hainbaum','kristall','erdzeichen'],done:''}
 ];
 let chap=0;
-const unlocked=new Set(['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof']);
+const unlocked=new Set(['weg','lager','speicher','wohnstaette','siedlerhuette','holzfaeller','gemuesehof','feldsteinbruch']);
 function checkChapter(){if(chap>=CH.length-1)return;const g=CH[chap].goal();if(g.c>=g.n)advance();}
 function advance(){const c=CH[chap];c.unlock.forEach(u=>unlocked.add(u));chap++;const n=CH[chap];
   showBanner(c.ev+' abgeschlossen',n.name,c.done,
@@ -717,7 +722,7 @@ function doPrestige(){
   const bonus=appliedAsp.size*100;
   RES.wood=400+bonus;RES.vegetables=240+bonus;RES.stone=120+bonus;RES.planks=80+bonus;
   pop=8;jobsUsed=0;hunger=0;chap=0;satisfaction=1;
-  const startUnlocks=['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof'];
+  const startUnlocks=['weg','lager','speicher','wohnstaette','siedlerhuette','holzfaeller','gemuesehof','feldsteinbruch'];
   const newUnlocked=new Set(startUnlocks);CH[0].unlock.forEach(u=>newUnlocked.add(u));
   unlocked.clear();startUnlocks.forEach(u=>unlocked.add(u));CH[0].unlock.forEach(u=>unlocked.add(u));
   networkDirty=true;buildPalette();hudDirty=true;toast('👑 Neuer Anfang — die Bestrebungen stärken dich!');
@@ -1172,7 +1177,7 @@ syncVillagers(); // erste Siedler spawnen lassen
 selHex=L0;renderInspector();
 setTimeout(()=>{resize();draw();},30);
 showBanner('Willkommen','Wurzelwerk',
-  'Baue eine Kolonie in Symbiose mit dem lebenden Hain. Starte mit 🪓 Holzfäller & 🥕 Gemüsehof, verbinde sie per · Wegen mit dem Lager 📦, und bau 🏠 Wohnstätten. Jedes Gebäude lässt sich ausbauen — höhere Stufen kosten brutal, liefern aber massiv. Erfülle die Kapitelziele, um den ganzen Tech-Baum freizuschalten!',
+  'Baue eine Kolonie in Symbiose mit dem lebenden Hain. Starte mit 🪓 Holzfäller & 🥕 Gemüsehof, verbinde sie per · Wegen mit dem Lager 📦, und bau 🛖 Siedlerhütten für Unterkunft. Jedes Gebäude lässt sich ausbauen — höhere Stufen kosten brutal, liefern aber massiv. Erfülle die Kapitelziele, um den ganzen Tech-Baum freizuschalten!',
   '7 Evolutions-Kapitel · Monumente · Aspirationen · 3 Savegames · Autosave');
 setInterval(()=>{if(!paused&&t%120===0)autoSave();},2400);
 requestAnimationFrame(function firstFrame(){
