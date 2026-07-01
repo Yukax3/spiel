@@ -270,37 +270,37 @@ const TOPRES=['wood','planks','stone','iron','tools'];
 function D(o){o.max=o.max||3;o.costGrow=o.costGrow||2.4;o.outGrow=o.outGrow||1.8;o.jobs=o.jobs??1;return o;}
 const DEFS={
   weg:        D({name:'Weg',em:'·',road:true,cat:'Basis',max:3,jobs:0,cost:{wood:1},costGrow:2.2,desc:'Stufe 1 = Trampelpfad, 2 = befestigt, 3 = lebende Wurzeln.'}),
- lager:      D({name:'Lager',em:'📦',cat:'Basis',jobs:0,max:5,cost:{wood:20,stone:10},caps:[160,320,560,900,1400],desc:'Herz des Wegenetzes & Stauraum. 5 Stufen.'}),
+ lager:      D({name:'Lager',em:'📦',cat:'Basis',jobs:0,max:5,size:2,cost:{wood:20,stone:10},caps:[160,320,560,900,1400],desc:'Herz des Wegenetzes & Stauraum. Belegt 2 Hexfelder als ein Bauwerk. 5 Stufen.'}),
  speicher:   D({name:'Speicher',em:'🗄️',cat:'Basis',jobs:0,max:3,cost:{wood:15,planks:8},caps:[120,240,420],desc:'Zusätzlicher Stauraum.'}),
  wohnstaette:D({name:'Wohnstätte',em:'🏠',cat:'Wohnen',jobs:0,max:5,cost:{wood:10},caps:[8,18,32,48,72],desc:'Siedler-Kapazität. Stufe 5 = teuer, aber brutal viel Platz.'}),
 
-  holzfaeller:D({name:'Holzfäller',em:'🪓',cat:'Holz',cost:{wood:2},biomes:['hain'],eco:true,out:{wood:1.4},vit:-2.2,desc:'Holz aus Wald. Zehrt an der Vitalität.'}),
- saegewerk:  D({name:'Sägewerk',em:'🪚',cat:'Holz',cost:{wood:12},in:{wood:2},out:{planks:1.4},desc:'Holz → Bretter.'}),
- tischlerei: D({name:'Tischlerei',em:'🪑',cat:'Holz',cost:{planks:10,wood:8},in:{planks:2},out:{furniture:1},desc:'Bretter → Möbel (Wohlstand).'}),
+  holzfaeller:D({name:'Holzfäller',em:'🪓',cat:'Holz',cost:{wood:2},biomes:['hain'],eco:true,out:{wood:2},vit:-2.2,desc:'Holz aus Wald. Zehrt an der Vitalität.'}),
+ saegewerk:  D({name:'Sägewerk',em:'🪚',cat:'Holz',cost:{wood:12},in:{wood:4},out:{planks:2},desc:'2 Holzfäller → 1 Sägewerk. Holz → Bretter.'}),
+ tischlerei: D({name:'Tischlerei',em:'🪑',cat:'Holz',cost:{planks:10,wood:8},in:{planks:4},out:{furniture:2},desc:'2 Sägewerke → 1 Tischlerei. Bretter → Möbel (Wohlstand).'}),
  foerster:   D({name:'Förster',em:'🌱',cat:'Holz',cost:{wood:6},biomes:['hain','lichtung'],vit:4.5,neigh:3.0,desc:'Forstet auf — hebt die Vitalität.'}),
 
- steinbruch: D({name:'Steinbruch',em:'⛏️',cat:'Stein & Erz',cost:{wood:10},biomes:['fels'],eco:true,out:{stone:1.4},vit:-1.8,desc:'Stein aus Felsgrund.'}),
- lehmgrube:  D({name:'Lehmgrube',em:'🕳️',cat:'Stein & Erz',cost:{wood:8},biomes:['aue','fels'],eco:true,out:{clay:1.6},vit:-0.8,desc:'Lehm für Ziegel & Töpfe.'}),
- erzmine:    D({name:'Erzmine',em:'🪨',cat:'Stein & Erz',cost:{wood:14,planks:6},biomes:['fels'],eco:true,out:{ore:1.3},vit:-2.2,desc:'Erz aus dem Felsgrund.'}),
- koehlerei:  D({name:'Köhlerei',em:'🔥',cat:'Stein & Erz',cost:{wood:10},in:{wood:2},out:{coal:1.5},desc:'Holz → Kohle.'}),
- schmelze:   D({name:'Schmelze',em:'🌋',cat:'Stein & Erz',cost:{stone:12,planks:8},in:{ore:2,coal:1},out:{iron:1},desc:'Erz + Kohle → Eisen.'}),
- schmiede:   D({name:'Schmiede',em:'⚒️',cat:'Stein & Erz',cost:{bricks:10,planks:8},in:{iron:1,coal:1},out:{tools:1},desc:'Eisen + Kohle → Werkzeug.'}),
- ziegelei:   D({name:'Ziegelei',em:'🧱',cat:'Stein & Erz',cost:{wood:10,stone:6},in:{clay:2},out:{bricks:1.5},desc:'Lehm → Ziegel.'}),
- toepferei:  D({name:'Töpferei',em:'🏺',cat:'Stein & Erz',cost:{wood:8,stone:4},in:{clay:2},out:{pottery:1},desc:'Lehm → Töpferware.'}),
+ steinbruch: D({name:'Steinbruch',em:'⛏️',cat:'Stein & Erz',cost:{wood:10},biomes:['fels'],eco:true,out:{stone:2},vit:-1.8,desc:'Stein aus Felsgrund.'}),
+ lehmgrube:  D({name:'Lehmgrube',em:'🕳️',cat:'Stein & Erz',cost:{wood:8},biomes:['aue','fels'],eco:true,out:{clay:2},vit:-0.8,desc:'Lehm für Ziegel & Töpfe.'}),
+ erzmine:    D({name:'Erzmine',em:'🪨',cat:'Stein & Erz',cost:{wood:14,planks:6},biomes:['fels'],eco:true,out:{ore:2},vit:-2.2,desc:'Erz aus dem Felsgrund.'}),
+ koehlerei:  D({name:'Köhlerei',em:'🔥',cat:'Stein & Erz',cost:{wood:10},in:{wood:2},out:{coal:2},desc:'1 Holzfäller → 1 Köhlerei. Holz → Kohle.'}),
+ schmelze:   D({name:'Schmelze',em:'🌋',cat:'Stein & Erz',cost:{stone:12,planks:8},in:{ore:4,coal:2},out:{iron:2},desc:'2 Erzminen + 1 Köhlerei → 1 Schmelze. Erz + Kohle → Eisen.'}),
+ schmiede:   D({name:'Schmiede',em:'⚒️',cat:'Stein & Erz',cost:{bricks:10,planks:8},in:{iron:2,coal:2},out:{tools:2},desc:'1 Schmelze + 1 Köhlerei → 1 Schmiede. Eisen + Kohle → Werkzeug.'}),
+ ziegelei:   D({name:'Ziegelei',em:'🧱',cat:'Stein & Erz',cost:{wood:10,stone:6},in:{clay:4},out:{bricks:2},desc:'2 Lehmgruben → 1 Ziegelei. Lehm → Ziegel.'}),
+ toepferei:  D({name:'Töpferei',em:'🏺',cat:'Stein & Erz',cost:{wood:8,stone:4},in:{clay:4},out:{pottery:2},desc:'2 Lehmgruben → 1 Töpferei. Lehm → Töpferware.'}),
 
- getreidefeld:D({name:'Getreidefeld',em:'🌾',cat:'Acker',cost:{wood:5},biomes:['aue','lichtung'],eco:true,season:true,out:{grain:2.4},vit:-0.4,desc:'Korn. Ruht im Winter.'}),
-  gemuesehof: D({name:'Gemüsehof',em:'🥕',cat:'Acker',cost:{wood:4},biomes:['aue','lichtung'],eco:true,season:true,out:{vegetables:1.5},vit:-0.4,desc:'Gemüse — frühe Nahrung.'}),
- muehle:     D({name:'Mühle',em:'🌀',cat:'Acker',cost:{wood:10,stone:5},in:{grain:2},out:{flour:1.6},desc:'Korn → Mehl.'}),
- backhaus:   D({name:'Backhaus',em:'🍞',cat:'Acker',cost:{wood:10,planks:6},in:{flour:2},out:{bread:2.2},desc:'Mehl → Brot (sättigt stark).'}),
- brunnen:    D({name:'Brunnen',em:'💧',cat:'Acker',cost:{wood:6,stone:4},out:{water:3},desc:'Wasser für Vieh & Sudhaus.'}),
- fischerhuette:D({name:'Fischerhütte',em:'🎣',cat:'Acker',cost:{wood:8},adj:'wasser',out:{fish:1.6},desc:'Fisch — braucht ein Wasser-Nachbarfeld.'}),
+ getreidefeld:D({name:'Getreidefeld',em:'🌾',cat:'Acker',cost:{wood:5},biomes:['aue','lichtung'],eco:true,season:true,out:{grain:2},vit:-0.4,desc:'Korn. Ruht im Winter.'}),
+  gemuesehof: D({name:'Gemüsehof',em:'🥕',cat:'Acker',cost:{wood:4},biomes:['aue','lichtung'],eco:true,season:true,out:{vegetables:2},vit:-0.4,desc:'Gemüse — frühe Nahrung.'}),
+ muehle:     D({name:'Mühle',em:'🌀',cat:'Acker',cost:{wood:10,stone:5},in:{grain:4},out:{flour:2},desc:'2 Getreidefelder → 1 Mühle. Korn → Mehl.'}),
+ backhaus:   D({name:'Backhaus',em:'🍞',cat:'Acker',cost:{wood:10,planks:6},in:{flour:4},out:{bread:3},desc:'2 Mühlen → 1 Backhaus. Mehl → Brot (sättigt stark).'}),
+ brunnen:    D({name:'Brunnen',em:'💧',cat:'Acker',cost:{wood:6,stone:4},out:{water:4},desc:'Wasser für Vieh & Sudhaus. Versorgt 2 Kuhfarmen.'}),
+ fischerhuette:D({name:'Fischerhütte',em:'🎣',cat:'Acker',cost:{wood:8},adj:'wasser',out:{fish:2},desc:'Fisch — braucht ein Wasser-Nachbarfeld.'}),
 
- kuhfarm:    D({name:'Kuhfarm',em:'🐄',cat:'Vieh & Stoff',cost:{planks:10,wood:10},biomes:['aue','lichtung'],in:{water:1},out:{milk:1.6},vit:-0.3,desc:'Milch. Braucht Wasser & Weide.'}),
- kaeserei:   D({name:'Käserei',em:'🧀',cat:'Vieh & Stoff',cost:{planks:8,stone:6},in:{milk:2},out:{cheese:1.5},desc:'Milch → Käse.'}),
- schaffarm:  D({name:'Schaffarm',em:'🐑',cat:'Vieh & Stoff',cost:{planks:10,wood:8},biomes:['aue','lichtung'],out:{wool:1.6},vit:-0.3,desc:'Wolle. Braucht Weide.'}),
- weberei:    D({name:'Weberei',em:'🧶',cat:'Vieh & Stoff',cost:{planks:8,wood:6},in:{wool:2},out:{cloth:1.5},desc:'Wolle → Stoff.'}),
- schneiderei:D({name:'Schneiderei',em:'👕',cat:'Vieh & Stoff',cost:{planks:8,bricks:4},in:{cloth:2},out:{clothes:1},desc:'Stoff → Kleidung.'}),
- jagdhuette: D({name:'Jagdhütte',em:'🏹',cat:'Vieh & Stoff',cost:{wood:10,planks:4},biomes:['hain'],eco:true,out:{meat:1.6},vit:-1.0,desc:'Fleisch — verdrängt Wild, senkt Vitalität.'}),
+ kuhfarm:    D({name:'Kuhfarm',em:'🐄',cat:'Vieh & Stoff',cost:{planks:10,wood:10},biomes:['aue','lichtung'],in:{water:2},out:{milk:2},vit:-0.3,desc:'Milch. Braucht Wasser & Weide.'}),
+ kaeserei:   D({name:'Käserei',em:'🧀',cat:'Vieh & Stoff',cost:{planks:8,stone:6},in:{milk:4},out:{cheese:2},desc:'2 Kuhfarmen → 1 Käserei. Milch → Käse.'}),
+ schaffarm:  D({name:'Schaffarm',em:'🐑',cat:'Vieh & Stoff',cost:{planks:10,wood:8},biomes:['aue','lichtung'],out:{wool:2},vit:-0.3,desc:'Wolle. Braucht Weide.'}),
+ weberei:    D({name:'Weberei',em:'🧶',cat:'Vieh & Stoff',cost:{planks:8,wood:6},in:{wool:4},out:{cloth:2},desc:'2 Schaffarmen → 1 Weberei. Wolle → Stoff.'}),
+ schneiderei:D({name:'Schneiderei',em:'👕',cat:'Vieh & Stoff',cost:{planks:8,bricks:4},in:{cloth:4},out:{clothes:2},desc:'2 Webereien → 1 Schneiderei. Stoff → Kleidung.'}),
+ jagdhuette: D({name:'Jagdhütte',em:'🏹',cat:'Vieh & Stoff',cost:{wood:10,planks:4},biomes:['hain'],eco:true,out:{meat:2},vit:-1.0,desc:'Fleisch — verdrängt Wild, senkt Vitalität.'}),
 
  imkerei:    D({name:'Imkerei',em:'🐝',cat:'Natur',cost:{wood:8},biomes:['aue','lichtung','hain'],out:{honey:1},vit:1,desc:'Honig. Bestäuber heben Vitalität; mehr Ertrag in blühenden Zonen.'}),
  kompost:    D({name:'Kompostwerk',em:'♻️',cat:'Natur',cost:{wood:10},vit:1,neigh:2.4,desc:'Hebt die Vitalität der Nachbarfelder.'}),
@@ -312,16 +312,16 @@ const DEFS={
   heilstube:D({name:'Heilstube',em:'🏥',cat:'Sozial',cost:{bricks:12,remedy:4},jobs:2,desc:'Heilung. Reduziert Abwanderung.'}),
   wildgehege:D({name:'Wildgehege',em:'🦌',cat:'Natur',cost:{wood:10,herbs:4},out:{meat:0.4},vit:1.2,desc:'Tiere beobachten statt jagen. Liefert etwas Fleisch & heilt Land.'}),
   pilznetz:D({name:'Pilznetz-Lager',em:'🍄',cat:'Basis',jobs:0,max:2,cost:{herbs:10,pottery:6},caps:[300,520],biomes:['hain','aue','lichtung'],minVit:65,desc:'Lebendes Pilz-Lager. Nur in gesunden Zonen. Größerer Stauraum.'}),
-  eselstation:D({name:'Eselstation',em:'🐴',cat:'Logistik',cost:{wood:18,planks:10},jobs:1,out:{tools:0.3},vit:0.2,desc:'Träger-Schnellboote. Massentransporte & Werkzeug.'}),
+  eselstation:D({name:'Eselstation',em:'🐴',cat:'Logistik',cost:{wood:18,planks:10},jobs:1,out:{tools:0.3},vit:0.2,desc:'Beschleunigt Träger in Nachbarfeldern (+15%/Stufe, bis +45%). Produziert nebenbei etwas Werkzeug.'}),
   marktplatz:D({name:'Marktplatz',em:'🏪',cat:'Basis',cost:{wood:12,planks:8},jobs:1,vit:0.5,neigh:1.5,desc:'Handelszentrum. Verteilt Waren effizient und verbindet Lager.'}),
   teich:D({name:'Teich',em:'🏞️',cat:'Natur',cost:{wood:8,stone:4},vit:2.5,neigh:1.8,desc:'Wasserfläche. Lockert Vieh an, erhöht Fischertrag.'}),
-  heilzelt:D({name:'Heilzelt',em:'🏕️',cat:'Natur',cost:{herbs:8,wood:6},biomes:['sumpf','hain','aue'],jobs:1,out:{essence:0.6},vit:1.2,desc:'Sammelt heilende Essenz aus Sumpf und Kräutern. Anteiligt an der Medizin-Kette.'}),
-  apothek:D({name:'Apotheke',em:'🔮',cat:'Sozial',cost:{pottery:10,essence:12},jobs:2,in:{essence:1},out:{medicine:0.8},desc:'Verwandelt Essenz zu Medizin. Reduziert Abwanderung.'}),
+  heilzelt:D({name:'Heilzelt',em:'🏕️',cat:'Natur',cost:{herbs:8,wood:6},biomes:['sumpf','hain','aue'],jobs:1,out:{essence:1},vit:1.2,desc:'Sammelt heilende Essenz aus Sumpf und Kräutern. Anteiligt an der Medizin-Kette.'}),
+  apothek:D({name:'Apotheke',em:'🔮',cat:'Sozial',cost:{pottery:10,essence:12},jobs:2,in:{essence:1},out:{medicine:1},desc:'1 Heilzelt → 1 Apotheke. Verwandelt Essenz zu Medizin. Reduziert Abwanderung.'}),
   // --- Monumente (Endgame) ---
-  hainbaum:D({name:'Hainbaum',em:'🌳',cat:'Monument',cost:{wood:150,planks:60,stone:50,bricks:30,remedy:10},jobs:0,max:1,vit:8,neigh:12,desc:'Der Große Hainbaum. Zentrum der Symbiose. +12 Vitalität im weiten Umkreis, epische Optik.'}),
-  kristall:D({name:'Kristallturm',em:'🔮',cat:'Monument',cost:{iron:50,tools:20,bricks:70,stone:80,remedy:8},jobs:0,max:1,vit:5,neigh:8,desc:'Kristalliner Turm der Weisheit. Verstärkt alle Gebäude im Umkreis +10%.'}),
-  erdzeichen:D({name:'Erdzeichen',em:'🪨',cat:'Monument',cost:{stone:150,bricks:100,iron:20,tools:10},jobs:0,max:1,vit:10,neigh:15,desc:'Uraltes Erdzeichen. Heilt Ödland und verwandelt es zurück in Hain.'}),
-  medizintempel:D({name:'Medizintempel',em:'🏥',cat:'Medizin',cost:{essence:50,medicine:30,bricks:40,remedy:20},jobs:3,max:1,vit:5,neigh:10,in:{essence:1.8},out:{medicine:1.5},desc:'Heiligtum der Medizin. Erzeugt kontinuierlich Medizin aus reiner Essenz. Endgame-Gebäude.'}),
+  hainbaum:D({name:'Hainbaum',em:'🌳',cat:'Monument',cost:{wood:150,planks:60,stone:50,bricks:30,remedy:10},jobs:0,max:1,size:3,vit:8,neigh:12,desc:'Der Große Hainbaum. Zentrum der Symbiose. Belegt 3 Hexfelder als ein Bauwerk. +12 Vitalität im weiten Umkreis, epische Optik.'}),
+  kristall:D({name:'Kristallturm',em:'🔮',cat:'Monument',cost:{iron:50,tools:20,bricks:70,stone:80,remedy:8},jobs:0,max:1,size:3,vit:5,neigh:8,desc:'Kristalliner Turm der Weisheit. Belegt 3 Hexfelder als ein Bauwerk. Verstärkt alle Gebäude im Umkreis +10%.'}),
+  erdzeichen:D({name:'Erdzeichen',em:'🪨',cat:'Monument',cost:{stone:150,bricks:100,iron:20,tools:10},jobs:0,max:1,size:3,vit:10,neigh:15,desc:'Uraltes Erdzeichen. Belegt 3 Hexfelder als ein Bauwerk. Heilt Ödland und verwandelt es zurück in Hain.'}),
+  medizintempel:D({name:'Medizintempel',em:'🏥',cat:'Medizin',cost:{essence:50,medicine:30,bricks:40,remedy:20},jobs:3,max:1,size:3,vit:5,neigh:10,in:{essence:2},out:{medicine:2},desc:'2 Heilzelte → 1 Medizintempel. Belegt 3 Hexfelder als ein Bauwerk. Heiligtum der Medizin.'}),
 };
 const CATS=['Basis','Wohnen','Holz','Stein & Erz','Acker','Vieh & Stoff','Natur','Sozial','Medizin','Logistik','Monument'];
 
@@ -381,20 +381,28 @@ function pixToAxial(x,y){
 function hexCorners(cx,cy){const p=[];for(let i=0;i<6;i++){const a=Math.PI/180*60*i;p.push([cx+SIZE*Math.cos(a),cy+SIZE*Math.sin(a)]);}return p;}
 const NB=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];
 function neighbors(h){return NB.map(([dq,dr])=>hexes.get(key(h.q+dq,h.r+dr))).filter(Boolean);}
+// Ein Hex zählt für Wegenetz-Zwecke als "belegt", wenn es selbst ein Gebäude trägt ODER
+// Teil des Footprints eines Mehrfeld-Gebäudes ist (siehe footprintHexes weiter unten).
+function occupied(h){return!!(h.b||h.footprintOf);}
 
 // ---------------- Network ----------------
 function recomputeNetwork(){
   hexes.forEach(h=>h.connected=false);
   const st=[L0],seen=new Set([key(L0.q,L0.r)]);L0.connected=true;
   while(st.length){const h=st.pop();for(const nb of neighbors(h)){const k=key(nb.q,nb.r);
-    if(seen.has(k)||!nb.b)continue;seen.add(k);nb.connected=true;st.push(nb);}}
+    if(seen.has(k)||!occupied(nb))continue;seen.add(k);nb.connected=true;st.push(nb);}}
 }
+const STORAGE_TYPES=new Set(['lager','speicher','pilznetz']);
+// Träger liefern zum NÄCHSTEN erreichbaren Lager/Speicher/Pilznetz, nicht stur zum Hauptlager —
+// BFS wächst in Distanzreihenfolge, das zuerst gefundene Lagerziel ist also automatisch das nächste.
 function pathToLager(h){
-  const startKey=key(L0.q,L0.r);
-  const prev=new Map([[key(h.q,h.r),null]]),q=[h];
+  const startKey=key(h.q,h.r);
+  const prev=new Map([[startKey,null]]),q=[h];
   while(q.length){const c=q.shift();
-    if(key(c.q,c.r)===startKey){const path=[];let k=startKey;while(k!==null){const[a,b]=k.split(',').map(Number);path.push(hexes.get(key(a,b)));k=prev.get(k);}return path;}
-    for(const nb of neighbors(c)){if(!nb.b)continue;const kk=key(nb.q,nb.r);if(prev.has(kk))continue;prev.set(kk,key(c.q,c.r));q.push(nb);}}
+    if(STORAGE_TYPES.has(c.b)){const path=[];let k=key(c.q,c.r);
+      while(k!==null){const[a,b]=k.split(',').map(Number);path.push(hexes.get(key(a,b)));k=prev.get(k);}
+      return path;}
+    for(const nb of neighbors(c)){if(!occupied(nb))continue;const kk=key(nb.q,nb.r);if(prev.has(kk))continue;prev.set(kk,key(c.q,c.r));q.push(nb);}}
   return null;
 }
 
@@ -475,6 +483,10 @@ function simTick(){
   hexes.forEach(h=>{
     if(h.b==='marktplatz'&&h.connected){
       neighbors(h).forEach(nb=>{if(nb.b&&nb.b!=='weg') nb._marketBoost=Math.max(nb._marketBoost,0.15);});
+    }
+    if(h.b==='eselstation'&&h.connected){
+      const boost=0.15*h.lvl; // Träger-Tempo +15%/Stufe im Umkreis, bis +45% auf Stufe 3
+      neighbors(h).forEach(nb=>{if(nb.b&&nb.b!=='weg')nb._transportBoost=Math.max(nb._transportBoost||0,boost);});
     }
     if(h.b==='teich'&&h.connected){
       neighbors(h).forEach(nb=>{
@@ -610,7 +622,8 @@ function stepVillagers(dt){
 }
 function spawnCarrier(h){if(carriers.length>180||Math.random()>0.6)return;
   const p=pathToLager(h);if(!p||p.length<2)return;
-  carriers.push({pts:p.slice().reverse().map(x=>axialToPix(x.q,x.r)),seg:0,tt:0,sp:0.02+Math.random()*0.01});}
+  const spBoost=1+(h._transportBoost||0);
+  carriers.push({pts:p.slice().reverse().map(x=>axialToPix(x.q,x.r)),seg:0,tt:0,sp:(0.02+Math.random()*0.01)*spBoost});}
 function stepCarriers(dt){for(let i=carriers.length-1;i>=0;i--){const c=carriers[i];c.tt+=c.sp*dt*0.06;
   if(c.tt>=1){c.tt=0;c.seg++;if(c.seg>=c.pts.length-1)carriers.splice(i,1);}}}
 
@@ -673,6 +686,7 @@ function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='
   if(chap>=CH.length-1) gSession.insertAdjacentHTML('beforeend',`<div id="prestigeBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="doPrestige()">👑 Neuer Anfang</div>`);
   gSession.insertAdjacentHTML('beforeend',`<div id="saveBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickSave()">💾 Save</div>`);
   gSession.insertAdjacentHTML('beforeend',`<div id="loadBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickLoad()">📂 Load</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="newGameBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="confirmNewGame()">🆕 Neues Spiel</div>`);
   gSession.insertAdjacentHTML('beforeend',`<div id="bgmToggle" style="font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="window._toggleBGM()">🎵</div>`);
   gSession.insertAdjacentHTML('beforeend',`<div id="settingsBtn" style="font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="showSettings()">⚙️</div>`);
   tb.appendChild(gSession);
@@ -730,8 +744,10 @@ function buildPalette(){const p=document.getElementById('buildbar');p.innerHTML=
     g.innerHTML=`<div class="lbl">${cat}</div>`;const row=document.createElement('div');row.className='row';
     keys.forEach(k=>{const d=DEFS[k],lck=!unlocked.has(k);
       const cost=Object.keys(d.cost||{}).map(r=>RESMETA[r][0]+d.cost[r]).join(' ');
+      const out=d.out?Object.keys(d.out).map(r=>RESMETA[r][0]+d.out[r]).join(' '):'';
       const el=document.createElement('div');el.className='btn'+(lck?' locked':'')+(buildMode===k?' sel':'');
-      el.innerHTML=`<span class="em">${d.em}</span><span class="nm">${k==='weg'?'Weg':d.name}</span><span class="cost">${lck?'🔒':cost}</span>`;
+      el.innerHTML=`<span class="em">${d.em}</span><span class="nm">${k==='weg'?'Weg':d.name}</span>`+
+        `<span class="cost">${lck?'🔒':cost}${out?` <span style="color:var(--accent)">→${out}</span>`:''}</span>`;
       el.title=d.name+' — '+d.desc+(lck?' (gesperrt)':'');
       if(!lck)el.onclick=()=>{buildMode=(buildMode===k?null:k);buildPalette();};
       row.appendChild(el);});
@@ -845,6 +861,10 @@ function updateSettingsLabels(){
   document.getElementById('seasonHarshLabel').textContent=harshLbl;
   document.getElementById('raubbauLabel').textContent=raubLbl;
 }
+function confirmNewGame(){
+  if(!confirm('Neues Spiel starten? Der aktuelle Fortschritt geht verloren, falls du nicht vorher gespeichert hast.'))return;
+  paused=true;showSettings();
+}
 function applySandbox(){
   const res=parseInt(document.getElementById('prefRes').value);
   const harsh=parseInt(document.getElementById('seasonHarsh').value);
@@ -871,16 +891,18 @@ function applySandboxSettings(s){
 }
 function startNewGame(settings){
   prestigeLevel=0;appliedAsp.clear();baseBuildMult=1;buildMult=1;renaturedCount=0;autarkYears=0;activeSymbioses=0;hungerFreeStreak=0;chap=0;satisfaction=1;
-  hexes.forEach(h=>{h.vit=95;h.b=null;h.lvl=1;h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;});
+  hexes.forEach(h=>{h.vit=95;h.b=null;h.lvl=1;h.footprintOf=null;h._footprint=null;h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;});
   Object.keys(RES).forEach(r=>RES[r]=0);
   const startUnlocks=['weg','lager','speicher','wohnstaette','holzfaeller','gemuesehof'];
   unlocked.clear();startUnlocks.forEach(u=>unlocked.add(u));CH[0].unlock.forEach(u=>unlocked.add(u));
   pop=4;jobsUsed=0;hunger=0; // Start unter dem Kapitel-I-Ziel (8) — sonst ist das Tutorial-Kapitel sofort ohne jede Aktion abgeschlossen
   precompute();
   applySandboxSettings(settings);
-  if(L0){L0.b='lager';L0.lvl=1;L0.biome='lichtung';L0.vit=95;}
   const L1=hexes.get(key(2,-3));if(L1){L1.b='wohnstaette';L1.lvl=1;L1.biome='lichtung';L1.vit=90;}
   const L2=hexes.get(key(3,-4));if(L2){L2.b='weg';L2.lvl=1;L2.biome='lichtung';L2.vit=90;}
+  // L1/L2 zuerst setzen, damit das Lager-Footprint (2 Hexe) sie beim Nachbar-Scan überspringt
+  if(L0){L0.b='lager';L0.lvl=1;L0.biome='lichtung';L0.vit=95;
+    const fp=footprintHexes(L0,DEFS.lager.size);if(fp)reserveFootprint(fp,L0);}
   recomputeNetwork();updateHUD();networkDirty=true;buildPalette();hudDirty=true;selHex=L0;renderInspector();
 }
 function toggleBuildbar(){
@@ -893,6 +915,7 @@ function doUpgrade(){const h=selHex;if(!h||!h.b)return;const d=DEFS[h.b];if(!d||
 function doDemolish(){if(!selHex||!selHex.b||selHex.b==='lager')return;const d=DEFS[selHex.b];
   let room=storageCap()-Object.values(RES).reduce((a,b)=>a+b,0);
   for(const r in d.cost){const refund=Math.min(Math.floor(d.cost[r]*selHex.lvl/2),Math.max(0,room));RES[r]+=refund;room-=refund;}
+  if(d.size>1)clearFootprint(selHex);
   selHex.b=null;selHex.lvl=1;
   generateDeco(selHex,srand((selHex.q*73856093^selHex.r*19349663)>>>0));networkDirty=true;hudDirty=true;}
 function doPrestige(){
@@ -900,6 +923,7 @@ function doPrestige(){
   appliedAsp.clear();baseBuildMult=1;buildMult=1;renaturedCount=0;autarkYears=0;activeSymbioses=0;hungerFreeStreak=0;
   prestigeLevel++;
   hexes.forEach(h=>{if(h.b&&h.b!=='lager'){h.b=null;h.lvl=1;generateDeco(h,srand((h.q*73856093^h.r*19349663)>>>0));}});
+  rebuildAllFootprints(); // löst Footprints demolierter Mehrfeld-Gebäude (Monumente) wieder auf, Lager behält seins
   Object.keys(RES).forEach(r=>RES[r]=0);
   const bonus=appliedAsp.size*100;
   const preMult=1+prestigeLevel*0.2;
@@ -923,9 +947,42 @@ window._toggleVitLayer=()=>{showVitLayer=!showVitLayer;
   toast(showVitLayer?'🧪 Vitalitäts-Layer an':'🧪 Vitalitäts-Layer aus');};
 
 // ---------------- Placement ----------------
+// Mehrfeld-Gebäude (Lager, Monumente): Ankerhex + (size-1) freie Nachbarhexe bilden EIN Bauwerk.
+// Sekundäre Footprint-Hexe bleiben h.b=null (zählen nirgends doppelt mit), tragen aber footprintOf
+// als Zeiger auf den Anker, damit Wegenetz/Kollision sie trotzdem als belegt behandeln.
+function footprintHexes(anchor,size){
+  if(!size||size<=1)return[anchor];
+  const result=[anchor],seen=new Set([key(anchor.q,anchor.r)]),queue=[...neighbors(anchor)];
+  while(queue.length&&result.length<size){
+    const h=queue.shift(),k=key(h.q,h.r);
+    if(seen.has(k))continue;seen.add(k);
+    if(h.biome==='wasser'||h.b||h.footprintOf)continue;
+    result.push(h);
+    if(result.length<size)neighbors(h).forEach(n=>{if(!seen.has(key(n.q,n.r)))queue.push(n);});
+  }
+  return result.length===size?result:null;
+}
+function resolveAnchor(h){
+  if(h&&h.footprintOf){const[a,b]=h.footprintOf.split(',').map(Number);return hexes.get(key(a,b))||h;}
+  return h;
+}
+function reserveFootprint(fpHexes,anchor){
+  fpHexes.forEach(h=>{if(h===anchor)return;h.footprintOf=key(anchor.q,anchor.r);h.b=null;h.deco=[];});
+  anchor._footprint=fpHexes;
+}
+function clearFootprint(anchor){
+  hexes.forEach(h=>{if(h.footprintOf===key(anchor.q,anchor.r)){h.footprintOf=null;generateDeco(h,srand((h.q*73856093^h.r*19349663)>>>0));}});
+  anchor._footprint=null;
+}
+// Nach dem Laden eines Spielstands (der nur b/lvl pro Hex kennt) Footprints für Mehrfeld-Gebäude neu aufbauen.
+function rebuildAllFootprints(){
+  hexes.forEach(h=>{if(h.footprintOf){h.footprintOf=null;generateDeco(h,srand((h.q*73856093^h.r*19349663)>>>0));}h._footprint=null;});
+  hexes.forEach(h=>{const d=DEFS[h.b];if(d&&d.size>1){const fp=footprintHexes(h,d.size);if(fp)reserveFootprint(fp,h);}});
+}
 function canPlace(h,k){const d=DEFS[k];
-  if(d.road)return!h.b&&h.biome!=='wasser';
-  if(h.b||h.biome==='wasser')return false;
+  if(d.road)return!h.b&&!h.footprintOf&&h.biome!=='wasser';
+  if(h.b||h.footprintOf||h.biome==='wasser')return false;
+  if(d.size>1&&!footprintHexes(h,d.size))return false;
   if(d.biomes&&!d.biomes.includes(h.biome))return false;
   if(d.adj&&!neighbors(h).some(n=>n.biome===d.adj))return false;
   if(d.minVit&&h.vit<d.minVit)return false;
@@ -935,14 +992,14 @@ function canPlace(h,k){const d=DEFS[k];
 function findRouteToNetwork(start){
   const startKey=key(start.q,start.r);
   const prev=new Map(),q=[];
-  neighbors(start).forEach(nb=>{if(nb.biome==='wasser'||(nb.b&&nb.b!=='weg'))return;
+  neighbors(start).forEach(nb=>{if(nb.biome==='wasser'||nb.footprintOf||(nb.b&&nb.b!=='weg'))return;
     const kk=key(nb.q,nb.r);if(!prev.has(kk)){prev.set(kk,startKey);q.push(nb);}});
   while(q.length){
     const c=q.shift();
     if(c.connected){const path=[];let k=key(c.q,c.r);
       while(k!==startKey){const[a,b]=k.split(',').map(Number);path.push(hexes.get(key(a,b)));k=prev.get(k);}
       return path;}
-    for(const nb of neighbors(c)){if(nb.biome==='wasser'||(nb.b&&nb.b!=='weg'))continue;
+    for(const nb of neighbors(c)){if(nb.biome==='wasser'||nb.footprintOf||(nb.b&&nb.b!=='weg'))continue;
       const kk=key(nb.q,nb.r);if(prev.has(kk))continue;prev.set(kk,key(c.q,c.r));q.push(nb);}
   }
   return null;
@@ -961,6 +1018,7 @@ function place(h,k){const d=DEFS[k];
     else if(d.minVit)toast(d.name+' braucht Vitalität ≥ '+d.minVit+' (aktuell: '+Math.round(h.vit)+').');
     else toast('Zu wenig Ressourcen.');return;}
   for(const r in d.cost)RES[r]-=d.cost[r];h.b=k;h.lvl=1;h.deco=[];
+  if(d.size>1){const fp=footprintHexes(h,d.size);if(fp)reserveFootprint(fp,h);}
   recomputeNetwork();
   if(!h.connected&&!d.road&&h.b!=='lager'){
     // Trampelpfad ist kostenlos (Komfortfunktion) — der Spieler hat bereits fürs Gebäude bezahlt
@@ -982,8 +1040,8 @@ cv.addEventListener('pointerdown',e=>{if(e.button===0||e.pointerType==='touch'){
 window.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-last.x,dy=e.clientY-last.y;
   if(Math.abs(dx)+Math.abs(dy)>3){dragMoved=true;cam.x+=dx/cam.zoom;cam.y+=dy/cam.zoom;last={x:e.clientX,y:e.clientY};}});
 window.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;if(dragMoved)return;
-  const h=evToHex(e);if(!h)return;if(buildMode)place(h,buildMode);else{selHex=h;renderInspector();}});
-cv.addEventListener('contextmenu',e=>{e.preventDefault();const h=evToHex(e);if(h&&h.b&&h.b!=='lager'){selHex=h;doDemolish();}});
+  const h=evToHex(e);if(!h)return;if(buildMode)place(h,buildMode);else{selHex=resolveAnchor(h);renderInspector();}});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();const h=evToHex(e);const anchor=resolveAnchor(h);if(anchor&&anchor.b&&anchor.b!=='lager'){selHex=anchor;doDemolish();}});
 cv.addEventListener('wheel',e=>{e.preventDefault();cam.zoom=Math.max(0.45,Math.min(2.4,cam.zoom*(e.deltaY<0?1.1:0.9)));},{passive:false});
 window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();paused=!paused;toast(paused?'⏸ Pause':'▶ Weiter');}
   if(e.key==='Escape'){buildMode=null;buildPalette();}
@@ -1109,9 +1167,17 @@ function drawWell(bx,by){shadowEll(bx,by+2,SIZE*0.32,SIZE*0.12);
   ctx.strokeStyle='#6b4a28';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx-SIZE*0.2,by-5);ctx.lineTo(bx-SIZE*0.15,by-SIZE*0.7);ctx.moveTo(bx+SIZE*0.2,by-5);ctx.lineTo(bx+SIZE*0.15,by-SIZE*0.7);ctx.stroke();
   ctx.fillStyle='#8a5a2b';ctx.beginPath();ctx.moveTo(bx-SIZE*0.3,by-SIZE*0.6);ctx.lineTo(bx,by-SIZE*0.9);ctx.lineTo(bx+SIZE*0.3,by-SIZE*0.6);ctx.closePath();ctx.fill();}
 function drawLevelBadge(h,x,y){const d=DEFS[h.b];if(!d||d.max<=1||h.lvl<=1)return;
-  ctx.fillStyle='#e1bf60';ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();
-  ctx.strokeStyle='rgba(40,29,12,.55)';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle='#1b2017';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(h.lvl,x,y+0.5);}
+  const maxed=h.lvl>=d.max;
+  ctx.fillStyle=maxed?'#8fd6f0':'#e1bf60';ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill();
+  ctx.strokeStyle=maxed?'rgba(20,40,48,.6)':'rgba(40,29,12,.55)';ctx.lineWidth=1;ctx.stroke();
+  if(maxed){ // eigenes Sternsymbol statt Zahl — signalisiert "voll ausgebaut" auf einen Blick
+    ctx.fillStyle='#0e2530';ctx.save();ctx.translate(x,y+0.5);
+    ctx.beginPath();for(let i=0;i<5;i++){const a=-Math.PI/2+i*2*Math.PI/5,a2=a+Math.PI/5;
+      ctx.lineTo(Math.cos(a)*4.4,Math.sin(a)*4.4);ctx.lineTo(Math.cos(a2)*1.8,Math.sin(a2)*1.8);}
+    ctx.closePath();ctx.fill();ctx.restore();
+  } else {
+    ctx.fillStyle='#1b2017';ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(h.lvl,x,y+0.5);
+  }}
 function drawHouseBody(bx,by,w,wh,rh,roof,wall='#d6c096'){
   const base=ctx.createLinearGradient(bx-w/2,by-wh,bx+w/2,by);base.addColorStop(0,shade(wall,1.08));base.addColorStop(.55,wall);base.addColorStop(1,shade(wall,.78));
   ctx.fillStyle=base;ctx.fillRect(bx-w/2,by-wh,w,wh);
@@ -1167,8 +1233,16 @@ function drawYardDetails(h,bx,by,sc){const d=DEFS[h.b];
   if(h.b==='imkerei'){ctx.fillStyle='#d4a642';for(let i=0;i<3;i++){ctx.fillRect(bx-SIZE*.35+i*SIZE*.16,by-13,SIZE*.11,SIZE*.13);ctx.fillStyle='#654322';ctx.fillRect(bx-SIZE*.35+i*SIZE*.16,by-9,SIZE*.11,1);ctx.fillStyle='#d4a642';}}
   if(['kompost','kraeutergarten','schrein','sudhaus'].includes(h.b)){ctx.strokeStyle='rgba(112,185,90,.72)';ctx.lineWidth=2;for(let i=0;i<5;i++){const a=tnow*.8+i*1.25;ctx.beginPath();ctx.arc(bx,by-SIZE*.45,10+i*2,a,a+.75);ctx.stroke();}}
 }
-function drawBuildingSprite(h){const d=DEFS[h.b],bx=h.px.x,by=h.px.y-h.elev;
-  const big=h.b==='lager'?1.45:(h.b==='speicher'?1.16:1),sc=(.9+(h.lvl-1)*.075)*big,w=SIZE*.78*sc,wh=SIZE*.52*sc,rh=SIZE*.38*sc,rc=ROOF[d.cat]||'#7b5632';
+function drawBuildingSprite(h){const d=DEFS[h.b];
+  // Mehrfeld-Gebäude: am Schwerpunkt des ganzen Footprints und größer zeichnen, statt an nur einem Hex —
+  // dadurch wirkt der Bau als EIN zusammenhängendes Bauwerk statt getrennter Einzelkacheln.
+  let bx=h.px.x,by=h.px.y-h.elev,fpScale=1;
+  if(h._footprint&&h._footprint.length>1){
+    let sx=0,sy=0;h._footprint.forEach(fh=>{sx+=fh.px.x;sy+=fh.px.y-fh.elev;});
+    bx=sx/h._footprint.length;by=sy/h._footprint.length;
+    fpScale=1+(h._footprint.length-1)*0.32;
+  }
+  const big=(h.b==='lager'?1.45:(h.b==='speicher'?1.16:1))*fpScale,sc=(.9+(h.lvl-1)*.075)*big,w=SIZE*.78*sc,wh=SIZE*.52*sc,rh=SIZE*.38*sc,rc=ROOF[d.cat]||'#7b5632';
   if(h.b==='getreidefeld'||h.b==='gemuesehof'){drawField(h,bx,by);drawLevelBadge(h,bx+SIZE*0.45,by-SIZE*0.45);return;}
   if(h.b==='brunnen'){drawWell(bx,by);drawLevelBadge(h,bx+SIZE*0.3,by-SIZE*0.75);return;}
   if(h.b==='teich'){
@@ -1184,31 +1258,31 @@ function drawBuildingSprite(h){const d=DEFS[h.b],bx=h.px.x,by=h.px.y-h.elev;
     ctx.fillStyle='rgba(200,120,75,0.5)';ctx.fillRect(bx-w*0.6,awningY+SIZE*0.12,w*1.2,2);
   }
   if(h.b==='hainbaum'){
-    ctx.save();ctx.translate(bx,by);
+    ctx.save();ctx.translate(bx,by);ctx.scale(fpScale,fpScale);
     ctx.fillStyle='rgba(60,40,20,0.5)';ctx.fillRect(-4, -SIZE*0.6, 8, SIZE*0.6);
     ctx.fillStyle='rgba(80,140,60,0.85)';ctx.beginPath();ctx.arc(0, -SIZE*0.7, SIZE*0.55, 0, 7);ctx.fill();
     ctx.fillStyle='rgba(50,110,40,0.7)';ctx.beginPath();ctx.arc(-SIZE*0.25, -SIZE*0.85, SIZE*0.35, 0, 7);ctx.fill();
     ctx.fillStyle='rgba(60,130,45,0.7)';ctx.beginPath();ctx.arc(SIZE*0.25, -SIZE*0.8, SIZE*0.38, 0, 7);ctx.fill();
     ctx.fillStyle='rgba(255,220,100,0.9)';ctx.beginPath();ctx.arc(0, -SIZE*0.75, SIZE*0.12, 0, 7);ctx.fill();
     ctx.restore();
-    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.6);return;}
+    drawLevelBadge(h,bx+SIZE*0.5*fpScale,by-SIZE*0.6*fpScale);return;}
   if(h.b==='kristall'){
-    ctx.save();ctx.translate(bx,by);
+    ctx.save();ctx.translate(bx,by);ctx.scale(fpScale,fpScale);
     ctx.fillStyle='rgba(80,60,100,0.8)';ctx.fillRect(-3, -SIZE*0.5, 6, SIZE*0.5);
     ctx.fillStyle='rgba(150,100,220,0.9)';ctx.beginPath();ctx.moveTo(-SIZE*0.2, -SIZE*0.5);ctx.lineTo(0, -SIZE*0.9);
     ctx.lineTo(SIZE*0.2, -SIZE*0.5);ctx.closePath();ctx.fill();
     ctx.fillStyle='rgba(200,160,255,0.8)';ctx.beginPath();ctx.moveTo(0, -SIZE*0.9);ctx.lineTo(SIZE*0.25, -SIZE*0.45);
     ctx.lineTo(0, -SIZE*0.4);ctx.lineTo(-SIZE*0.25, -SIZE*0.45);ctx.closePath();ctx.fill();
     ctx.restore();
-    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.5);return;}
+    drawLevelBadge(h,bx+SIZE*0.5*fpScale,by-SIZE*0.5*fpScale);return;}
   if(h.b==='erdzeichen'){
-    ctx.save();ctx.translate(bx,by);
+    ctx.save();ctx.translate(bx,by);ctx.scale(fpScale,fpScale);
     ctx.fillStyle='rgba(100,80,60,0.8)';
     for(let i=0;i<6;i++){const a=Math.PI/3*i;ctx.beginPath();ctx.arc(Math.cos(a)*SIZE*0.3, Math.sin(a)*SIZE*0.25, 4, 0, 7);ctx.fill();}
     ctx.fillStyle='rgba(140,110,80,0.9)';ctx.beginPath();ctx.arc(0,0,SIZE*0.2,0,7);ctx.fill();
     ctx.fillStyle='rgba(200,180,140,0.7)';ctx.beginPath();ctx.arc(0,0,SIZE*0.1,0,7);ctx.fill();
     ctx.restore();
-    drawLevelBadge(h,bx+SIZE*0.5,by-SIZE*0.35);return;}
+    drawLevelBadge(h,bx+SIZE*0.5*fpScale,by-SIZE*0.35*fpScale);return;}
   shadowEll(bx,by+3,w*.72,SIZE*.18*sc,.32);
   drawHouseBody(bx,by,w,wh,rh,rc,d.cat==='Stein & Erz'?'#b8b3a3':'#d7c298');
   drawYardDetails(h,bx,by,sc);
@@ -1300,7 +1374,7 @@ function draw(){
         ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();ctx.setLineDash([]);
       }});
     }
-    if(h.b&&h.b!=='weg')drawBuildingSprite(h);else if(!h.b)drawDeco(h);
+    if(h.b&&h.b!=='weg')drawBuildingSprite(h);else if(!h.b&&!h.footprintOf)drawDeco(h);
   }
   carriers.forEach(c=>{const a=c.pts[c.seg],b=c.pts[c.seg+1];if(!a||!b)return;
     const x=a.x+(b.x-a.x)*c.tt,y=a.y+(b.y-a.y)*c.tt;drawCarrier(x,y,tnow*9+c.seg);});
@@ -1360,7 +1434,8 @@ function applyState(s){
   hungerFreeStreak=s.hungerFreeStreak;buildMult=s.buildMult;
   if(s.cam){cam.x=s.cam.x;cam.y=s.cam.y;cam.zoom=s.cam.zoom||1;}
   showVitLayer=!!s.showVitLayer;
-  hexes.forEach((h,k)=>{const d=s.hexData[k];if(d){h.biome=d.biome;h.vit=d.vit;h.b=d.b;h.lvl=d.lvl;}h._seedCache=h._seedCache||{};});
+  hexes.forEach((h,k)=>{const d=s.hexData[k];if(d){h.biome=d.biome;h.vit=d.vit;h.b=d.b;h.lvl=d.lvl;}h.footprintOf=null;h._footprint=null;h._seedCache=h._seedCache||{};});
+  rebuildAllFootprints(); // Footprints werden nicht mitgespeichert — nach dem Laden aus b/size neu ableiten
   networkDirty=true;buildPalette();hudDirty=true;
 }
 function saveGame(slotIdx,name){
