@@ -10,17 +10,17 @@
 <meta name="theme-color" content="#0f1612">
 <title>Wurzelwerk — Aufbau</title>
 <style>
-  :root{--bg:#0f1612;--panel:rgba(28,36,28,0.82);--panel2:rgba(20,26,20,0.9);--line:rgba(255,255,255,0.06);
-    --line2:rgba(255,255,255,0.1);--text:#f0e6d3;--muted:#a8b898;--accent:#88d080;--gold:#e2c65a;
-    --bad:#e07a52;--ink:#090d09;--shadow:0 8px 32px rgba(0,0,0,0.35);}
+  :root{--bg:#06080a;--panel:rgba(13,16,19,0.97);--panel2:rgba(8,10,12,0.98);--line:rgba(255,255,255,0.08);
+    --line2:rgba(255,255,255,0.18);--text:#e9eef1;--muted:#7c8a94;--accent:#00e6c3;--gold:#ffb020;
+    --bad:#ff4444;--ink:#000000;--shadow:0 2px 0 rgba(0,0,0,0.6),0 8px 24px rgba(0,0,0,0.5);}
   *{box-sizing:border-box}
   html,body{margin:0;height:100dvh;height:-webkit-fill-available;background:var(--bg);color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden;position:fixed;width:100%}
-  body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;opacity:.14;
-    background-image:radial-gradient(circle at 15% 8%,rgba(255,244,205,.14),transparent 32%),
-      radial-gradient(circle at 85% 20%,rgba(180,220,160,.1),transparent 28%),
-      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
-      linear-gradient(0deg,rgba(0,0,0,.04) 1px,transparent 1px);
+  body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;opacity:.16;
+    background-image:radial-gradient(circle at 50% 0%,rgba(0,230,195,.06),transparent 40%),
+      radial-gradient(circle at 100% 100%,rgba(0,0,0,.5),transparent 45%),
+      linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px),
+      linear-gradient(0deg,rgba(0,0,0,.05) 1px,transparent 1px);
     background-size:auto,auto,5px 5px,6px 6px;mix-blend-mode:soft-light}
   #app{display:flex;height:100%;backdrop-filter:blur(2px)}
   #left{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
@@ -28,7 +28,7 @@
     border-bottom:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
     flex-wrap:wrap;font-size:13.5px;box-shadow:var(--shadow);position:relative;z-index:10}
   .res{display:flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(255,255,255,0.03);
-    border-radius:8px;border:1px solid var(--line);transition:all .2s}
+    border-radius:2px;border:1px solid var(--line);transition:all .2s}
   .res:hover{background:rgba(255,255,255,0.06);border-color:var(--line2)}
   .res b{font-weight:650;min-width:18px;text-align:right;font-variant-numeric:tabular-nums}
   .res .ic{font-size:16px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.3))}
@@ -39,15 +39,15 @@
   .hud-session{opacity:.8;transition:opacity .15s}
   .hud-session:hover{opacity:1}
   #store{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:4px 10px;
-    background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid var(--line)}
-  #storeBar{width:84px;height:10px;background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:6px;
+    background:rgba(255,255,255,0.02);border-radius:2px;border:1px solid var(--line)}
+  #storeBar{width:84px;height:10px;background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:2px;
     overflow:hidden;position:relative;box-shadow:inset 0 1px 3px rgba(0,0,0,0.4)}
-  #storeFill{height:100%;background:linear-gradient(90deg,#7cb868,#e0c055);border-radius:4px;
-    transition:width .4s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 8px rgba(124,184,104,0.3)}
+  #storeFill{height:100%;background:linear-gradient(90deg,#00b89c,#00e6c3);border-radius:2px;
+    transition:width .4s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 8px rgba(0,230,195,0.35)}
   #season{margin-left:auto;font-size:12.5px;color:var(--muted);text-align:right;line-height:1.4;padding:4px 10px;
-    background:rgba(0,0,0,0.15);border-radius:8px;border:1px solid var(--line)}
+    background:rgba(0,0,0,0.15);border-radius:2px;border:1px solid var(--line)}
   #season b{color:var(--text);font-weight:600}
-  #vitToggle{font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;
+  #vitToggle{font-size:11px;cursor:pointer;padding:5px 9px;border-radius:2px;user-select:none;
     background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);
     transition:all .15s;font-weight:600;letter-spacing:0.5px}
   #vitToggle:hover{background:rgba(255,255,255,0.08);color:var(--text)}
@@ -58,38 +58,33 @@
     box-shadow:var(--shadow);position:relative;z-index:10}
   #buildbar::-webkit-scrollbar{width:6px}
   #buildbar::-webkit-scrollbar-track{background:transparent}
-  #buildbar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+  #buildbar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
   #buildbar h4{margin:0 0 16px 4px;font-size:14px;font-weight:700;color:var(--gold);
-    letter-spacing:0.4px;text-shadow:0 0 20px rgba(226,198,90,0.3)}
+    letter-spacing:0.4px;text-shadow:0 0 20px rgba(255,176,32,0.3)}
   .grp{margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
   .grp:last-child{border-bottom:none}
   .grp .lbl{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1.6px;margin:0 0 8px 4px;
     font-weight:600;opacity:0.85}
   .grp .row{display:flex;flex-direction:column;gap:5px}
-  .btn{background:linear-gradient(135deg,rgba(50,60,48,0.7),rgba(35,42,32,0.85));border:1px solid rgba(255,255,255,0.08);
-    color:var(--text);border-radius:8px;padding:9px 10px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;
-    gap:10px;transition:all .15s;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04);
+  .btn{background:#0e1114;border:1px solid var(--line);border-left:2px solid transparent;
+    color:var(--text);border-radius:2px;padding:9px 10px;font-size:12.5px;cursor:pointer;display:flex;align-items:center;
+    gap:10px;transition:border-color .12s,background-color .12s;width:100%;
     position:relative;overflow:hidden}
-  .btn::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04),transparent);
-    opacity:0;transition:opacity .15s}
-  .btn:hover::before{opacity:1}
-  .btn:hover{background:linear-gradient(135deg,rgba(58,70,55,0.8),rgba(42,50,40,0.9));
-    border-color:rgba(255,255,255,0.14);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
-  .btn:active{transform:translateY(0);box-shadow:0 1px 4px rgba(0,0,0,0.2)}
-  .btn.sel{border-color:var(--gold);background:linear-gradient(135deg,rgba(90,80,35,0.85),rgba(55,50,28,0.9));
-    color:#fff7d8;box-shadow:0 0 16px rgba(226,198,90,0.25),inset 0 1px 0 rgba(255,255,255,0.08)}
+  .btn:hover{background:#151a1e;border-color:var(--line2);border-left-color:var(--accent)}
+  .btn:active{background:#0a0c0e}
+  .btn.sel{border-color:var(--accent);border-left-color:var(--accent);background:rgba(0,230,195,0.07);
+    color:var(--text)}
   .btn .em{font-size:17px;width:24px;height:24px;text-align:center;flex-shrink:0;display:grid;place-items:center;
-    background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:6px;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,0.3)}
+    background:#000;border:1px solid var(--line);border-radius:2px}
   .btn .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;letter-spacing:0.2px}
   .btn .cost{font-size:10.5px;color:var(--muted);white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums}
   .btn.locked{opacity:.28;cursor:not-allowed;filter:grayscale(0.6)}
-  .btn.locked:hover{transform:none;background:linear-gradient(135deg,rgba(50,60,48,0.7),rgba(35,42,32,0.85))}
+  .btn.locked:hover{background:#0e1114;border-left-color:transparent}
   #right{width:320px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;
     overflow-y:auto;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--shadow);position:relative;z-index:10}
   #right::-webkit-scrollbar{width:6px}
   #right::-webkit-scrollbar-track{background:transparent}
-  #right::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+  #right::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
   .card{padding:16px 18px;border-bottom:1px solid var(--line);background:rgba(255,255,255,0.01);
     transition:background .2s}
   .card:hover{background:rgba(255,255,255,0.025)}
@@ -97,84 +92,86 @@
     align-items:center;letter-spacing:0.3px}
   .card .sub{font-size:12.5px;color:var(--muted);line-height:1.5}
   .ev{font-size:10.5px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-weight:700;
-    margin-bottom:4px;opacity:0.9;text-shadow:0 0 12px rgba(226,198,90,0.2)}
+    margin-bottom:4px;opacity:0.9;text-shadow:0 0 12px rgba(255,176,32,0.2)}
   #chapName{font-size:18px;font-weight:700;color:var(--text);margin:4px 0 8px;letter-spacing:0.2px;
     text-shadow:0 2px 8px rgba(0,0,0,0.3)}
   #chapStory{font-size:12.5px;color:var(--muted);line-height:1.55;margin:8px 0 14px}
   #goalRow{display:flex;align-items:center;gap:10px;font-size:12.5px;margin-top:8px}
-  #goalBar{flex:1;height:12px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
+  #goalBar{flex:1;height:12px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:2px;
     overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);position:relative}
-  #goalFill{height:100%;width:0;background:linear-gradient(90deg,#7cb868,#e0c055);border-radius:5px;
-    transition:width .5s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 12px rgba(124,184,104,0.4)}
+  #goalFill{height:100%;width:0;background:linear-gradient(90deg,#00b89c,#00e6c3);border-radius:2px;
+    transition:width .5s cubic-bezier(0.22, 1, 0.36, 1);box-shadow:0 0 12px rgba(0,230,195,0.4)}
   #goalTxt{font-size:11.5px;color:var(--muted);min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
-  .vbar{height:10px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:6px;
+  .vbar{height:10px;background:rgba(0,0,0,0.25);border:1px solid var(--line2);border-radius:2px;
     overflow:hidden;margin:6px 0;box-shadow:inset 0 1px 3px rgba(0,0,0,0.3)}
   .vbar > div{height:100%;transition:width .3s}
   .lvldots{display:flex;gap:4px}
   .lvldots i{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.3);border:1px solid var(--line2);
     display:inline-block;transition:all .2s}
-  .lvldots i.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(226,198,90,0.5)}
-  .up{margin-top:10px;width:100%;background:linear-gradient(135deg,rgba(90,80,35,0.85),rgba(55,50,28,0.9));
-    border:1px solid var(--gold);color:#fff;padding:9px;border-radius:8px;font-size:12.5px;cursor:pointer;
+  .lvldots i.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(255,176,32,0.5)}
+  .up{margin-top:10px;width:100%;background:linear-gradient(135deg,rgba(255,176,32,0.18),rgba(150,100,10,0.25));
+    border:1px solid var(--gold);color:#fff;padding:9px;border-radius:2px;font-size:12.5px;cursor:pointer;
     text-align:center;font-weight:600;letter-spacing:0.3px;transition:all .15s;
-    box-shadow:0 4px 12px rgba(226,198,90,0.2),inset 0 1px 0 rgba(255,255,255,0.1)}
-  .up:hover:not(.no){background:linear-gradient(135deg,rgba(105,95,42,0.9),rgba(62,56,30,0.95));
-    transform:translateY(-1px);box-shadow:0 6px 16px rgba(226,198,90,0.3)}
+    box-shadow:0 4px 12px rgba(255,176,32,0.2),inset 0 1px 0 rgba(255,255,255,0.1)}
+  .up:hover:not(.no){background:linear-gradient(135deg,rgba(255,176,32,0.24),rgba(150,100,10,0.3));
+    transform:translateY(-1px);box-shadow:0 6px 16px rgba(255,176,32,0.3)}
   .up.no{background:rgba(40,46,38,0.7);border-color:var(--line2);color:var(--muted);cursor:not-allowed;
     box-shadow:none;opacity:0.6}
   .dem{margin-top:8px;width:100%;background:rgba(255,255,255,0.02);border:1px solid var(--line);color:var(--muted);
-    padding:6px;border-radius:7px;font-size:11.5px;cursor:pointer;transition:all .15s}
+    padding:6px;border-radius:2px;font-size:11.5px;cursor:pointer;transition:all .15s}
   .dem:hover{background:rgba(255,80,60,0.08);border-color:rgba(255,100,80,0.3);color:var(--bad)}
   .costline{font-size:11px;color:var(--muted);margin-top:5px;letter-spacing:0.2px}
   .costline .miss{color:var(--bad);font-weight:600}
   #stock{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;font-size:12.5px}
   #stock div{display:flex;gap:5px;align-items:center;background:rgba(0,0,0,0.2);border:1px solid var(--line);
-    border-radius:6px;padding:5px 6px;transition:all .15s}
+    border-radius:2px;padding:5px 6px;transition:all .15s}
   #stock div:hover{background:rgba(0,0,0,0.3);border-color:var(--line2)}
   #hint{font-size:11.5px;color:var(--muted);line-height:1.6}
   #banner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
     background:rgba(8,12,8,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:50;
     animation:fadeIn .3s}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  #bannerInner{background:linear-gradient(145deg,#2a3428,#1a2218);border:1px solid var(--gold);border-radius:14px;
-    padding:28px 32px;max-width:480px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 80px rgba(226,198,90,0.08);
+  #bannerInner{background:linear-gradient(160deg,#14181c,#0a0c0e);border:1px solid var(--gold);border-radius:2px;
+    padding:28px 32px;max-width:480px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 80px rgba(255,176,32,0.08);
     animation:slideUp .4s cubic-bezier(0.22, 1, 0.36, 1)}
   @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
   #bannerInner h2{margin:4px 0 6px;color:var(--gold);font-size:22px;font-weight:700;letter-spacing:0.4px;
-    text-shadow:0 0 30px rgba(226,198,90,0.4)}
+    text-shadow:0 0 30px rgba(255,176,32,0.4)}
   #bannerInner p{font-size:14px;line-height:1.6;color:var(--text)}
   #bannerInner .unl{font-size:13px;color:var(--accent);margin-top:12px;line-height:1.5;font-weight:500}
-  #bannerInner button{margin-top:18px;background:linear-gradient(135deg,rgba(80,100,65,0.9),rgba(55,70,42,0.95));
-    border:1px solid var(--gold);color:#fff;padding:11px 26px;border-radius:9px;font-size:14px;cursor:pointer;
-    font-weight:600;letter-spacing:0.4px;transition:all .15s;box-shadow:0 4px 16px rgba(226,198,90,0.25)}
-  #bannerInner button:hover{background:linear-gradient(135deg,rgba(95,120,75,0.95),rgba(65,85,50,1));
-    transform:translateY(-2px);box-shadow:0 8px 24px rgba(226,198,90,0.35)}
+  #bannerInner button{margin-top:18px;background:linear-gradient(135deg,rgba(0,230,195,0.16),rgba(0,140,120,0.22));
+    border:1px solid var(--gold);color:#fff;padding:11px 26px;border-radius:2px;font-size:14px;cursor:pointer;
+    font-weight:600;letter-spacing:0.4px;transition:all .15s;box-shadow:0 4px 16px rgba(255,176,32,0.25)}
+  #bannerInner button:hover{background:linear-gradient(135deg,rgba(0,230,195,0.22),rgba(0,150,130,0.3));
+    transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,176,32,0.35)}
   .small{font-size:11px;color:var(--muted);line-height:1.5}
-  #toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(35,45,32,0.96),rgba(25,32,24,0.98));
-    border:1px solid var(--line2);padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;
+  #toast{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:var(--panel2);border-left:3px solid var(--accent);
+    border:1px solid var(--line2);padding:10px 18px;border-radius:2px;font-size:13px;opacity:0;
     transition:all .3s cubic-bezier(0.22, 1, 0.36, 1);pointer-events:none;z-index:40;
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,0.4);
     font-weight:500;letter-spacing:0.2px}
-  kbd{background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:4px;padding:2px 6px;
+  kbd{background:rgba(0,0,0,0.3);border:1px solid var(--line2);border-radius:2px;padding:2px 6px;
     font-size:10.5px;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,0.2)}
   @media (max-width:700px){
-    #buildbar{position:absolute;left:0;top:0;bottom:0;width:240px;transform:translateX(-240px);transition:transform .25s;z-index:30;padding:14px 10px 20px;}
+    #buildbar{position:absolute;left:0;top:0;bottom:0;width:82vw;max-width:320px;transform:translateX(-100%);transition:transform .25s;z-index:30;padding:14px 10px 20px;}
     #buildbar.open{transform:translateX(0);}
-    #right{position:absolute;right:0;top:0;bottom:0;width:260px;transform:translateX(260px);transition:transform .25s;z-index:30;padding:14px 10px 20px;}
+    #right{position:absolute;right:0;top:0;bottom:0;width:82vw;max-width:320px;transform:translateX(100%);transition:transform .25s;z-index:30;padding:14px 10px 20px;}
     #right.open{transform:translateX(0);}
     .card{padding:12px 10px;}
     .card h3{font-size:13px;}
-    .btn{padding:7px 8px;font-size:11.5px;}
+    .btn{padding:12px 10px;font-size:13px;min-height:44px;}
+    .btn.locked{display:none;} /* Mobile: nur wirklich baubare Gebäude zeigen, kein Ballast durch gesperrte */
     #topbar{gap:8px;padding:8px 10px;font-size:12px;}
     #menuBtn,#statsBtn{display:flex !important;}
+    .up,.dem{min-height:44px;font-size:13.5px;}
   }
-  #menuBtn,#statsBtn{display:none;position:fixed;bottom:18px;z-index:40;padding:10px 14px;border-radius:20px;font-size:14px;cursor:pointer;background:rgba(255,255,255,0.06);border:1px solid var(--line2);color:var(--muted);font-weight:600;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-width:44px;min-height:44px;display:none;align-items:center;justify-content:center;}
+  #menuBtn,#statsBtn{display:none;position:fixed;bottom:18px;z-index:40;padding:10px 14px;border-radius:2px;font-size:14px;cursor:pointer;background:rgba(255,255,255,0.06);border:1px solid var(--line2);color:var(--muted);font-weight:600;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-width:44px;min-height:44px;display:none;align-items:center;justify-content:center;}
   #menuBtn{left:12px;}
   #statsBtn{right:12px;}
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:25;display:none;}
   .overlay.show{display:block;}
-  #settingsModal input[type=range]{-webkit-appearance:none;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;outline:none}
-  #settingsModal input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 6px rgba(226,198,90,0.4)}
+  #settingsModal input[type=range]{-webkit-appearance:none;height:6px;background:rgba(255,255,255,0.08);border-radius:2px;outline:none}
+  #settingsModal input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 6px rgba(255,176,32,0.4)}
 </style>
 </head>
 <body>
@@ -188,8 +185,7 @@
     <div id="stage">
         <canvas id="cv"></canvas>
         <div id="toast"></div>
-        <audio id="bgm" preload="auto" loop><source src="audio/ost.mp3" type="audio/mpeg"></audio>
-        <div id="settingsModal" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,12,8,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:60;animation:fadeIn .3s"><div style="background:linear-gradient(145deg,#2a3428,#1a2218);border:1px solid var(--gold);border-radius:14px;padding:24px 28px;max-width:420px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 80px rgba(226,198,90,0.08);animation:slideUp .4s cubic-bezier(0.22, 1, 0.36, 1)"><h2 style="margin:4px 0 12px;color:var(--gold);font-size:20px;font-weight:700;letter-spacing:0.4px">Sandbox-Einstellungen</h2><div style="display:flex;flex-direction:column;gap:12px"><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Startressourcen</span><span id="prefResLabel" style="color:var(--muted)">Normal</span></label><input id="prefRes" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="0" style="width:100%;accent-color:var(--gold)"></div><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Jahreszeit-Härte</span><span id="seasonHarshLabel" style="color:var(--muted)">Normal</span></label><input id="seasonHarsh" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="1" style="width:100%;accent-color:var(--gold)"></div><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Raubbau-Bonus</span><span id="raubbauLabel" style="color:var(--muted)">Normal</span></label><input id="raubbauBonus" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="1" style="width:100%;accent-color:var(--gold)"></div></div><button id="applySettings" onclick="applySandbox()" style="margin-top:16px;width:100%;background:linear-gradient(135deg,rgba(80,100,65,0.9),rgba(55,70,42,0.95));border:1px solid var(--gold);color:#fff;padding:10px;border-radius:9px;font-size:14px;cursor:pointer;font-weight:600;letter-spacing:0.4px;transition:all .15s;box-shadow:0 4px 16px rgba(226,198,90,0.25)">Spiel starten</button></div></div>
+        <div id="settingsModal" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(8,12,8,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:60;animation:fadeIn .3s"><div style="background:linear-gradient(160deg,#14181c,#0a0c0e);border:1px solid var(--gold);border-radius:2px;padding:24px 28px;max-width:420px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 80px rgba(255,176,32,0.08);animation:slideUp .4s cubic-bezier(0.22, 1, 0.36, 1)"><h2 style="margin:4px 0 12px;color:var(--gold);font-size:20px;font-weight:700;letter-spacing:0.4px">Sandbox-Einstellungen</h2><div style="display:flex;flex-direction:column;gap:12px"><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Startressourcen</span><span id="prefResLabel" style="color:var(--muted)">Normal</span></label><input id="prefRes" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="0" style="width:100%;accent-color:var(--gold)"></div><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Jahreszeit-Härte</span><span id="seasonHarshLabel" style="color:var(--muted)">Normal</span></label><input id="seasonHarsh" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="1" style="width:100%;accent-color:var(--gold)"></div><div><label style="display:flex;justify-content:space-between;font-size:13px;color:var(--text);margin-bottom:4px"><span>Raubbau-Bonus</span><span id="raubbauLabel" style="color:var(--muted)">Normal</span></label><input id="raubbauBonus" oninput="updateSettingsLabels()" type="range" min="0" max="2" step="1" value="1" style="width:100%;accent-color:var(--gold)"></div></div><button id="applySettings" onclick="applySandbox()" style="margin-top:16px;width:100%;background:linear-gradient(135deg,rgba(0,230,195,0.16),rgba(0,140,120,0.22));border:1px solid var(--gold);color:#fff;padding:10px;border-radius:2px;font-size:14px;cursor:pointer;font-weight:600;letter-spacing:0.4px;transition:all .15s;box-shadow:0 4px 16px rgba(255,176,32,0.25)">Spiel starten</button></div></div>
         <audio id="bgm" preload="auto" loop><source src="audio/ost.mp3" type="audio/mpeg"></audio>
 
       <div id="banner"><div id="bannerInner">
@@ -432,6 +428,8 @@ function aspBonus(name){return appliedAsp.has(name)?1:0;}
 // ---------------- Sim ----------------
 let pop=4,paused=false,t=0,year=0,seasonIdx=1,bluehendCount=0,jobsUsed=0,hunger=0,dayTime=0,satisfaction=1,showVitLayer=false,autarkYears=0,activeSymbioses=0,hungerFreeStreak=0,buildMult=1,renaturedCount=0,prestigeLevel=0,baseBuildMult=1;
 const appliedAsp=new Set();
+const priorityRes=new Set(); // vom Spieler priorisierte Waren — bekommen mehr Lagerplatz als die 40%-Regel sonst erlaubt
+function toggleResPriority(r){if(priorityRes.has(r))priorityRes.delete(r);else priorityRes.add(r);toast((priorityRes.has(r)?'⭐ ':'☆ ')+RESMETA[r][1]+(priorityRes.has(r)?' priorisiert':' nicht mehr priorisiert'));hudDirty=true;}
 const SEASON_TICKS=40,YEAR_TICKS=160;
 const SEASONS=['Frühling','Sommer','Herbst','Winter'];
 const SEASON_FIELD=[1.2,1.1,1.0,0.2],SEASON_REGEN=[1.2,1.1,0.8,0.4];
@@ -451,6 +449,12 @@ function workPriority(h){const d=DEFS[h.b];
   if(h.b==='kuhfarm'||h.b==='jagdhuette') return 0;
   if(!d.in) return 1;
   return 2;}
+const SPECIALTY_CATS=['Holz','Stein & Erz','Acker','Vieh & Stoff','Natur'];
+// Deterministisch aus der Hex-Position abgeleitet (kein Zufalls-State nötig, übersteht Speichern/Laden ohne Zusatzfeld).
+function wohnstaetteSpecialty(h){
+  if(h.b!=='wohnstaette'||h.lvl<3)return null;
+  return SPECIALTY_CATS[Math.floor(seeded(h,50)*SPECIALTY_CATS.length)];
+}
 function simTick(){
   t++;dayTime=(dayTime+1)%64;if(networkDirty){networkDirty=false;recomputeNetwork();}
   seasonIdx=Math.floor((t%YEAR_TICKS)/SEASON_TICKS);if(t%YEAR_TICKS===0&&t>0)year++;
@@ -459,7 +463,7 @@ function simTick(){
   const symbiosisMult=appliedAsp.has('symbiose_meister')?1.25:1;
   const buildMult=appliedAsp.has('wuselnde_stadt')?0.9:1;
   for(const k in counts)delete counts[k];
-  hexes.forEach(h=>{h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;});
+  hexes.forEach(h=>{h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;h._specialtyBoost=0;});
   if(t%18===0&&chap>=4){
     hexes.forEach(h=>{
       if(h.b==='imkerei'&&h.connected&&h.vit>70){
@@ -494,9 +498,20 @@ function simTick(){
         if(nb.b==='fischerhuette'&&nb.connected) nb._pollBoost=Math.max(nb._pollBoost||0,4);
       });
     }
+    // Spezialisierung: Wohnstätten ab Stufe 3 entwickeln eine (deterministische) Fachrichtung
+    // und boosten nahe Gebäude ihrer Kategorie — macht Bau-Reihenfolge rund um Wohnstätten taktisch.
+    if(h.b==='wohnstaette'&&h.lvl>=3&&h.connected){
+      const spec=wohnstaetteSpecialty(h);
+      if(spec)neighbors(h).forEach(nb=>{if(nb.b&&DEFS[nb.b].cat===spec)nb._specialtyBoost=0.12;});
+    }
   });
   const cap=storageCap();
   let used=Object.values(RES).reduce((a,b)=>a+b,0); // Lager ist ein gemeinsamer Topf über alle Warentypen, kein Slot pro Ware
+  // Damit eine einzelne Ware (z.B. Holz) nicht das ganze gemeinsame Lager blockiert und andere
+  // Ketten (z.B. Nahrung) aushungert, darf keine Einzelware mehr als diesen Anteil belegen —
+  // vom Spieler priorisierte Waren dürfen deutlich mehr beanspruchen (75% statt 40%).
+  const perResCap=Math.max(40,cap*0.4);
+  const resCapFor=r=>priorityRes.has(r)?Math.max(perResCap,cap*0.75):perResCap;
   // verbundene Job-Gebäude sammeln, nach Priorität sortieren
   const work=[];hexes.forEach(h=>{const d=DEFS[h.b];if(!d||d.road||d.jobs===0)return;work.push(h);});
   work.sort((a,b)=>workPriority(a)-workPriority(b));
@@ -504,6 +519,7 @@ function simTick(){
   for(const h of work){
     const d=DEFS[h.b],need=jobsFor(d,h.lvl);
     h._stalled=false;h._noFood=false;h._noInput=false;
+    if(h._paused){h._active=false;continue;} // Spieler hat das Gebäude manuell pausiert — Arbeiter bleibt für andere Betriebe frei
     if(!h.connected||idle<need){h._active=false;continue;}
     // Bergarbeiter brauchen gelieferte Nahrung
     if(d.cat==='Stein & Erz'){const up=0.12*need;
@@ -516,8 +532,10 @@ function simTick(){
     if(h._pollBoost>0){m*=1.5;h._pollBoost=Math.max(0,h._pollBoost-1);}
     if(h.b==='erzmine'&&h._oreBoost>0){m*=1.6;h._oreBoost=Math.max(0,h._oreBoost-1);}
     if(h._marketBoost>0)m*=(1+h._marketBoost);
+    if(h._specialtyBoost>0)m*=(1+h._specialtyBoost);
     // Lager für Output voll? → sauber pausieren, Input wird NICHT verschwendet
-    if(d.out&&used>=cap-0.5){h._active=false;h._stalled=true;continue;}
+    if(d.out){const anyRoom=used<cap-0.5&&Object.keys(d.out).some(r=>RES[r]<resCapFor(r)-0.5);
+      if(!anyRoom){h._active=false;h._stalled=true;continue;}}
     // Input verfügbar? sonst warten (Arbeiter bleibt frei für andere Betriebe)
     if(d.in){let ok=true;for(const r in d.in)if(RES[r]<d.in[r]*m){ok=false;break;}
       if(!ok){h._active=false;h._noInput=true;continue;}}
@@ -525,7 +543,7 @@ function simTick(){
     idle-=need;jobsUsed+=need;counts[h.b]=(counts[h.b]||0)+1;h._active=true;
     if(d.in)for(const r in d.in){RES[r]-=d.in[r]*m;used-=d.in[r]*m;}
     if(d.out){for(const r in d.out){let amt=d.out[r]*m;if(['honey','herbs','remedy'].includes(r))amt*=symbiosisMult;
-      amt=Math.max(0,Math.min(amt,cap-used));RES[r]+=amt;used+=amt;}}
+      amt=Math.max(0,Math.min(amt,cap-used,resCapFor(r)-RES[r]));RES[r]+=amt;used+=amt;}}
     if(d.vit)h.vit=Math.max(0,Math.min(100,h.vit+d.vit));
     if(d.neigh)for(const nb of neighbors(h))if(nb.biome!=='wasser')nb.vit=Math.min(100,nb.vit+d.neigh);
     if(d.out)spawnCarrier(h);
@@ -541,6 +559,22 @@ function simTick(){
     h.vit=Math.min(100,h.vit+0.5*SEASON_REGEN[seasonIdx]*(0.5+0.5*h.vit/100)*regenMult);
     if(h.vit>=80)blue++;});
   bluehendCount=blue;
+  // Vitalitäts-Infektion: tief verödete Zonen (vit<20) ziehen ihre Nachbarn langsam mit runter,
+  // wenn man sie sich selbst überlässt — macht Vernachlässigung spürbar riskanter als nur lokal.
+  hexes.forEach(h=>{if(h.biome==='wasser'||h.vit>=20)return;
+    const drain=(20-h.vit)*0.004;
+    neighbors(h).forEach(nb=>{if(nb.biome!=='wasser')nb.vit=Math.max(0,nb.vit-drain);});});
+  // Kipppunkt-Erkennung: Zone sinkt gerade UND nähert sich einer Ertrags-Schwelle von oben (80/50/25) —
+  // Warnung kommt VOR dem Umkippen, nicht erst danach.
+  const TIER_THRESH=[80,50,25];let tippingCount=0;
+  hexes.forEach(h=>{
+    if(h.biome==='wasser'){h._tipping=false;h._prevVit=h.vit;return;}
+    const declining=h._prevVit!==undefined&&h.vit<h._prevVit-0.001;
+    h._tipping=declining&&TIER_THRESH.some(th=>h.vit>=th&&h.vit<th+6);
+    if(h._tipping)tippingCount++;
+    h._prevVit=h.vit;
+  });
+  window._tippingCount=tippingCount;
   // population — bewusst langsames, regionales Wachstum. Neue Siedler sind ein
   // Ergebnis guter Versorgung, kein Automatik-Turbo. So bleibt jeder Ausbau ein Erlebnis.
   const hc=housingCap(),eat=pop*0.5,ft=foodTotal();
@@ -550,16 +584,26 @@ function simTick(){
     hungerFreeStreak++;
     if(hungerFreeStreak>=YEAR_TICKS){autarkYears++;hungerFreeStreak=0;toast('🏆 Ein Jahr autark überstanden!');}
     let variety=FOODS.filter(r=>RES[r]>0).length;
-    let sat=1;
-    if(pop>12&&![...hexes.values()].some(h=>h.b==='schule'&&h.connected))sat-=0.12;
-    if(pop>24&&![...hexes.values()].some(h=>h.b==='festplatz'&&h.connected))sat-=0.1;
-    if(pop>40&&![...hexes.values()].some(h=>h.b==='heilstube'&&h.connected))sat-=0.12;
+    let sat=1;const reasons=[];
+    if(pop>12&&![...hexes.values()].some(h=>h.b==='schule'&&h.connected)){sat-=0.12;reasons.push('Keine Schule (−12%)');}
+    if(pop>24&&![...hexes.values()].some(h=>h.b==='festplatz'&&h.connected)){sat-=0.1;reasons.push('Kein Festplatz (−10%)');}
+    if(pop>40&&![...hexes.values()].some(h=>h.b==='heilstube'&&h.connected)){sat-=0.12;reasons.push('Keine Heilstube (−12%)');}
+    if(variety<=1)reasons.push('Einseitige Ernährung (nur '+variety+' Nahrungsart)');
+    // Dynamische Nachfrage: im Winter wird Kleidung verbraucht (wer nicht vorgesorgt hat, spürt's) —
+    // erst relevant sobald die Kleidungskette überhaupt freigeschaltet ist, sonst unfair für frühe Kapitel.
+    if(seasonIdx===3&&chap>=3){
+      const clothesNeed=pop*0.1;
+      if(RES.clothes>=clothesNeed)RES.clothes=Math.round((RES.clothes-clothesNeed)*10)/10;
+      else{RES.clothes=0;sat-=0.08;reasons.push('Zu wenig Kleidung für den Winter (−8%)');}
+    }
     sat=Math.max(0.35,sat);
     satisfaction=sat;
+    window._satReasons=reasons.length?reasons:['Alle Bedürfnisse gedeckt'];
     const interval=Math.max(5,Math.round((14-variety*2)*sat));
     if(pop<hc&&ft>pop*sat*1.5&&variety>=1&&t%interval===0&&Math.random()<sat)pop++;
   } else { // Unterversorgung — mit Karenzzeit, nie unter 2 (minimale Arbeitskraft halten)
     hunger++;hungerFreeStreak=0;
+    window._satReasons=['⚠️ Nahrungsmangel (Hunger '+hunger+'/12)'];
     if(hunger>=12&&t%2===0&&pop>2){pop--;hunger=6;toast('⚠️ Nahrung wird knapp — ein Siedler wandert ab.');}
   }
   for(const r in RES)RES[r]=Math.max(0,Math.round(RES[r]*10)/10);
@@ -675,25 +719,35 @@ function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='
   const gPop=document.createElement('div');gPop.className='hud-group';
   gPop.insertAdjacentHTML('beforeend',`<div class="res" title="Bevölkerung / Wohnkapazität"><span class="ic">👥</span><b id="r_pop">0</b><span class="small" id="r_cap"></span></div>`);
   gPop.insertAdjacentHTML('beforeend',`<div class="res" title="Arbeiter beschäftigt / frei verfügbar"><span class="ic">⚒️</span><b id="r_jobs">0</b><span class="small" id="r_idle"></span></div>`);
-  gPop.insertAdjacentHTML('beforeend',`<div class="res" style="gap:4px" title="Zufriedenheit"><span class="ic">😊</span><div style="width:60px;height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden"><div id="satFill" style="height:100%;width:100%;background:linear-gradient(90deg,#e07a52,#88d080);border-radius:4px;transition:width .3s"></div></div></div>`);
+  gPop.insertAdjacentHTML('beforeend',`<div class="res" id="satRes" style="gap:4px" title="Zufriedenheit"><span class="ic">😊</span><div style="width:60px;height:8px;background:rgba(0,0,0,0.3);border-radius:2px;overflow:hidden"><div id="satFill" style="height:100%;width:100%;background:linear-gradient(90deg,#ff4444,#00e6c3);border-radius:2px;transition:width .3s"></div></div></div>`);
   gPop.insertAdjacentHTML('beforeend',`<div id="store" title="Lagerauslastung">📦<div id="storeBar"><div id="storeFill"></div></div><span id="storeTxt"></span></div>`);
   tb.appendChild(gPop);
   tb.insertAdjacentHTML('beforeend',`<div id="season"></div>`);
   // Gruppe 3: Session-Werkzeuge — seltener gebraucht, bewusst zurückhaltender
   tb.insertAdjacentHTML('beforeend','<div class="hud-divider"></div>');
   const gSession=document.createElement('div');gSession.className='hud-group hud-session';
-  gSession.insertAdjacentHTML('beforeend',`<div id="vitToggle" style="font-size:11px;cursor:pointer;opacity:${showVitLayer?1:0.5};border:1px solid ${showVitLayer?'var(--gold)':'var(--line2)'};padding:2px 6px;border-radius:4px;user-select:none" onclick="window._toggleVitLayer()">🧪 V</div>`);
-  if(chap>=CH.length-1) gSession.insertAdjacentHTML('beforeend',`<div id="prestigeBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="doPrestige()">👑 Neuer Anfang</div>`);
-  gSession.insertAdjacentHTML('beforeend',`<div id="saveBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickSave()">💾 Save</div>`);
-  gSession.insertAdjacentHTML('beforeend',`<div id="loadBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickLoad()">📂 Load</div>`);
-  gSession.insertAdjacentHTML('beforeend',`<div id="newGameBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="confirmNewGame()">🆕 Neues Spiel</div>`);
-  gSession.insertAdjacentHTML('beforeend',`<div id="bgmToggle" style="font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="window._toggleBGM()">🎵</div>`);
-  gSession.insertAdjacentHTML('beforeend',`<div id="settingsBtn" style="font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="showSettings()">⚙️</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="vitToggle" style="font-size:11px;cursor:pointer;opacity:${showVitLayer?1:0.5};border:1px solid ${showVitLayer?'var(--gold)':'var(--line2)'};padding:2px 6px;border-radius:2px;user-select:none" onclick="window._toggleVitLayer()">🧪 V</div>`);
+  if(chap>=CH.length-1) gSession.insertAdjacentHTML('beforeend',`<div id="prestigeBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:2px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--gold);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="doPrestige()">👑 Neuer Anfang</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="saveBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:2px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickSave()">💾 Save</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="loadBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:2px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="quickLoad()">📂 Load</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="newGameBtn" style="font-size:11px;cursor:pointer;padding:5px 9px;border-radius:2px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="confirmNewGame()">🆕 Neues Spiel</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="bgmToggle" style="font-size:12px;cursor:pointer;padding:4px 8px;border-radius:2px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--gold);font-weight:700;letter-spacing:0.5px" onclick="window._toggleBGM()">🎵</div>`);
+  gSession.insertAdjacentHTML('beforeend',`<div id="settingsBtn" style="font-size:12px;cursor:pointer;padding:4px 8px;border-radius:2px;user-select:none;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);font-weight:700;letter-spacing:0.5px" onclick="showSettings()">⚙️</div>`);
   tb.appendChild(gSession);
 }
 function toggleBGM(){bgmMuted=!bgmMuted;const bgm=document.getElementById('bgm');bgm.volume=bgmMuted?0:0.6;if(!bgmMuted)bgm.play().catch(()=>{});updateBgmBtn();localStorage.setItem('wz_bgm_muted',bgmMuted?'1':'0');}
 function updateBgmBtn(){const btn=document.getElementById('bgmToggle');if(btn)btn.textContent=bgmMuted?'🔇':'🎵';}
-function initBGM(){updateBgmBtn();if(bgmMuted){document.getElementById('bgm').volume=0;return;}const startBGM=()=>{if(bgmStarted)return;bgmStarted=true;document.getElementById('bgm').play().catch(()=>{});document.removeEventListener('click',startBGM);};document.addEventListener('click',startBGM);}
+function initBGM(){updateBgmBtn();if(bgmMuted){document.getElementById('bgm').volume=0;return;}
+  const startBGM=()=>{if(bgmStarted)return;
+    const p=document.getElementById('bgm').play();
+    if(p&&p.then)p.then(()=>{bgmStarted=true;removeStartListeners();}).catch(()=>{}); // Autoplay evtl. noch blockiert — Listener bleiben aktiv für den nächsten Versuch
+    else{bgmStarted=true;removeStartListeners();}
+  };
+  // iOS Safari verlangt eine "echte" Geste — click allein reicht dort oft nicht, touchend/pointerdown zusätzlich abdecken
+  const events=['click','touchend','pointerdown','keydown'];
+  function removeStartListeners(){events.forEach(ev=>document.removeEventListener(ev,startBGM));}
+  events.forEach(ev=>document.addEventListener(ev,startBGM,{passive:true}));
+}
 window._toggleBGM=toggleBGM;
 let ambientCtx=null,ambientGain=null,ambientNodes={};
 function initAmbient(){
@@ -761,6 +815,8 @@ function computeTip(){
   if(noFood)return '🍽️ '+DEFS[noFood.b].name+' wartet auf Nahrung — baue mehr Gemüsehöfe/Getreidefelder oder eine Fischerhütte.';
   const stalled=built.find(h=>h._stalled);
   if(stalled)return '📦 '+DEFS[stalled.b].name+' pausiert — dein Lager ist voll. Baue einen Speicher oder verarbeite Rohstoffe weiter.';
+  const tipping=window._tippingCount||0;
+  if(tipping>0)return '⚠️ '+tipping+' Zone(n) kurz vorm Kippen in die nächstschlechtere Stufe — jetzt mit Förster/Kompost gegensteuern, bevor der Ertrag einbricht.';
   const noInput=built.filter(h=>h._noInput);
   if(noInput.length>=2){const worst=noInput.sort((a,b)=>0)[0];return '⛓️ Mehrere Betriebe warten auf Rohstoffe (u.a. '+DEFS[worst.b].name+') — baue mehr Zulieferer für diese Kette.';}
   const idleWorkers=Math.max(0,pop-jobsUsed);
@@ -792,16 +848,18 @@ function updateHUD(){
   const cap=storageCap(),used=Object.values(RES).reduce((a,b)=>a+b,0);
   const storeFillEl=document.getElementById('storeFill');
   storeFillEl.style.width=Math.min(100,100*used/(cap||1))+'%';
-  storeFillEl.style.background=used>=cap*0.9?'linear-gradient(90deg,#c9663f,#e0a055)':'linear-gradient(90deg,#7cb868,#e0c055)';
+  storeFillEl.style.background=used>=cap*0.9?'linear-gradient(90deg,#ff4444,#ffb020)':'linear-gradient(90deg,#00b89c,#00e6c3)';
   document.getElementById('storeTxt').textContent=Math.floor(used)+'/'+cap;
   const dayPhase=['Nacht','Morgen','Tag','Abend'][Math.floor(dayTime/16)%4];
-  document.getElementById('season').innerHTML=`<b>${SEASONS[seasonIdx]}</b> · Jahr ${year+1}<br><span class="small">Feld ×${SEASON_FIELD[seasonIdx]} · ${dayPhase}</span>`;
+  const winterNote=(seasonIdx===3&&chap>=3)?' · 👕 Kleidung wird verbraucht':'';
+  document.getElementById('season').innerHTML=`<b>${SEASONS[seasonIdx]}</b> · Jahr ${year+1}<br><span class="small">Feld ×${SEASON_FIELD[seasonIdx]} · ${dayPhase}${winterNote}</span>`;
   const c=CH[chap],g=c.goal();
   document.getElementById('chapEv').textContent=c.ev;document.getElementById('chapName').textContent=c.name;
   document.getElementById('chapStory').textContent=c.story;document.getElementById('goalTxt').textContent=g.t;
   document.getElementById('goalFill').style.width=Math.min(100,100*g.c/g.n)+'%';
   const sc=document.getElementById('stock');sc.innerHTML='';
-  Object.keys(RESMETA).forEach(r=>{if(RES[r]>0)sc.insertAdjacentHTML('beforeend',`<div title="${RESMETA[r][1]}">${RESMETA[r][0]}<b>${Math.floor(RES[r])}</b></div>`);});
+  Object.keys(RESMETA).forEach(r=>{if(RES[r]<=0)return;const pr=priorityRes.has(r);
+    sc.insertAdjacentHTML('beforeend',`<div title="${RESMETA[r][1]} — klicken zum ${pr?'Entfernen der':'Setzen von'} Priorität" style="cursor:pointer;${pr?'border-color:var(--gold);background:rgba(255,176,32,0.1)':''}" onclick="toggleResPriority('${r}')">${pr?'⭐':''}${RESMETA[r][0]}<b>${Math.floor(RES[r])}</b></div>`);});
   document.getElementById('stockCap').textContent=Math.floor(used)+' / '+cap;
   const st=document.getElementById('stats');if(st){
     const satPct=Math.round(satisfaction*100);
@@ -814,6 +872,8 @@ function updateHUD(){
     al.innerHTML=ASPIRATIONS.map(a=>`<div style="font-size:11px;margin:3px 0;color:${appliedAsp.has(a.id)?'var(--gold)':'var(--muted)'}">${a.icon} ${a.name}: ${appliedAsp.has(a.id)?'✓ '+a.bonus().label:a.desc}</div>`).join('');
   }
   const satEl=document.getElementById('satFill');if(satEl)satEl.style.width=Math.round(satisfaction*100)+'%';
+  const satRes=document.getElementById('satRes');
+  if(satRes){const reasons=window._satReasons||['Alle Bedürfnisse gedeckt'];satRes.title='Zufriedenheit '+Math.round(satisfaction*100)+'%\n'+reasons.join('\n');}
   renderInspector();
 }
 function renderInspector(){const el=document.getElementById('inspBody');
@@ -828,12 +888,17 @@ function renderInspector(){const el=document.getElementById('inspBody');
     if(d.max>1){let dots='';for(let i=0;i<d.max;i++)dots+=`<i class="${i<h.lvl?'on':''}"></i>`;
       s+=`<div class="row"><span>Stufe ${h.lvl}/${d.max}</span><span class="lvldots">${dots}</span></div>`;}
     if(d.jobs>0&&!d.road){s+=`<div class="row"><span>Arbeiter</span><span>${jobsFor(d,h.lvl)}</span></div>`;
-      s+=`<div class="row"><span>Status</span><span style="color:${h._active?'var(--accent)':'var(--bad)'}">${h._active?'aktiv':(h._noFood?'keine Nahrung':(h._noInput?'wartet auf Rohstoff':(h._stalled?'Lager voll':(h.connected?'kein Personal':'nicht verbunden'))))}</span></div>`;}
+      s+=`<div class="row"><span>Status</span><span style="color:${h._paused?'var(--muted)':(h._active?'var(--accent)':'var(--bad)')}">${h._paused?'pausiert':(h._active?'aktiv':(h._noFood?'keine Nahrung':(h._noInput?'wartet auf Rohstoff':(h._stalled?'Lager voll':(h.connected?'kein Personal':'nicht verbunden')))))}</span></div>`;
+      s+=`<div class="dem" style="border-color:${h._paused?'var(--gold)':'var(--line)'};color:${h._paused?'var(--gold)':'var(--muted)'}" onclick="togglePause()">${h._paused?'▶ Produktion fortsetzen':'⏸ Produktion stoppen'}</div>`;}
     const io=[];if(d.in)io.push('rein '+Object.keys(d.in).map(r=>RESMETA[r][0]+ (d.in[r]*outMult(d,h.lvl)).toFixed(1)).join(' '));
     if(d.out)io.push('raus '+Object.keys(d.out).map(r=>RESMETA[r][0]+ (d.out[r]*outMult(d,h.lvl)).toFixed(1)).join(' '));
     if(d.caps)io.push('Kapazität '+d.caps[h.lvl-1]);
     if(io.length)s+=`<div class="small" style="margin-top:5px">${io.join(' · ')}</div>`;
     s+=`<div class="small" style="margin-top:4px">${d.desc}</div>`;
+    if(h.b==='wohnstaette'){const spec=wohnstaetteSpecialty(h);
+      s+=spec?`<div class="small" style="margin-top:4px;color:var(--gold)">🎓 Fachrichtung: ${spec} (+12% für Nachbargebäude dieser Kategorie)</div>`
+             :`<div class="small" style="margin-top:4px">Ab Stufe 3 entwickelt die Wohnstätte eine Fachrichtung.</div>`;}
+    if(h._specialtyBoost>0)s+=`<div class="small" style="margin-top:4px;color:var(--accent)">🎓 +${Math.round(h._specialtyBoost*100)}% durch nahe Fach-Wohnstätte</div>`;
     if(h.b!=='lager'||d.max>1){}
     if(h.lvl<d.max){const cost=scaledCost(d,h.lvl),ok=affordable(cost)&&h.connected;
       s+=`<div class="up ${ok?'':'no'}" onclick="${ok?'doUpgrade()':''}">⬆ Ausbauen → Stufe ${h.lvl+1}</div><div class="costline">${costStr(cost)}${h.connected?'':' · <span class="miss">nicht verbunden</span>'}</div>`;}
@@ -909,6 +974,7 @@ function toggleBuildbar(){
   const bb=document.getElementById('buildbar'),ov=document.getElementById('overlay'),rt=document.getElementById('right');
   const open=bb.classList.toggle('open');rt.classList.remove('open');ov.classList.toggle('show',open);
 }
+function togglePause(){const h=selHex;if(!h||!h.b)return;h._paused=!h._paused;toast(h._paused?'⏸ '+DEFS[h.b].name+' pausiert':'▶ '+DEFS[h.b].name+' fortgesetzt');hudDirty=true;renderInspector();}
 function doUpgrade(){const h=selHex;if(!h||!h.b)return;const d=DEFS[h.b];if(!d||h.lvl>=d.max)return;const cost=scaledCost(d,h.lvl);
   if(!affordable(cost))return;if(!h.connected)return;for(const r in cost)if(!(r in RES)||RES[r]<(cost[r]||0))return;
   for(const r in cost)RES[r]-=cost[r];h.lvl++;toast(d.name+' → Stufe '+h.lvl);hudDirty=true;selHex=h;renderInspector();}
@@ -1040,7 +1106,11 @@ cv.addEventListener('pointerdown',e=>{if(e.button===0||e.pointerType==='touch'){
 window.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-last.x,dy=e.clientY-last.y;
   if(Math.abs(dx)+Math.abs(dy)>3){dragMoved=true;cam.x+=dx/cam.zoom;cam.y+=dy/cam.zoom;last={x:e.clientX,y:e.clientY};}});
 window.addEventListener('pointerup',e=>{if(!dragging)return;dragging=false;if(dragMoved)return;
-  const h=evToHex(e);if(!h)return;if(buildMode)place(h,buildMode);else{selHex=resolveAnchor(h);renderInspector();}});
+  const h=evToHex(e);if(!h)return;if(buildMode)place(h,buildMode);else{selHex=resolveAnchor(h);renderInspector();
+    // Mobile: Antippen eines Gebäudes öffnet sofort das Inspector-/Ausbauen-Panel statt eines separaten Toggle-Taps
+    if(window.innerWidth<=700&&selHex.b){document.getElementById('buildbar').classList.remove('open');
+      document.getElementById('right').classList.add('open');document.getElementById('overlay').classList.add('show');}
+  }});
 cv.addEventListener('contextmenu',e=>{e.preventDefault();const h=evToHex(e);const anchor=resolveAnchor(h);if(anchor&&anchor.b&&anchor.b!=='lager'){selHex=anchor;doDemolish();}});
 cv.addEventListener('wheel',e=>{e.preventDefault();cam.zoom=Math.max(0.45,Math.min(2.4,cam.zoom*(e.deltaY<0?1.1:0.9)));},{passive:false});
 window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();paused=!paused;toast(paused?'⏸ Pause':'▶ Weiter');}
@@ -1375,6 +1445,11 @@ function draw(){
       }});
     }
     if(h.b&&h.b!=='weg')drawBuildingSprite(h);else if(!h.b&&!h.footprintOf)drawDeco(h);
+    if(h._tipping){ // Kipppunkt-Warnung: pulsierender Ring, bevor eine Zone in die nächstschlechtere Stufe fällt
+      const pulse=0.5+0.5*Math.sin(tnow*4);
+      ctx.strokeStyle=`rgba(224,122,82,${0.35+0.4*pulse})`;ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.arc(h.px.x,h.px.y-h.elev,SIZE*(0.75+0.1*pulse),0,7);ctx.stroke();
+    }
   }
   carriers.forEach(c=>{const a=c.pts[c.seg],b=c.pts[c.seg+1];if(!a||!b)return;
     const x=a.x+(b.x-a.x)*c.tt,y=a.y+(b.y-a.y)*c.tt;drawCarrier(x,y,tnow*9+c.seg);});
@@ -1472,7 +1547,7 @@ function buildTopbarSaveControls(){
     const btn=document.createElement('button');
     btn.textContent=(slots.meta[i]?slots.meta[i].name:name);
     btn.title='Slot '+(i+1)+': '+(slots.meta[i]?slots.meta[i].savedAt:'leer');
-    btn.style.cssText='font-size:11px;padding:4px 8px;border-radius:6px;cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);transition:all .15s';
+    btn.style.cssText='font-size:11px;padding:4px 8px;border-radius:2px;cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid var(--line2);color:var(--muted);transition:all .15s';
     btn.onmouseenter=()=>{btn.style.background='rgba(255,255,255,0.08)';btn.style.color='var(--text)';};
     btn.onmouseleave=()=>{btn.style.background='rgba(255,255,255,0.04)';btn.style.color='var(--muted)';};
     btn.onclick=()=>{
