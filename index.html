@@ -113,6 +113,19 @@
   #inspBody .row span:first-child{color:var(--muted);font-size:9.5px;text-transform:uppercase;
     letter-spacing:1.6px;font-weight:700;flex-shrink:0}
   #inspBody .row span:last-child{font-family:var(--font-data);font-size:12px;text-align:right}
+  .demIcon{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-left:8px;
+    border:1px solid var(--line2);border-radius:2px;cursor:pointer;font-family:initial;font-size:14px;
+    background:#0b0e10;transition:border-color .12s,background-color .12s;vertical-align:middle}
+  .demIcon:hover{border-color:var(--bad);background:rgba(255,68,68,.1)}
+  #buildModeBar{position:absolute;left:76px;right:76px;bottom:18px;z-index:35;display:flex;
+    align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--accent);border-radius:2px;
+    padding:9px 8px 9px 12px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  #buildModeTxt{flex:1;min-width:0;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #buildModeBar button{flex-shrink:0;background:transparent;border:1px solid var(--line2);color:var(--muted);
+    padding:8px 10px;border-radius:2px;font:700 11px/1 var(--font-ui);letter-spacing:.5px;cursor:pointer;
+    white-space:nowrap;min-height:36px}
+  #buildModeBar button:hover{border-color:var(--bad);color:#ff6b6b}
+  @media (max-width:700px){#buildModeBar{left:8px;right:8px;bottom:68px}}
   .vbar{height:8px;background:#000;border:1px solid var(--line2);border-radius:1px;overflow:hidden;margin:8px 0}
   .vbar > div{height:100%;transition:width .3s}
   .lvldots{display:flex;gap:4px}
@@ -208,10 +221,20 @@
     .card{padding:12px 10px}
     .btn{padding:12px 10px;font-size:13px;min-height:44px}
     .btn.locked{display:none} /* Mobile: nur wirklich baubare Gebäude zeigen, kein Ballast durch gesperrte */
-    #topbar{gap:6px 8px;padding:9px 10px 8px;font-size:12px}
+    #topbar{gap:5px;padding:7px 8px;font-size:12px;max-height:38vh;overflow-y:auto}
     #menuBtn,#statsBtn{display:flex !important}
     .up,.dem{min-height:44px}
     .tbtn{padding:11px 10px;min-height:40px}
+    /* Mobile: jede HUD-Zeile scrollt horizontal statt in mehrere Zeilen umzubrechen — spart vertikalen Platz für die Karte */
+    .hud-group,#saveControls{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+      -ms-overflow-style:none;padding-bottom:2px}
+    .hud-group::-webkit-scrollbar,#saveControls::-webkit-scrollbar{display:none}
+    .hud-group>*,#saveControls>*{flex-shrink:0}
+    .hud-divider{display:none}
+    /* In der Sitzungs-Karte (rechtes Panel) ist genug vertikaler Platz — dort normal umbrechen statt horizontal scrollen */
+    #sessionCardBody .hud-group,#sessionCardBody #saveControls{flex-wrap:wrap;overflow-x:visible}
+    #sessionCardBody .hud-group>*,#sessionCardBody #saveControls>*{flex-shrink:1}
+    #season{margin-left:0}
   }
   @media (prefers-reduced-motion:reduce){
     *,*:before,*:after{transition-duration:.01ms !important;animation-duration:.01ms !important}
@@ -229,6 +252,7 @@
     <div id="stage">
         <canvas id="cv"></canvas>
         <div id="toast"></div>
+        <div id="buildModeBar" style="display:none"><span id="buildModeTxt"></span><button onclick="buildMode=null;buildPalette();">✕ Abbrechen</button></div>
         <div id="settingsModal" style="display:none"><div class="modal">
           <div class="ev">Neue Partie</div>
           <h2>Sandbox-Einstellungen</h2>
@@ -252,6 +276,10 @@
     </div>
   </div>
   <div id="right">
+    <div class="card" id="sessionCard" style="display:none">
+      <h3>Sitzung</h3>
+      <div id="sessionCardBody" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
     <div class="card">
       <div class="ev" id="chapEv">Kapitel I</div>
       <div id="chapName"></div>
@@ -306,12 +334,13 @@ const RESMETA={
   bread:['🍞','Brot'], vegetables:['🥕','Gemüse'], water:['💧','Wasser'], milk:['🥛','Milch'],
   cheese:['🧀','Käse'], wool:['🧶','Wolle'], cloth:['🧵','Stoff'], clothes:['👕','Kleidung'],
   fish:['🐟','Fisch'], meat:['🍖','Fleisch'], furniture:['🪑','Möbel'], herbs:['🌿','Kräuter'],
-  honey:['🍯','Honig'], remedy:['⚗️','Heiltrank'], essence:['✨','Essenz'], medicine:['💊','Medizin']
+  honey:['🍯','Honig'], remedy:['⚗️','Heiltrank'], essence:['✨','Essenz'], medicine:['💊','Medizin'],
+  muenzen:['🪙','Münzen']
 };
 const RES={}; Object.keys(RESMETA).forEach(k=>RES[k]=0);
 RES.wood=70; RES.vegetables=40; RES.stone=25; RES.planks=15;
 const FOODS=['vegetables','bread','cheese','fish','meat'];
-const TOPRES=['wood','planks','stone','iron','tools'];
+const TOPRES=['muenzen','wood','planks','stone','iron','tools'];
 
 // ---------------- Building defs ----------------
 // out/in at level1; scaled by outGrow^(lvl-1). cost scaled by costGrow^lvl on upgrade.
@@ -367,13 +396,14 @@ const DEFS={
   teich:D({name:'Teich',em:'🏞️',cat:'Natur',cost:{wood:8,stone:4},vit:2.5,neigh:1.8,desc:'Wasserfläche. Lockert Vieh an, erhöht Fischertrag.'}),
   heilzelt:D({name:'Heilzelt',em:'🏕️',cat:'Natur',cost:{herbs:8,wood:6},biomes:['sumpf','hain','aue'],jobs:1,out:{essence:1},vit:1.2,desc:'Sammelt heilende Essenz aus Sumpf und Kräutern. Anteiligt an der Medizin-Kette.'}),
   apothek:D({name:'Apotheke',em:'🔮',cat:'Sozial',cost:{pottery:10,essence:12},jobs:2,in:{essence:1},out:{medicine:1},desc:'1 Heilzelt → 1 Apotheke. Verwandelt Essenz zu Medizin. Reduziert Abwanderung.'}),
+  muenzpraegerei:D({name:'Münzprägerei',em:'🪙',cat:'Handel',cost:{bricks:20,iron:15,tools:10},in:{tools:4},out:{muenzen:3},desc:'2 Schmieden → 1 Münzprägerei. Prägt überschüssiges Werkzeug zu Handelswährung — Münzen verstopfen nie das Lager wie Rohware, sie sind der Statussymbol-Beweis eures Wohlstands.'}),
   // --- Monumente (Endgame) ---
   hainbaum:D({name:'Hainbaum',em:'🌳',cat:'Monument',cost:{wood:150,planks:60,stone:50,bricks:30,remedy:10},jobs:0,max:1,size:3,vit:8,neigh:12,desc:'Der Große Hainbaum. Zentrum der Symbiose. Belegt 3 Hexfelder als ein Bauwerk. +12 Vitalität im weiten Umkreis, epische Optik.'}),
   kristall:D({name:'Kristallturm',em:'🔮',cat:'Monument',cost:{iron:50,tools:20,bricks:70,stone:80,remedy:8},jobs:0,max:1,size:3,vit:5,neigh:8,desc:'Kristalliner Turm der Weisheit. Belegt 3 Hexfelder als ein Bauwerk. Verstärkt alle Gebäude im Umkreis +10%.'}),
   erdzeichen:D({name:'Erdzeichen',em:'🪨',cat:'Monument',cost:{stone:150,bricks:100,iron:20,tools:10},jobs:0,max:1,size:3,vit:10,neigh:15,desc:'Uraltes Erdzeichen. Belegt 3 Hexfelder als ein Bauwerk. Heilt Ödland und verwandelt es zurück in Hain.'}),
   medizintempel:D({name:'Medizintempel',em:'🏥',cat:'Medizin',cost:{essence:50,medicine:30,bricks:40,remedy:20},jobs:3,max:1,size:3,vit:5,neigh:10,in:{essence:2},out:{medicine:2},desc:'2 Heilzelte → 1 Medizintempel. Belegt 3 Hexfelder als ein Bauwerk. Heiligtum der Medizin.'}),
 };
-const CATS=['Basis','Wohnen','Holz','Stein & Erz','Acker','Vieh & Stoff','Natur','Sozial','Medizin','Logistik','Monument'];
+const CATS=['Basis','Wohnen','Holz','Stein & Erz','Acker','Vieh & Stoff','Natur','Sozial','Medizin','Logistik','Handel','Monument'];
 
 // ---------------- Map ----------------
 const RAD=20,hexes=new Map();
@@ -406,13 +436,15 @@ function precompute(){
     h.elev=(ELEV[h.biome]||0)+sr()*2.5;
     h.mountain=(h.biome==='fels'&&sr()>0.5);if(h.mountain)h.elev+=7+sr()*7;
     generateDeco(h,sr);});
+  // Küstensaum: Hex grenzt an Wasser, aber ist selbst kein Wasser — für Schaumkante in drawTerrainWash.
+  hexes.forEach(h=>{h._coast=h.biome!=='wasser'&&neighbors(h).some(nb=>nb.biome==='wasser');});
   SORTED=[...hexes.values()].sort((a,b)=>a.px.y-b.px.y||a.px.x-b.px.x);
   initCritters();
 }
 function generateDeco(h,rng){h.deco=[];if(h.b||h.biome==='wasser')return;
   const R=SIZE*0.6;function pos(){const a=rng()*6.2832,d=Math.sqrt(rng())*R;return[Math.cos(a)*d,Math.sin(a)*d*0.72];}
-  if(h.biome==='hain'){const n=3+Math.floor(rng()*3);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'tree',s:0.8+rng()*0.5});}}
-  else if(h.biome==='lichtung'){const n=1+Math.floor(rng()*2);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'tree',s:0.7+rng()*0.4});}
+  if(h.biome==='hain'){const n=3+Math.floor(rng()*3);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'tree',s:0.8+rng()*0.5,kind:rng()>0.55?'conifer':'deciduous'});}}
+  else if(h.biome==='lichtung'){const n=1+Math.floor(rng()*2);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'tree',s:0.7+rng()*0.4,kind:rng()>0.7?'conifer':'deciduous'});}
     for(let i=0;i<2;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:rng()>0.82?'flower':'tuft',s:0.55+rng()*0.4,c:rng()});}}
   else if(h.biome==='aue'){for(let i=0;i<4;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:rng()>0.9?'flower':'tuft',s:0.55+rng()*0.45,c:rng()});}}
   else if(h.biome==='fels'){const n=2+Math.floor(rng()*3);for(let i=0;i<n;i++){const[dx,dy]=pos();h.deco.push({dx,dy,t:'rock',s:0.7+rng()*0.7});}
@@ -471,11 +503,12 @@ const ASPIRATIONS=[
   {id:'wuselnde_stadt',icon:'🏙️',name:'Wuselnde Stadt',desc:'150 Siedler bei >80% Zufriedenheit.',bonus:()=>({label:'+10% Bauproduktivität',apply:()=>{appliedAsp.add('wuselnde_stadt');}}),target:()=>pop>=150&&satisfaction>=0.8},
   {id:'autark',icon:'🌾',name:'Vier Jahreszeiten autark',desc:'Überstehe ein volles Jahr ohne Nahrungsengpass.',bonus:()=>({label:'Winter mildert sich (−30% Feldruhe)',apply:()=>{appliedAsp.add('autark');}}),target:()=>autarkYears>=1},
   {id:'symbiose_meister',icon:'🐝',name:'Symbiose-Meister',desc:'Alle 4 Tier-Symbiosen gleichzeitig aktiv.',bonus:()=>({label:'+25% Sonderwaren-Ertrag',apply:()=>{appliedAsp.add('symbiose_meister');}}),target:()=>activeSymbioses>=4},
+  {id:'handelsimperium',icon:'🪙',name:'Handelsimperium',desc:'Präge 500 Münzen (gleichzeitig im Lager).',bonus:()=>({label:'−8% Baukosten (Handelsrabatt)',apply:()=>{appliedAsp.add('handelsimperium');}}),target:()=>RES.muenzen>=500},
 ];
 let aspJustUnlocked=false;
 function checkAspirations(){if(aspJustUnlocked)return;let any=false;
   ASPIRATIONS.forEach(a=>{if(appliedAsp.has(a.id))return;if(a.target()){appliedAsp.add(a.id);any=true;toast('🌟 Bestrebung erfüllt: '+a.name+' — '+a.bonus().label);aspJustUnlocked=true;setTimeout(()=>aspJustUnlocked=false,2500);}});
-  buildMult=baseBuildMult*(appliedAsp.has('wuselnde_stadt')?0.9:1);
+  buildMult=baseBuildMult*(appliedAsp.has('wuselnde_stadt')?0.9:1)*(appliedAsp.has('handelsimperium')?0.92:1);
   if(any)updateHUD();}
 function aspBonus(name){return appliedAsp.has(name)?1:0;}
 
@@ -515,7 +548,7 @@ function simTick(){
   const regenMult=appliedAsp.has('großer_hain')?1.2:1;
   const autarkWinterMult=appliedAsp.has('autark')?0.5:0.2; // milder Winter
   const symbiosisMult=appliedAsp.has('symbiose_meister')?1.25:1;
-  const buildMult=appliedAsp.has('wuselnde_stadt')?0.9:1;
+  const buildMult=(appliedAsp.has('wuselnde_stadt')?0.9:1)*(appliedAsp.has('handelsimperium')?0.92:1);
   for(const k in counts)delete counts[k];
   hexes.forEach(h=>{h._marketBoost=0;h._pollBoost=0;h._oreBoost=0;h._specialtyBoost=0;});
   if(t%18===0&&chap>=4){
@@ -787,7 +820,16 @@ function buildTopbar(){const tb=document.getElementById('topbar');tb.innerHTML='
   gSession.insertAdjacentHTML('beforeend',`<div id="newGameBtn" class="tbtn" onclick="confirmNewGame()">🆕 Neues Spiel</div>`);
   gSession.insertAdjacentHTML('beforeend',`<div id="bgmToggle" class="tbtn" onclick="window._toggleBGM()">🎵</div>`);
   gSession.insertAdjacentHTML('beforeend',`<div id="settingsBtn" class="tbtn" onclick="showSettings()">⚙️</div>`);
-  tb.appendChild(gSession);
+  // Mobile: Session-Werkzeuge raus aus der Topbar (kostet zu viel Höhe von der Karte) — stattdessen als
+  // eigene Karte im rechten Panel, das über den 📊-Button erreichbar ist.
+  const sessionCard=document.getElementById('sessionCard');
+  if(window.innerWidth<=700){
+    document.getElementById('sessionCardBody').appendChild(gSession);
+    sessionCard.style.display='block';
+  } else {
+    tb.appendChild(gSession);
+    sessionCard.style.display='none';
+  }
 }
 function toggleBGM(){bgmMuted=!bgmMuted;const bgm=document.getElementById('bgm');bgm.volume=bgmMuted?0:0.6;if(!bgmMuted)bgm.play().catch(()=>{});updateBgmBtn();localStorage.setItem('wz_bgm_muted',bgmMuted?'1':'0');}
 function updateBgmBtn(){const btn=document.getElementById('bgmToggle');if(btn)btn.textContent=bgmMuted?'🔇':'🎵';}
@@ -857,9 +899,17 @@ function buildPalette(){const p=document.getElementById('buildbar');p.innerHTML=
       el.innerHTML=`<span class="em">${d.em}</span><span class="nm">${k==='weg'?'Weg':d.name}</span>`+
         `<span class="cost">${lck?'🔒':cost}${out?` <span style="color:var(--accent)">→${out}</span>`:''}</span>`;
       el.title=d.name+' — '+d.desc+(lck?' (gesperrt)':'');
-      if(!lck)el.onclick=()=>{buildMode=(buildMode===k?null:k);buildPalette();};
+      if(!lck)el.onclick=()=>{buildMode=(buildMode===k?null:k);buildPalette();
+        // Mobile: nach der Auswahl das Baumenü automatisch schließen, damit die Karte fürs Platzieren frei ist
+        if(window.innerWidth<=700&&buildMode)closePanels();
+      };
       row.appendChild(el);});
     g.appendChild(row);p.appendChild(g);});
+  const bar=document.getElementById('buildModeBar');
+  if(buildMode){const d=DEFS[buildMode];
+    document.getElementById('buildModeTxt').textContent=d.em+' '+(buildMode==='weg'?'Weg':d.name)+' platzieren — auf ein Feld tippen';
+    bar.style.display='flex';
+  } else bar.style.display='none';
 }
 function vcolHTML(v){const t=Math.max(0,Math.min(1,v/100));return`rgb(${Math.round(138-(138-63)*t)},${Math.round(90+(160-90)*t)},${Math.round(54+(86-54)*t)})`;}
 // Beschäftigt den Spieler zwischen Bevölkerungswachstums-Schüben mit einem konkreten nächsten Schritt.
@@ -938,7 +988,7 @@ function renderInspector(){const el=document.getElementById('inspBody');
   if(h.biome!=='wasser'){const st=h.vit>=80?'Blühend':h.vit>=50?'Gesund':h.vit>=25?'Erschöpft':'Verödet';
     s+=`<div class="row"><span>Vitalität</span><span>${Math.round(h.vit)} · ${st}</span></div><div class="vbar"><div style="width:${h.vit}%;background:${vcolHTML(h.vit)}"></div></div>`;}
   if(d){
-    s+=`<div class="row"><span>Gebäude</span><span>${d.em} ${d.name}</span></div>`;
+    s+=`<div class="row"><span>Gebäude</span><span>${d.em} ${d.name}${h.b!=='lager'?` <span class="demIcon" title="Abreißen (½ zurück)" onclick="doDemolish()">🗑</span>`:''}</span></div>`;
     if(d.max>1){let dots='';for(let i=0;i<d.max;i++)dots+=`<i class="${i<h.lvl?'on':''}"></i>`;
       s+=`<div class="row"><span>Stufe ${h.lvl}/${d.max}</span><span class="lvldots">${dots}</span></div>`;}
     if(d.jobs>0&&!d.road){s+=`<div class="row"><span>Arbeiter</span><span>${jobsFor(d,h.lvl)}</span></div>`;
@@ -1149,7 +1199,7 @@ function toggleRight(){
   const rt=document.getElementById('right'),ov=document.getElementById('overlay'),bb=document.getElementById('buildbar');
   const open=rt.classList.toggle('open');bb.classList.remove('open');ov.classList.toggle('show',open);}
 function closePanels(){document.getElementById('buildbar').classList.remove('open');document.getElementById('right').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-window.addEventListener('resize',()=>{if(window.innerWidth>700){closePanels();resize();}});
+window.addEventListener('resize',()=>{if(window.innerWidth>700){closePanels();resize();}buildTopbar();buildTopbarSaveControls();});
 
 // ---------------- Input ----------------
 function evToHex(e){const rect=cv.getBoundingClientRect();
@@ -1180,17 +1230,20 @@ function resize(){const st=document.getElementById('stage');dpr=window.devicePix
   const h=st.clientHeight||(window.innerHeight-60);
   cv.width=Math.max(1,Math.floor(w*dpr));cv.height=Math.max(1,Math.floor(h*dpr));cv.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
 window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,50));
-const BIO={hain:[49,111,61],aue:[111,144,77],fels:[119,119,110],lichtung:[134,163,83],wasser:[35,94,116],frost:[180,200,220],sumpf:[80,100,70],wuiste:[160,140,100]},DEAD=[120,93,62];
+const BIO={hain:[54,86,52],aue:[102,120,78],fels:[108,105,98],lichtung:[120,136,86],wasser:[40,90,106],frost:[170,184,194],sumpf:[72,86,64],wuiste:[146,126,94]},DEAD=[102,86,64];
 const GREEN_FAMILY=new Set(['hain','aue','lichtung']);
+// Gerichtetes Licht (oben-links) — Schlagschatten/Höhenlicht orientieren sich einheitlich an dieser Richtung.
+const LIGHT_OX=0.42,LIGHT_OY=0.22,LIGHT_ANGLE=Math.atan2(LIGHT_OY,LIGHT_OX);
 function vcol(b,v){if(b==='wasser')return'rgb(37,111,138)';if(b==='frost')return`rgb(${Math.round(140+(180-140)*v/100)},${Math.round(160+(200-160)*v/100)},${Math.round(180+(220-180)*v/100)})`;if(b==='sumpf')return`rgb(${Math.round(60+(80-60)*v/100)},${Math.round(80+(100-80)*v/100)},${Math.round(55+(70-55)*v/100)})`;if(b==='wuiste')return`rgb(${Math.round(130+(160-130)*v/100)},${Math.round(110+(140-110)*v/100)},${Math.round(80+(100-80)*v/100)})`;const t=Math.max(0,Math.min(1,v/100)),H=BIO[b];
   return`rgb(${Math.round(DEAD[0]+(H[0]-DEAD[0])*t)},${Math.round(DEAD[1]+(H[1]-DEAD[1])*t)},${Math.round(DEAD[2]+(H[2]-DEAD[2])*t)})`;}
 function shade(c,f){let m;if(c[0]==='#'){const n=parseInt(c.slice(1),16);m=[n>>16&255,n>>8&255,n&255];}else m=c.match(/\d+/g).map(Number);
   return`rgb(${Math.max(0,Math.min(255,Math.round(m[0]*f)))},${Math.max(0,Math.min(255,Math.round(m[1]*f)))},${Math.max(0,Math.min(255,Math.round(m[2]*f)))})`;}
 function rgba(c,a){return c.replace('rgb(','rgba(').replace(')',','+a+')');}
 const FLOWERCOL=['#a84e54','#b89945','#95699b','#d9cfb4','#a9663d'];
-const ROOF={Basis:'#79623a',Wohnen:'#9b3f2f',Holz:'#77512e','Stein & Erz':'#555d63',Acker:'#b87a32','Vieh & Stoff':'#85663d',Natur:'#3e7445',Sozial:'#7a5c8a',Logistik:'#5c6a7a'};
+const ROOF={Basis:'#6e5a38',Wohnen:'#8a3f30',Holz:'#6b4d2e','Stein & Erz':'#565b5e',Acker:'#a3722f','Vieh & Stoff':'#785f3a',Natur:'#3f6640',Sozial:'#6c5876',Logistik:'#565f66'};
 let tnow=0;
-function shadowEll(x,y,rx,ry,a=.22){ctx.fillStyle=`rgba(0,0,0,${a})`;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,7);ctx.fill();}
+function shadowEll(x,y,rx,ry,a=.22,dx=1){ctx.fillStyle=`rgba(18,13,8,${a})`;ctx.beginPath();
+  ctx.ellipse(x+rx*LIGHT_OX*dx,y+ry*LIGHT_OY*dx,rx*1.04,ry*.86,LIGHT_ANGLE*.3,0,7);ctx.fill();}
 function poly(points){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();}
 function strokePoly(points){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.stroke();}
 function fillPoly(points){poly(points);ctx.fill();}
@@ -1219,7 +1272,8 @@ function drawTerrainWash(){
   ctx.save();
   ctx.globalCompositeOperation='multiply';
   for(const h of SORTED){if(h.biome==='wasser')continue;const bx=h.px.x,by=h.px.y-h.elev;if(Math.abs(bx+camX)>VIEW_W+SIZE*2||Math.abs(by+camY)>VIEW_H+SIZE*2)continue;
-    neighbors(h).forEach((nb,i)=>{if(!nb||nb.biome===h.biome||nb.biome==='wasser')return;
+    neighbors(h).forEach((nb,i)=>{if(!nb||nb.biome===h.biome)return;
+      if(nb.biome==='wasser')return; // Küste wird unten separat (additive Schaumkante) gezeichnet, keine dunkle Naht
       if(GREEN_FAMILY.has(h.biome)&&GREEN_FAMILY.has(nb.biome))return; // Grasbiome gehen fließend ineinander über, keine harte Naht
       const nx=nb.px.x,ny=nb.px.y-nb.elev;
       const mx=(bx+nx)/2,my=(by+ny)/2,c=vcol(h.biome,h.vit);
@@ -1227,6 +1281,16 @@ function drawTerrainWash(){
       ctx.beginPath();ctx.moveTo(mx-(ny-by)*.12,my+(nx-bx)*.12);ctx.lineTo(mx+(ny-by)*.12,my-(nx-bx)*.12);ctx.stroke();});}
   ctx.restore();
   ctx.globalCompositeOperation='source-over';
+  // Küsten-Schaumkante: heller, additiver Saum entlang Land/Wasser-Grenze statt harter dunkler Naht.
+  ctx.save();
+  for(const h of SORTED){if(!h._coast)continue;const bx=h.px.x,by=h.px.y-h.elev;if(Math.abs(bx+camX)>VIEW_W+SIZE*2||Math.abs(by+camY)>VIEW_H+SIZE*2)continue;
+    neighbors(h).forEach(nb=>{if(!nb||nb.biome!=='wasser')return;
+      const nx=nb.px.x,ny=nb.px.y-nb.elev,mx=(bx+nx)/2,my=(by+ny)/2;
+      ctx.strokeStyle='rgba(226,222,196,.4)';ctx.lineWidth=SIZE*.15;
+      ctx.beginPath();ctx.moveTo(mx-(ny-by)*.14,my+(nx-bx)*.14);ctx.lineTo(mx+(ny-by)*.14,my-(nx-bx)*.14);ctx.stroke();
+      ctx.strokeStyle='rgba(255,255,240,.22)';ctx.lineWidth=SIZE*.06;
+      ctx.beginPath();ctx.moveTo(mx-(ny-by)*.14,my+(nx-bx)*.14);ctx.lineTo(mx+(ny-by)*.14,my-(nx-bx)*.14);ctx.stroke();});}
+  ctx.restore();
 }
 function drawTile(h){
   const bx=h.px.x,by=h.px.y-h.elev;
@@ -1251,16 +1315,35 @@ function drawTile(h){
     ctx.globalAlpha=.1;ctx.strokeStyle='#d7e7df';ctx.lineWidth=1.25;
     for(let k=0;k<3;k++){const yy=by-10+k*8+Math.sin(tnow*1.35+h.q*.7+k)*1.8;ctx.beginPath();ctx.moveTo(bx-SIZE*.78,yy);ctx.bezierCurveTo(bx-SIZE*.25,yy-3,bx+SIZE*.25,yy+3,bx+SIZE*.78,yy);ctx.stroke();}
     ctx.globalAlpha=1;ctx.restore();}
+  // Höhenlicht (der Sonne zugewandte Kante) + Hangkanten-AO (abgewandte Kante) — stärker bei erhöhtem Terrain (Berge).
+  if(h.biome!=='wasser'){
+    const elevBoost=Math.min(1,h.elev/9);
+    ctx.save();ctx.globalAlpha=.16+elevBoost*.22;ctx.strokeStyle=shade(topCol,1.5);ctx.lineWidth=SIZE*(.06+elevBoost*.05);ctx.lineCap='round';
+    ctx.beginPath();ctx.ellipse(bx,by,rx*.94,ry*.86,seeded(h,5)*.22,Math.PI+LIGHT_ANGLE-.9,Math.PI+LIGHT_ANGLE+.35);ctx.stroke();
+    ctx.restore();
+    ctx.save();ctx.globalAlpha=.1+elevBoost*.28;ctx.strokeStyle='rgba(20,14,8,1)';ctx.lineWidth=SIZE*(.07+elevBoost*.07);ctx.lineCap='round';
+    ctx.beginPath();ctx.ellipse(bx,by,rx*.96,ry*.9,seeded(h,5)*.22,LIGHT_ANGLE-.35,LIGHT_ANGLE+.9);ctx.stroke();
+    ctx.restore();
+  }
 }
-function drawTree(x,y,s,vit){const sz=SIZE*0.5*s,t=Math.max(0,Math.min(1,vit/100));
-  shadowEll(x,y+1,sz*0.5,sz*0.18,.24);
-  const bark=ctx.createLinearGradient(x-sz*.1,y-sz*.5,x+sz*.12,y);bark.addColorStop(0,'#7b5530');bark.addColorStop(1,'#402b1a');
+function drawTree(x,y,s,vit,kind){const sz=SIZE*0.5*s,t=Math.max(0,Math.min(1,vit/100));
+  shadowEll(x,y+1,sz*0.55,sz*0.18,.26);
+  const bark=ctx.createLinearGradient(x-sz*.1,y-sz*.5,x+sz*.12,y);bark.addColorStop(0,'#6e4d2c');bark.addColorStop(1,'#3a2716');
   ctx.fillStyle=bark;ctx.fillRect(x-sz*0.075,y-sz*0.48,sz*0.15,sz*0.5);
   ctx.globalAlpha=0.35+0.65*t;
-  const g=`rgb(${Math.round(106-(106-35)*t)},${Math.round(90+(128-90)*t)},${Math.round(50+(68-50)*t)})`,gl=`rgb(${Math.round(144-(144-75)*t)},${Math.round(126+(168-126)*t)},${Math.round(73+(82-73)*t)})`;
   const sw=Math.sin(tnow*1.4+x*0.05)*sz*0.07;
-  ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x+sw,y-sz*.6,sz*.43,sz*.5,0,0,7);ctx.ellipse(x-sz*.3+sw,y-sz*.4,sz*.34,sz*.36,0,0,7);ctx.ellipse(x+sz*.32+sw,y-sz*.4,sz*.34,sz*.36,0,0,7);ctx.fill();
-  ctx.fillStyle=gl;ctx.beginPath();ctx.ellipse(x-sz*.12+sw,y-sz*.78,sz*.24,sz*.18,-.35,0,7);ctx.fill();ctx.globalAlpha=1;}
+  if(kind==='conifer'){
+    const g=`rgb(${Math.round(58-(58-24)*t)},${Math.round(66+(92-66)*t)},${Math.round(46+(56-46)*t)})`,gl=`rgb(${Math.round(84-(84-46)*t)},${Math.round(98+(126-98)*t)},${Math.round(66+(72-66)*t)})`;
+    ctx.fillStyle=g;
+    for(let i=0;i<3;i++){const yy=y-sz*(.28+i*.24),wl=sz*(.42-i*.1),sww=sw*(1-i*.15);
+      ctx.beginPath();ctx.moveTo(x-wl+sww,yy);ctx.lineTo(x+sww,yy-sz*.28);ctx.lineTo(x+wl+sww,yy);ctx.closePath();ctx.fill();}
+    ctx.fillStyle=gl;ctx.beginPath();ctx.moveTo(x-sz*.14+sw,y-sz*.94);ctx.lineTo(x+sw,y-sz*1.12);ctx.lineTo(x+sz*.1+sw,y-sz*.94);ctx.closePath();ctx.fill();
+  } else {
+    const g=`rgb(${Math.round(94-(94-32)*t)},${Math.round(82+(114-82)*t)},${Math.round(46+(60-46)*t)})`,gl=`rgb(${Math.round(130-(130-68)*t)},${Math.round(116+(150-116)*t)},${Math.round(66+(74-66)*t)})`;
+    ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x+sw,y-sz*.6,sz*.43,sz*.5,0,0,7);ctx.ellipse(x-sz*.3+sw,y-sz*.4,sz*.34,sz*.36,0,0,7);ctx.ellipse(x+sz*.32+sw,y-sz*.4,sz*.34,sz*.36,0,0,7);ctx.fill();
+    ctx.fillStyle=gl;ctx.beginPath();ctx.ellipse(x-sz*.12+sw,y-sz*.78,sz*.24,sz*.18,-.35,0,7);ctx.fill();
+  }
+  ctx.globalAlpha=1;}
 function drawRock(x,y,s){const sz=SIZE*0.34*s;shadowEll(x,y+1,sz*0.9,sz*0.3);
   ctx.fillStyle='#7b8088';ctx.beginPath();ctx.moveTo(x-sz,y);ctx.lineTo(x-sz*0.5,y-sz*0.9);ctx.lineTo(x+sz*0.3,y-sz);ctx.lineTo(x+sz,y-sz*0.2);ctx.lineTo(x+sz*0.6,y+sz*0.2);ctx.lineTo(x-sz*0.6,y+sz*0.2);ctx.closePath();ctx.fill();
   ctx.fillStyle='#9aa0a7';ctx.beginPath();ctx.moveTo(x-sz*0.5,y-sz*0.9);ctx.lineTo(x+sz*0.3,y-sz);ctx.lineTo(x+sz*0.1,y-sz*0.5);ctx.lineTo(x-sz*0.3,y-sz*0.45);ctx.closePath();ctx.fill();}
@@ -1275,9 +1358,9 @@ function drawFlower(x,y,s,c,vit){drawTuft(x,y,s*0.7,vit);const sz=SIZE*0.12*s,fy
   ctx.globalAlpha=.62;ctx.fillStyle=FLOWERCOL[Math.floor(c*FLOWERCOL.length)%FLOWERCOL.length];ctx.beginPath();ctx.ellipse(x,fy,sz*.75,sz*.55,0,0,7);ctx.fill();ctx.globalAlpha=1;}
 function drawDeco(h){const bx=h.px.x,by=h.px.y-h.elev;
   for(const d of h.deco){const x=bx+d.dx,y=by+d.dy;
-    if(d.t==='tree')drawTree(x,y,d.s,h.vit);else if(d.t==='rock')drawRock(x,y,d.s);
+    if(d.t==='tree')drawTree(x,y,d.s,h.vit,d.kind);else if(d.t==='rock')drawRock(x,y,d.s);
     else if(d.t==='peak')drawPeak(x,y,d.s);else if(d.t==='flower')drawFlower(x,y,d.s,d.c,h.vit);else drawTuft(x,y,d.s,h.vit);}}
-function drawField(h,bx,by){const crop=h.b==='getreidefeld'?'#cfaa43':'#5f9a45',winter=seasonIdx===3;
+function drawField(h,bx,by){const crop=h.b==='getreidefeld'?'#bfa055':'#6d8a56',winter=seasonIdx===3;
   shadowEll(bx,by+2,SIZE*.66,SIZE*.22,.27);
   const soil=ctx.createRadialGradient(bx,by-4,2,bx,by-2,SIZE*.66);soil.addColorStop(0,'#7a5934');soil.addColorStop(1,'#4b351f');
   ctx.fillStyle=soil;ctx.beginPath();ctx.ellipse(bx,by-2,SIZE*.66,SIZE*.36,0,0,7);ctx.fill();
@@ -1408,7 +1491,7 @@ function drawBuildingSprite(h){const d=DEFS[h.b];
     ctx.restore();
     drawLevelBadge(h,bx+SIZE*0.5*fpScale,by-SIZE*0.35*fpScale);return;}
   shadowEll(bx,by+3,w*.72,SIZE*.18*sc,.32);
-  drawHouseBody(bx,by,w,wh,rh,rc,d.cat==='Stein & Erz'?'#b8b3a3':'#d7c298');
+  drawHouseBody(bx,by,w,wh,rh,rc,d.cat==='Stein & Erz'?'#aca597':'#c9b78e');
   drawYardDetails(h,bx,by,sc);
   if(d.jobs>0&&!h._active&&h.b!=='lager'){ctx.fillStyle='rgba(40,20,15,.42)';ctx.fillRect(bx-w/2,by-wh-rh,w+w*0.1,wh+rh);
     ctx.fillStyle='#e07a4d';ctx.beginPath();ctx.arc(bx+w/2,by-wh-rh*0.5,4,0,7);ctx.fill();}
@@ -1594,7 +1677,10 @@ function buildTopbarSaveControls(){
   const tb=document.getElementById('topbar');
   if(!tb)return;
   let wrap=document.getElementById('saveControls');
-  if(!wrap){wrap=document.createElement('div');wrap.id='saveControls';wrap.className='hud-session';wrap.style.cssText='display:flex;gap:6px;';tb.appendChild(wrap);}
+  if(!wrap){wrap=document.createElement('div');wrap.id='saveControls';wrap.className='hud-session';wrap.style.cssText='display:flex;gap:6px;';}
+  // Mobile: wie die Session-Werkzeuge auch die Reise-Slots ins rechte Panel verschieben statt in die Topbar
+  const target=window.innerWidth<=700?document.getElementById('sessionCardBody'):tb;
+  if(wrap.parentElement!==target)target.appendChild(wrap);
   wrap.innerHTML='';
   const slots=getSaveSlots();
   SLOT_NAMES.forEach((name,i)=>{
